@@ -7,9 +7,9 @@
 This repo was adapted/modifed from Uncle Dave's Emacs, found here:
 =https://github.com/daedreth/UncleDavesEmacs=
 
-* TODO Installation
-** TODO Quick Installation
-=git clone https://github.com/daedreth/UncleDavesEmacs ~/.emacs.d=
+* Installation
+** Quick Installation
+=git clone https://github.com/Keyhenge/Emacs.git ~/.emacs.d=
 
 Keep in mind that you should remove your own ~/.emacs and your ~/.emacs.d
 prior to cloning this configuration. The next time you launch Emacs (and I recommend
