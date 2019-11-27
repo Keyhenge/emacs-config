@@ -538,13 +538,15 @@ Have some fun with it, add your own keybindings, change parameters, it's your ed
 ** Text manipulation
  Here I shall collect self-made functions that make editing text easier.
 
-*** Mark-Multiple
+*** Mark-Multiple/IEdit
  I can barely contain my joy. This extension allows you to quickly mark the next occurence of a region
  and edit them all at once. Wow!
  #+BEGIN_SRC emacs-lisp
    (use-package mark-multiple
      :ensure t
      :bind ("C-c q" . 'mark-next-like-this))
+   (use-package iedit
+     :ensure t)
  #+END_SRC
 
 *** Improved kill-word
