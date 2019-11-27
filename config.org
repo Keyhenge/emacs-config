@@ -839,25 +839,25 @@ Every good config needs a good theme. I've customized mine to be as easily readi
 
      `(header-line ((,class (:inherit mode-line-inactive))))
 
-     `(powerline-active0 ((,class (:height 0.9 :foreground ,green :background ,background-green
+     `(powerline-active0 ((,class (:height 0.8 :foreground ,green :background ,background-green
                                            :distant-foreground ,background-green))))
-     `(powerline-active1 ((,class (:height 0.9 :foreground ,green :background ,green-light
+     `(powerline-active1 ((,class (:height 0.8 :foreground ,green :background ,green-light
                                            :distant-foreground ,background-green))))
-     `(powerline-active2 ((,class (:height 0.9 :foreground ,green :background ,background-green
+     `(powerline-active2 ((,class (:height 0.8 :foreground ,green :background ,background-green
                                            :distant-foreground ,background-green))))
-     `(powerline-inactive0 ((,class (:height 0.9 :foreground ,green :background ,background-green
+     `(powerline-inactive0 ((,class (:height 0.8 :foreground ,green :background ,background-green
                                              :distant-foreground ,background-green))))
-     `(powerline-inactive1 ((,class (:height 0.9 :foreground ,green :background ,green-light
+     `(powerline-inactive1 ((,class (:height 0.8 :foreground ,green :background ,green-light
                                              distant-foreground ,background-green))))
-     `(powerline-inactive2 ((,class (:height 0.9 :foreground ,green :background ,background-green
+     `(powerline-inactive2 ((,class (:height 0.8 :foreground ,green :background ,background-green
                                              :distant-foreground ,background-green))))
 
      `(dashboard-heading-face ((,class (:background ,background-dark :foreground ,green
-                                                    :bold t :height 1.0))))
+                                                    :bold t :height 0.9))))
      `(dashboard-banner-logo-title-face ((,class (:background ,background-dark :foreground ,green
-                                                              :bold t :height 1.0))))
+                                                              :bold t :height 0.9))))
      `(widget-button ((,class (:background ,background-dark :foreground ,default :bold nil
-                                           :underline t :height 1.0))))
+                                           :underline t :height 0.9))))
 
      ;; erc stuff
      `(erc-nick-default-face ((,class :foreground ,green :background ,background-dark :weight bold)))
