@@ -218,24 +218,24 @@ Have some fun with it, add your own keybindings, change parameters, it's your ed
      (interactive)
      (start-process name nil name))
 
-   (defun key/launch-browser ()
+   (defun daedreth/launch-browser ()
      (interactive)
      (exwm-async-run "firefox"))
 
-   (defun key/lock-screen ()
+   (defun daedreth/lock-screen ()
      (interactive)
      (exwm-async-run "slock"))
 
-   (defun key/shutdown ()
+   (defun daedreth/shutdown ()
      (interactive)
      (start-process "halt" nil "sudo" "halt"))
  #+END_SRC
 
 **** Keybindings to start processes
  #+BEGIN_SRC emacs-lisp
-   (global-set-key (kbd "<s-tab>") 'key/launch-browser)
-   (global-set-key (kbd "<XF86ScreenSaver>") 'key/lock-screen)
-   (global-set-key (kbd "<XF86PowerOff>") 'key/shutdown)
+   (global-set-key (kbd "<s-tab>") 'daedreth/launch-browser)
+   (global-set-key (kbd "<XF86ScreenSaver>") 'daedreth/lock-screen)
+   (global-set-key (kbd "<XF86PowerOff>") 'daedreth/shutdown)
  #+END_SRC
 
 *** Audio controls
@@ -273,7 +273,7 @@ Have some fun with it, add your own keybindings, change parameters, it's your ed
 *** Screenshots
 **** Screenshotting the entire screen
  #+BEGIN_SRC emacs-lisp
-   (defun key/take-screenshot ()
+   (defun daedreth/take-screenshot ()
      "Takes a fullscreen screenshot of the current workspace"
      (interactive)
      (when window-system
@@ -286,12 +286,12 @@ Have some fun with it, add your own keybindings, change parameters, it's your ed
      (start-process "screenshot" nil "import" "-window" "root"
                 (concat (getenv "HOME") "/" (subseq (number-to-string (float-time)) 0 10) ".png"))
      (message "Screenshot taken!")))
-   (global-set-key (kbd "<print>") 'key/take-screenshot)
+   (global-set-key (kbd "<print>") 'daedreth/take-screenshot)
  #+END_SRC
 
 **** Screenshotting a region
  #+BEGIN_SRC emacs-lisp
-   (defun key/take-screenshot-region ()
+   (defun daedreth/take-screenshot-region ()
      "Takes a screenshot of a region selected by the user."
      (interactive)
      (when window-system
@@ -299,7 +299,7 @@ Have some fun with it, add your own keybindings, change parameters, it's your ed
      (call-process "convert" nil nil nil ".newScreen.png" "-shave" "1x1"
                    (concat (getenv "HOME") "/" (subseq (number-to-string (float-time)) 0 10) ".png"))
      (call-process "rm" nil nil nil ".newScreen.png")))
-   (global-set-key (kbd "<Scroll_Lock>") 'key/take-screenshot-region)
+   (global-set-key (kbd "<Scroll_Lock>") 'daedreth/take-screenshot-region)
  #+END_SRC
 
 *** Default browser
