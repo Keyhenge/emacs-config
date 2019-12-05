@@ -168,10 +168,11 @@ For now, this configuration is simply a nice way to use emacs, with a lot of tim
        ;; this just enables exwm, it started automatically once everything is ready
        (exwm-enable))
  +END_SRC
+p
 *** TODO Launchers
  
-**** dmenu for emacs
- 
+**** TODO dmenu for emacs
+
  #+BEGIN_SRC emacs-lisp
    (use-package dmenu
      :ensure t
@@ -180,11 +181,12 @@ For now, this configuration is simply a nice way to use emacs, with a lot of tim
  #+END_SRC
 
 **** Functions to start processes
- 
+
  #+BEGIN_SRC emacs-lisp
    (defun exwm-async-run (name)
      (interactive)
      (start-process name nil name))
+
 
    (defun daedreth/launch-browser ()
      (interactive)
@@ -224,6 +226,7 @@ A set of controls/settings to manipulate audio from inside emacs.
      (interactive)
      (start-process "lower-volume" nil "pulsemixer" "--change-volume" (concat "-" volumeModifier)))
  #+END_SRC
+
 
 **** Audio Keybindings
  I have a couple dedicated audio keys on my keyboard, which I bind the above functions to here. That being said, these are the only dedicated audio keys I have, so other audio keybinds (like those defined in [[Media]]) are bound to function keys.
@@ -474,6 +477,7 @@ Copies the word your cursor is currently on.
 
 *** Copy a line
 Copies the whole line the cursor is on.
+ Regardless of where your cursor is, this quickly copies a line. 
  #+BEGIN_SRC emacs-lisp
    (defun daedreth/copy-whole-line ()
      "Copies a line without regard for cursor position."
@@ -771,7 +775,6 @@ As a small TODO, maybe later I'll put in a light theme and keyboard macro to swi
  #+END_SRC
 
 *** Some customization
-
  #+BEGIN_SRC emacs-lisp
    (let ((class '((class color) (min-colors 89)))
          (default (if (true-color-p) "#abb2bf" "#afafaf"))
@@ -1161,9 +1164,6 @@ Packages and settings that make working in specific languages easier go here.
 
 *** lua/löve
 
-I must regrettably admit that =company= sucks with Lua/LÖVE.
-Which is also why I have =AC= now.
-I needed to do some shenanigans to get great auto-completion but here goes.
 #+BEGIN_SRC emacs-lisp
   (add-hook 'lua-mode-hook 'yas-minor-mode)
   (add-hook 'lua-mode-hook 'flycheck-mode)
@@ -1400,6 +1400,7 @@ so that I can completely replace it.
  #+END_SRC
 
 ***** Updating the database easily
+
  #+BEGIN_SRC emacs-lisp
    (defun mpd/update-database ()
      "Updates the MPD database synchronously."
