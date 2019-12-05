@@ -12,7 +12,7 @@ The majority of the configuration and especially the functions were written by h
 :PROPERTIES:
 :CUSTOM_ID: quick-install
 :END:
-=git clone https://github.com/Keyhenge/Emacs.git ~/.emacs.d=
+=git clone https://github.com/Keyhenge/emacs-config.git ~/.emacs.d=
 
 Running the above command will clone this repository into your emacs settings, overwriting anything you have there already. I highly recommend backing up your current settings by copying them into another repository (e.g. =cp ~/.emacs.d ~/.emacs.d.bak=).
 
@@ -70,7 +70,7 @@ For now, this configuration is simply a nice way to use emacs, with a lot of tim
 ** TODO Window Manager
  Everything surrounding EXWM is contained here, as well as a few extra controls which will only be accesible while emacs is in focus.
 *** TODO EXWM
- 
+ Currently I'm still using i3 due to disappointing bugs plaguing EXWM in NixOS. This will probably change upon changing to Guix.
 **** Installation
  +BEGIN_SRC emacs-lisp
    (use-package exwm
@@ -589,8 +589,14 @@ Deletes everything up to a character you choose. Similar to avy's ace-jump, exce
      :bind ("M-z" . zzz-up-to-char))
  #+END_SRC
 
-** TODO Remote editing
+*** Syntax highlighting for documents exported to HTML
+Allows you to export your buffer to HTML while respecting your tabs, theming, fonts, etc.
+ #+BEGIN_SRC emacs-lisp
+   (use-package htmlize
+     :ensure t)
+ #+END_SRC
 
+** TODO Remote editing
 *** Editing with sudo
 
  #+BEGIN_SRC emacs-lisp
@@ -617,9 +623,7 @@ Default emacs behavior is to cycle through the kill ring with =M-y=. This change
  #+END_SRC
 
 ** Eshell
-Part of the reason to move to emacs over other text editors is all of the great replacements for standard
-terminal programs. Sometimes you still need access to a shell for various commands though, and eshell is
-a great replacement for bash/zsh/fish that integrates directly with helm.
+Part of the reason to move to emacs over other text editors is all of the great replacements for standard terminal programs. Sometimes you still need access to a shell for various commands though, and eshell is a great replacement for bash/zsh/fish that integrates directly with helm.
 *** Completion
 Command completion isn't that great in eshell, so let's leech from the great completion fish provides.
 #+BEGIN_SRC emacs-lisp
@@ -642,11 +646,12 @@ Command completion isn't that great in eshell, so let's leech from the great com
  #+END_SRC
 
 ** Regular shell
-*** Default shell should be fish
-For the rare times I need to use a terminal in emacs that isn't eshell, it should at least be using fish.
+Generally I want to use eshell for its emacs integration, and use a terminal emulator for curses programs. However, there are still a few times where I want a shell, emacs integration, and POSIX compliance.
+*** Default shell should be zsh
+For the rare times I need to use a terminal in emacs that isn't eshell, it should at least be using zsh. This used to be fish, but eshell replacing most of my shell use means it's better to have a POSIX compliant shell.
  #+BEGIN_SRC emacs-lisp
-   (defvar my-term-shell "/usr/local/bin/fish")
-   (defadvice ansi-term (before force-fish)
+   (defvar my-term-shell "/bin/zsh")
+   (defadvice ansi-term (before force-zsh)
      (interactive (list my-term-shell)))
    (ad-activate 'ansi-term)
  #+END_SRC
@@ -753,8 +758,10 @@ Replaces the standard Emacs splash screen with a more streamlined one relevant t
                               (bookmarks . 10))))
  #+END_SRC
 
-** Theme
+** TODO Theme
 Every good config needs a good theme. I've customized mine to be as easily readible as possible.
+
+As a small TODO, maybe later I'll put in a light theme and keyboard macro to switch between them. I've been reading SICP through w3m in Emacs and the black text images are near unreadable on the dark background.
 *** A nice theme
  #+BEGIN_SRC emacs-lisp
    (use-package zerodark-theme
@@ -766,115 +773,116 @@ Every good config needs a good theme. I've customized mine to be as easily readi
 *** Some customization
 
  #+BEGIN_SRC emacs-lisp
-  (let ((class '((class color) (min-colors 89)))
-        (default (if (true-color-p) "#abb2bf" "#afafaf"))
-        (light (if (true-color-p) "#ccd4e3" "#d7d7d7"))
-        (background (if (true-color-p) "#22252c" "#333333"))
-        (background-dark (if (true-color-p) "#24282f" "#222222"))
-        (background-darker (if (true-color-p) "#22252c" "#222222"))
-        (mode-line-inactive (if "#1c2129" "#222222"))
-        (mode-line-active (if (true-color-p) "#6f337e" "#875f87"))
-        (background-lighter (if (true-color-p) "#3a3f4b" "#5f5f5f"))
-        (background-red (if (true-color-p) "#4c3840" "#5f5f5f"))
-        (bright-background-red (if (true-color-p) "#744a5b" "#744a5b"))
-        (background-purple (if (true-color-p) "#48384c" "#5f5f5f"))
-        (background-blue (if (true-color-p) "#38394c" "#444444"))
-        (bright-background-blue (if (true-color-p) "#4e5079" "#4e5079"))
-        (background-green (if (true-color-p) "#3d4a41" "#5f5f5f"))
-        (bright-background-green (if (true-color-p) "#3f6d54" "#3f6d54"))
-        (background-orange (if (true-color-p) "#4a473d" "#5f5f5f"))
-        (hl-line (if (true-color-p) "#2c323b" "#333333"))
-        (grey (if (true-color-p) "#cccccc" "#cccccc"))
-        (grey-dark (if (true-color-p) "#666666" "#666666"))
-        (highlight (if (true-color-p) "#3e4451" "#5f5f5f"))
-        (comment (if (true-color-p) "#687080" "#707070"))
-        (orange (if (true-color-p) "#da8548" "#d7875f"))
-        (orange-light (if (true-color-p) "#ddbd78" "#d7af87"))
-        (red (if (true-color-p) "#ff2727" "#ff3a3f"))
-        (red-light (if (true-color-p) "#ff6464" "#ff8070"))
-        (purple (if (true-color-p) "#c678dd" "#d787d7"))
-        (purple-dark (if (true-color-p) "#64446d" "#5f5f5f"))
-        (blue (if (true-color-p) "#61afef" "#5fafff"))
-        (blue-dark (if (true-color-p) "#1f5582" "#005f87"))
-        (green (if (true-color-p) "#98be65" "#87af5f"))
-        (green-light (if (true-color-p) "#9eac8c" "#afaf87"))
-        (peach "PeachPuff3")
-        (diff-added-background (if (true-color-p) "#284437" "#284437"))
-        (diff-added-refined-background (if (true-color-p) "#1e8967" "#1e8967"))
-        (diff-removed-background (if (true-color-p) "#583333" "#580000"))
-        (diff-removed-refined-background (if (true-color-p) "#b33c49" "#b33c49"))
-        (diff-current-background (if (true-color-p) "#29457b" "#29457b"))
-        (diff-current-refined-background (if (true-color-p) "#4174ae" "#4174ae")))
+   (let ((class '((class color) (min-colors 89)))
+         (default (if (true-color-p) "#abb2bf" "#afafaf"))
+         (light (if (true-color-p) "#ccd4e3" "#d7d7d7"))
+         (background (if (true-color-p) "#22252c" "#333333"))
+         (background-dark (if (true-color-p) "#24282f" "#222222"))
+         (background-darker (if (true-color-p) "#22252c" "#222222"))
+         (mode-line-inactive (if "#1c2129" "#222222"))
+         (mode-line-active (if (true-color-p) "#6f337e" "#875f87"))
+         (background-lighter (if (true-color-p) "#3a3f4b" "#5f5f5f"))
+         (background-red (if (true-color-p) "#4c3840" "#5f5f5f"))
+         (bright-background-red (if (true-color-p) "#744a5b" "#744a5b"))
+         (background-purple (if (true-color-p) "#48384c" "#5f5f5f"))
+         (background-blue (if (true-color-p) "#38394c" "#444444"))
+         (bright-background-blue (if (true-color-p) "#4e5079" "#4e5079"))
+         (background-green (if (true-color-p) "#3d4a41" "#5f5f5f"))
+         (bright-background-green (if (true-color-p) "#3f6d54" "#3f6d54"))
+         (background-orange (if (true-color-p) "#4a473d" "#5f5f5f"))
+         (hl-line (if (true-color-p) "#2c323b" "#333333"))
+         (grey (if (true-color-p) "#cccccc" "#cccccc"))
+         (grey-dark (if (true-color-p) "#666666" "#666666"))
+         (highlight (if (true-color-p) "#3e4451" "#5f5f5f"))
+         (comment (if (true-color-p) "#687080" "#707070"))
+         (orange (if (true-color-p) "#da8548" "#d7875f"))
+         (orange-light (if (true-color-p) "#ddbd78" "#d7af87"))
+         (red (if (true-color-p) "#ff2727" "#ff3a3f"))
+         (red-light (if (true-color-p) "#ff6464" "#ff8070"))
+         (purple (if (true-color-p) "#c678dd" "#d787d7"))
+         (purple-dark (if (true-color-p) "#64446d" "#5f5f5f"))
+         (blue (if (true-color-p) "#61afef" "#5fafff"))
+         (blue-dark (if (true-color-p) "#1f5582" "#005f87"))
+         (green (if (true-color-p) "#98be65" "#87af5f"))
+         (green-light (if (true-color-p) "#9eac8c" "#afaf87"))
+         (peach "PeachPuff3")
+         (diff-added-background (if (true-color-p) "#284437" "#284437"))
+         (diff-added-refined-background (if (true-color-p) "#1e8967" "#1e8967"))
+         (diff-removed-background (if (true-color-p) "#583333" "#580000"))
+         (diff-removed-refined-background (if (true-color-p) "#b33c49" "#b33c49"))
+         (diff-current-background (if (true-color-p) "#29457b" "#29457b"))
+         (diff-current-refined-background (if (true-color-p) "#4174ae" "#4174ae")))
 
-    (custom-theme-set-faces
-     'zerodark
-     `(default ((,class (:background ,background-darker :foreground ,default))))
+     (custom-theme-set-faces
+      'zerodark
+      `(default ((,class (:background ,background-darker :foreground ,default))))
 
-     ;; Font lock faces
-     `(font-lock-builtin-face ((,class (:foreground ,blue :weight bold))))
-     `(font-lock-comment-face ((,class (:foreground ,comment :slant italic))))
-     `(font-lock-constant-face ((,class (:foreground ,orange :weight bold))))
-     `(font-lock-function-name-face ((,class (:foreground ,blue))))
-     `(font-lock-keyword-face ((,class (:foreground ,red-light :weight bold))))
-     `(font-lock-string-face ((,class (:foreground ,green))))
-     `(font-lock-doc-face ((,class (:foreground ,green-light))))
-     `(font-lock-type-face ((,class (:foreground ,blue))))
-     `(font-lock-variable-name-face ((,class (:foreground ,blue))))
-     `(font-lock-warning-face ((,class (:foreground ,red :weight bold :background ,background-red))))
+      ;; Font lock faces
+      `(font-lock-builtin-face ((,class (:foreground ,blue :weight bold))))
+      `(font-lock-comment-face ((,class (:foreground ,comment :slant italic))))
+      `(font-lock-constant-face ((,class (:foreground ,orange :weight bold))))
+      `(font-lock-function-name-face ((,class (:foreground ,blue))))
+      `(font-lock-keyword-face ((,class (:foreground ,red-light :weight bold))))
+      `(font-lock-string-face ((,class (:foreground ,green))))
+      `(font-lock-doc-face ((,class (:foreground ,green-light))))
+      `(font-lock-type-face ((,class (:foreground ,blue))))
+      `(font-lock-variable-name-face ((,class (:foreground ,blue))))
+      `(font-lock-warning-face ((,class (:foreground ,red :weight bold :background ,background-red))))
 
-     `(fancy-battery-charging ((,class (:background ,background-green :height 1.0 :bold t))))
-     `(fancy-battery-discharging ((,class (:background ,background-green :height 1.0))))
-     `(fancy-battery-critical ((,class (:background ,background-green :height 1.0))))
+      `(fancy-battery-charging ((,class (:background ,background-green :height 1.0 :bold t))))
+      `(fancy-battery-discharging ((,class (:background ,background-green :height 1.0))))
+      `(fancy-battery-critical ((,class (:background ,background-green :height 1.0))))
 
-     ;; mode line stuff
-     `(mode-line ((,class (:background ,background-green :height 1.0 :foreground ,green
-                                       :distant-foreground ,background-green
-                                       :box ,(when zerodark-use-paddings-in-mode-line
-                                               (list :line-width 1 :color background-green))))))
+      ;; mode line stuff
+      `(mode-line ((,class (:background ,background-green :height 1.0 :foreground ,green
+                                        :distant-foreground ,background-green
+                                        :box ,(when zerodark-use-paddings-in-mode-line
+                                                (list :line-width 1 :color background-green))))))
 
-     `(mode-line-inactive ((,class (:background ,background-green :height 1.0 :foreground ,default
-                                                :distant-foreground ,background-green
-                                                :box ,(when zerodark-use-paddings-in-mode-line
-                                                        (list :line-width 1 :color background-green))))))
+      `(mode-line-inactive ((,class (:background ,background-green :height 1.0 :foreground ,default
+                                                 :distant-foreground ,background-green
+                                                 :box ,(when zerodark-use-paddings-in-mode-line
+                                                         (list :line-width 1 :color background-green))))))
 
-     `(header-line ((,class (:inherit mode-line-inactive))))
+      `(header-line ((,class (:inherit mode-line-inactive))))
 
-     `(powerline-active0 ((,class (:height 0.9 :foreground ,green :background ,background-green
-                                           :distant-foreground ,background-green))))
-     `(powerline-active1 ((,class (:height 0.9 :foreground ,green :background ,green-light
-                                           :distant-foreground ,background-green))))
-     `(powerline-active2 ((,class (:height 0.9 :foreground ,green :background ,background-green
-                                           :distant-foreground ,background-green))))
-     `(powerline-inactive0 ((,class (:height 0.9 :foreground ,green :background ,background-green
-                                             :distant-foreground ,background-green))))
-     `(powerline-inactive1 ((,class (:height 0.9 :foreground ,green :background ,green-light
-                                             distant-foreground ,background-green))))
-     `(powerline-inactive2 ((,class (:height 0.9 :foreground ,green :background ,background-green
-                                             :distant-foreground ,background-green))))
+      `(powerline-active0 ((,class (:height 0.9 :foreground ,green :background ,background-green
+                                            :distant-foreground ,background-green))))
+      `(powerline-active1 ((,class (:height 0.9 :foreground ,green :background ,green-light
+                                            :distant-foreground ,background-green))))
+      `(powerline-active2 ((,class (:height 0.9 :foreground ,green :background ,background-green
+                                            :distant-foreground ,background-green))))
+      `(powerline-inactive0 ((,class (:height 0.9 :foreground ,green :background ,background-green
+                                              :distant-foreground ,background-green))))
+      `(powerline-inactive1 ((,class (:height 0.9 :foreground ,green :background ,green-light
+                                              distant-foreground ,background-green))))
+      `(powerline-inactive2 ((,class (:height 0.9 :foreground ,green :background ,background-green
+                                              :distant-foreground ,background-green))))
 
-     `(dashboard-heading-face ((,class (:background ,background-dark :foreground ,green
-                                                    :bold t :height 1.0))))
-     `(dashboard-banner-logo-title-face ((,class (:background ,background-dark :foreground ,green
-                                                              :bold t :height 1.0))))
-     `(widget-button ((,class (:background ,background-dark :foreground ,default :bold nil
-                                           :underline t :height 1.0))))
+      `(dashboard-heading-face ((,class (:background ,background-dark :foreground ,green
+                                                     :bold t :height 1.0))))
+      `(dashboard-banner-logo-title-face ((,class (:background ,background-dark :foreground ,green
+                                                               :bold t :height 1.0))))
+      `(widget-button ((,class (:background ,background-dark :foreground ,default :bold nil
+                                            :underline t :height 1.0))))
 
-     ;; erc stuff
-     `(erc-nick-default-face ((,class :foreground ,green :background ,background-dark :weight bold)))
+      ;; erc stuff
+      `(erc-nick-default-face ((,class :foreground ,green :background ,background-dark :weight bold)))
 
-     ;; org stuff
-     `(outline-1 ((,class (:foreground ,blue :weight bold :height 1.8 :bold nil))))
-     `(outline-2 ((,class (:foreground ,red-light :weight bold :height 1.7 :bold nil))))
-     `(outline-3 ((,class (:foreground ,peach :weight bold :height 1.6 :bold nil))))
-     `(outline-4 ((,class (:foreground ,green-light :weight bold :height 1.5 :bold nil))))
-     `(outline-5 ((,class (:foreground ,purple :weight bold :height 1.4 :bold nil))))
-     `(outline-6 ((,class (:foreground ,orange :weight bold :height 1.3 :bold nil))))
-     `(outline-7 ((,class (:foreground ,grey :weight bold :height 1.2 :bold nil))))
-     `(outline-8 ((,class (:foreground ,blue-dark :weight bold :height 1.1 :bold nil))))
-     `(org-block-begin-line ((,class (:background ,background-green :foreground ,green
-                                                  :bold t :height 1.0))))
-     `(org-block-end-line ((,class (:background ,background-green :foreground ,green
-                                                :bold t :height 1.0))))))
+      ;; org stuff
+      `(outline-1 ((,class (:foreground ,blue :weight bold :height 1.8 :bold nil))))
+      `(outline-2 ((,class (:foreground ,red-light :weight bold :height 1.7 :bold nil))))
+      `(outline-3 ((,class (:foreground ,peach :weight bold :height 1.6 :bold nil))))
+      `(outline-4 ((,class (:foreground ,green-light :weight bold :height 1.5 :bold nil))))
+      `(outline-5 ((,class (:foreground ,purple :weight bold :height 1.4 :bold nil))))
+      `(outline-6 ((,class (:foreground ,orange :weight bold :height 1.3 :bold nil))))
+      `(outline-7 ((,class (:foreground ,grey :weight bold :height 1.2 :bold nil))))
+      `(outline-8 ((,class (:foreground ,blue-dark :weight bold :height 1.1 :bold nil))))
+      `(org-block-begin-line ((,class (:background ,background-green :foreground ,green
+                                                   :bold t :height 1.0))))
+      `(org-block-end-line ((,class (:background ,background-green :foreground ,green
+                                                 :bold t :height 1.0))))
+      `(org-ellipses nil)))
  #+END_SRC
 
 ** TODO Modeline
@@ -960,11 +968,11 @@ Hides the following modes from your modeline in order to save room.
  #+END_SRC
 
 * Programming
-
+While Emacs is great for general text editing among many other features, let's be real: if you're reading this, you're a programmer. Therefore, we need some accessories to greatly improve the general programming workflow.
 ** Projectile
-
+Projectile is a flexible project manager that allows you to perform a lot of arbitrary actions, anything from running tests to replacing text project-wide. It automatically recognizes anything being tracked by VCS as a project.
 *** Enable projectile globally
-
+Allows any folder to be considered a project. Also maps all projectile commands to =C-c p=. Also, don't forget =C-x C-z= to use helm to search over a projectile project!
  #+BEGIN_SRC emacs-lisp
    (use-package projectile
      :ensure t
@@ -975,31 +983,32 @@ Hides the following modes from your modeline in order to save room.
  #+END_SRC
 
 *** Let projectile call make
-
+Binds F5 to compile your project via a Makefile in the root directory.
  #+BEGIN_SRC emacs-lisp
    (global-set-key (kbd "<f5>") 'projectile-compile-project)
  #+END_SRC
 
 ** Yasnippet
-
+Yasnippet gives you access to a bunch of different templates that you can use to quickly define parts of a project. You put in the first few letters of what you want, hit =tab=, and suddenly a template you can fill out appears. Press =tab= while editing the template to jump to the next "part" of the form (like the function name -> parameters -> returned types). =C-m t= brings up a table of the available snippets for your current major mode. =C-c &= is the prefix for various snippet editing commands, like defining new ones or inserting an arbitrary snippet.
 #+BEGIN_SRC emacs-lisp
-    (use-package yasnippet
-      :ensure t
-      :config
-        (use-package yasnippet-snippets
-          :ensure t)
-        (yas-reload-all))
+  (use-package yasnippet
+    :ensure t
+    :config
+    (use-package yasnippet-snippets
+      :ensure t)
+    (yas-reload-all))
+  ;;(global-set-key (kbd "C-m t") 'yas-describe-tables)
 #+END_SRC
 
 ** Flycheck
-
+A programmer's best friend, checks for syntax and styling errors.
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
     :ensure t)
 #+END_SRC
 
 ** Company mode
-
+Text completion, another great tool. Use =M-n= and =M-p= to cycle through suggestions and =Return= to choose one (or =M-<num>= to choose one of the first 10). You may want to set the delay to be lower if you use completion a lot.
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :ensure t
@@ -1008,16 +1017,23 @@ Hides the following modes from your modeline in order to save room.
     (setq company-minimum-prefix-length 3))
 
   (with-eval-after-load 'company
-    ;;(define-key company-active-map (kbd "M-n") nil)
-    ;;(define-key company-active-map (kbd "M-p") nil)
-    ;;(define-key company-active-map (kbd "C-n") #'company-select-next)
-    ;;(define-key company-active-map (kbd "C-p") #'company-select-previous)
     (define-key company-active-map (kbd "SPC") #'company-abort))
+
+  (defun tab-indent-or-complete ()
+    (interactive)
+    (if (minibufferp)
+        (minibuffer-complete)
+      (if (or (not yas-minor-mode)
+              (null (do-yas-expand)))
+          (if (check-expansion)
+              (company-complete-common)
+            (indent-for-tab-command)))))
+
+  (global-set-key [backtab] 'tab-indent-or-complete)
 #+END_SRC
 
 ** Git integration
-
-*** magit
+Git is used just about everywhere, and magit makes it easy to use from inside Emacs. =M-g= to pull it up, I recommend reading the [[https://magit.vc/manual/magit/][manual]] or the =M-h m= page, there's a lot to learn.
  #+BEGIN_SRC emacs-lisp
    (use-package magit
      :ensure t
@@ -1029,41 +1045,18 @@ Hides the following modes from your modeline in order to save room.
  #+END_SRC
 
 ** Language Server Protocol
+The language server protocol is where you connect to an external program that provides all of the syntax checking and suggestions for a language, developed because people keep making new editors and developers have given up writing new implementations for each. Should have just stuck with Emacs/vi...
 
+While this doesn't matter for older languages like Python and C that already have rich ecosystems in Emacs, Go requires it.
 #+BEGIN_SRC emacs-lisp
-; Install relevant packages
-(use-package lsp-mode)
-(use-package company-lsp)
-(use-package lsp-ui)
-
-; Define Hydra keybinds
-(defhydra hydra-lsp (:exit t :hint nil)
-  "
- Buffer^^               Server^^                   Symbol
--------------------------------------------------------------------------------------
- [_f_] format           [_M-r_] restart            [_d_] declaration  [_i_] implementation  [_o_] documentation
- [_m_] imenu            [_S_]   shutdown           [_D_] definition   [_t_] type            [_r_] rename
- [_x_] execute action   [_M-s_] describe session   [_R_] references   [_s_] signature"
-  ("d" lsp-find-declaration)
-  ("D" lsp-ui-peek-find-definitions)
-  ("R" lsp-ui-peek-find-references)
-  ("i" lsp-ui-peek-find-implementation)
-  ("t" lsp-find-type-definition)
-  ("s" lsp-signature-help)
-  ("o" lsp-describe-thing-at-point)
-  ("r" lsp-rename)
-
-  ("f" lsp-format-buffer)
-  ("m" lsp-ui-imenu)
-  ("x" lsp-execute-code-action)
-
-  ("M-s" lsp-describe-session)
-  ("M-r" lsp-restart-workspace)
-  ("S" lsp-shutdown-workspace))
+  ;; Install relevant packages
+  (use-package lsp-mode)
+  (use-package company-lsp)
+  (use-package lsp-ui)
 #+END_SRC
 
 ** Specific languages
-
+Packages and settings that make working in specific languages easier go here.
 *** c/c++
 
 #+BEGIN_SRC emacs-lisp
@@ -1241,14 +1234,15 @@ I needed to do some shenanigans to get great auto-completion but here goes.
     (lsp)
     (company-mode)
     (flycheck-mode)
-    (aggressive-indent-mode -1)
     (eldoc-mode))
 
-  (use-package flycheck-golangci-lint
+  (use-package flycheck-gometalinter
     :ensure t
-    :hook (go-mode . flycheck-golangci-lint-setup))
+    :config
+    (progn
+      (flycheck-gometalinter-setup)))
 
-  (add-hook 'go-mode-hook #'cce/go-mode-hook)
+  (add-hook 'go-mode-hook 'cce/go-mode-hook)
   (eval-after-load "go-mode"
     (lambda ()
       (define-key go-mode-map (kbd "C-<tab>") 'company-lsp)))
@@ -1256,86 +1250,72 @@ I needed to do some shenanigans to get great auto-completion but here goes.
 
 * Misc
 ** Org
-
+The most useful mode in Emacs, bar none. This entire document is written in it, my schedule is written it, my contact book is written in it, my papers are written in it, etc.
 *** Common settings
-
  #+BEGIN_SRC emacs-lisp
-   (setq org-ellipsis " ")
-   (setq org-src-fontify-natively t)
-   (setq org-src-tab-acts-natively t)
-   (setq org-confirm-babel-evaluate nil)
-   (setq org-export-with-smart-quotes t)
-   (setq org-src-window-setup 'current-window)
-   (add-hook 'org-mode-hook 'org-indent-mode)
- #+END_SRC
-
-*** Syntax highlighting for documents exported to HTML
-
- #+BEGIN_SRC emacs-lisp
-   (use-package htmlize
-     :ensure t)
+   (setq org-ellipsis "…") ;; Sets the character that comes after headings if they are collapsed
+   (setq org-src-fontify-natively t) ;; Gives code blocks in org files proper highlighting
+   (setq org-src-tab-acts-natively t) ;; When in a code block, makes tab operate as if it were in that language's major mode
+   (setq org-confirm-babel-evaluate nil) ;; Disables y/n check when evaluating code in Org buffers
+   (setq org-export-with-smart-quotes t) ;; Treats double quotes as primary quotes, single quotes as secondary quotes, and single quote marks as apostrophes when exporting
+   (setq org-src-window-setup 'current-window) ;; When editing code blocks with =C-c '=, open editing in current buffer
+   (add-hook 'org-mode-hook 'org-indent-mode) ;; Always have indent mode active in org mode
  #+END_SRC
 
 *** Line wrapping
-
+Always wrap lines in org mode.
  #+BEGIN_SRC emacs-lisp
    (add-hook 'org-mode-hook
 	     '(lambda ()
 	        (visual-line-mode 1)))
  #+END_SRC
 
-*** Keybindings
-
+*** Edit code blocks
+Pressing =C-c '= while in a code block will pull up that code in its own buffer with the appropriate major mode activated.
  #+BEGIN_SRC emacs-lisp
    (global-set-key (kbd "C-c '") 'org-edit-src-code)
  #+END_SRC
 
 *** Org Bullets
-
+Replaces the asterisks you usually get in Org mode with more visually interesting bullets.
  #+BEGIN_SRC emacs-lisp
    (use-package org-bullets
      :ensure t
      :config
-       (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
- #+END_SRC
+     (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+      #+END_SRC
 
 *** Easy-to-add emacs-lisp template
-
+Great for editing this document in paticular. If you ever need to add a new block of code just type "el" and then hit =Tab=.
  #+BEGIN_SRC emacs-lisp
    (add-to-list 'org-structure-template-alist
 	        '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
  #+END_SRC
 
 *** Exporting options
-
 **** latex
-
+Adds the ability to export your org documents to LaTeX.
  #+BEGIN_SRC emacs-lisp
    (when (file-directory-p "/usr/share/emacs/site-lisp/tex-utils")
      (add-to-list 'load-path "/usr/share/emacs/site-lisp/tex-utils")
      (require 'xdvi-search))
  #+END_SRC
-**** Twitter Bootstrap
-
- #+BEGIN_SRC emacs-lisp
-   (use-package ox-twbs
-     :ensure t)
- #+END_SRC
 
 *** Agenda
-
+If you really want to stay organized, I highly recommend starting an agenda.org file and adding tasks and deadlines, then adding it to the org agenda list. Once you do both, you can pull up a 10 day summary (3 days before and the week ahead) of your schedule with =C-c a=.
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-c a") 'org-agenda-list)
   (setq org-agenda-start-day "-3d")
   (setq org-agenda-span 10)
 #+END_SRC
 
-** Instant messaging
-
-*** erc, also known as "a way to ask for help on #emacs"
-
+** TODO Messaging
+Interfaces for several messaging clients. Remember, we want to be using Emacs any time we're editing text.
+Still need to add a matrix client.
+*** ERC
+Some people still use IRC, and you should too! Remember to edit the nickname to be yours.
 **** Some common settings
-
+Hides some common channel messages and changes the buffer name to match the channel.
  #+BEGIN_SRC emacs-lisp
    (setq erc-nick "keyhenge")
    (setq erc-prompt (lambda () (concat "[" (buffer-name) "]")))
@@ -1343,14 +1323,13 @@ I needed to do some shenanigans to get great auto-completion but here goes.
  #+END_SRC
 
 **** Poor mans selectable server list
-
+Changes server history to the following list of servers for easy access.
  #+BEGIN_SRC emacs-lisp
    (setq erc-server-history-list '("irc.freenode.net"
                                    "localhost"))
  #+END_SRC
 
 **** Nick highlighting
-
  #+BEGIN_SRC emacs-lisp
  (use-package erc-hl-nicks
    :ensure t
@@ -1358,15 +1337,8 @@ I needed to do some shenanigans to get great auto-completion but here goes.
      (erc-update-modules))
  #+END_SRC
 
-*** rich presence for discord
-
- #+BEGIN_SRC emacs-lisp
-   (use-package elcord
-     :ensure t)
- #+END_SRC
-
 ** Elfeed
-
+Elfeed is an RSS newsfeed with tagging, searching, autodownloads, the works.
 #+BEGIN_SRC emacs-lisp
   (use-package elfeed
     :ensure t)
