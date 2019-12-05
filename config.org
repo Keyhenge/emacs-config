@@ -16,7 +16,7 @@ The majority of the configuration and especially the functions were written by h
 
 Running the above command will clone this repository into your emacs settings, overwriting anything you have there already. I highly recommend backing up your current settings by copying them into another repository (e.g. =cp ~/.emacs.d ~/.emacs.d.bak=).
 
-This config file is saved as an org file, then parsed into valid emacs-lisp. As such, most sections have some sort of rambling attached explaining what the keybindings are, what packages I've added, why things are the way they are, etc. You should read through them to get the full benefit of the configuration.
+This config file is saved as an org file, then parsed into valid emacs-lisp. As such, most sections have some sort of rambling attached explaining what the keybindings are, what packages I've added, why things are the way they are, etc. You should read through them to get the full benefit of the configuration. Also, if you do decide to download, try deleting these ramblings and filling them in with your own. Doing so helped me understand each part of the config, customize it further to my liking, and got me more familiar with the programs I was using.
 
 ** TODO Dependencies for:
 *** EXWM
