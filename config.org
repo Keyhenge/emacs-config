@@ -1057,7 +1057,6 @@ While this doesn't matter for older languages like Python and C that already hav
 ** Specific languages
 Packages and settings that make working in specific languages easier go here.
 *** c/c++
-
 #+BEGIN_SRC emacs-lisp
   (add-hook 'c++-mode-hook 'yas-minor-mode)
   (add-hook 'c-mode-hook 'yas-minor-mode)
@@ -1092,7 +1091,6 @@ Packages and settings that make working in specific languages easier go here.
 #+END_SRC
 
 *** python
-
 #+BEGIN_SRC emacs-lisp
   (add-hook 'python-mode-hook 'yas-minor-mode)
   (add-hook 'python-mode-hook 'flycheck-mode)
@@ -1119,7 +1117,6 @@ Packages and settings that make working in specific languages easier go here.
 #+END_SRC
 
 *** emacs-lisp
-
 #+BEGIN_SRC emacs-lisp
   (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
   (add-hook 'emacs-lisp-mode-hook 'yas-minor-mode)
@@ -1139,7 +1136,6 @@ Packages and settings that make working in specific languages easier go here.
 #+END_SRC
 
 *** bash
-
 #+BEGIN_SRC emacs-lisp
   (add-hook 'shell-mode-hook 'yas-minor-mode)
   (add-hook 'shell-mode-hook 'flycheck-mode)
@@ -1159,7 +1155,6 @@ Packages and settings that make working in specific languages easier go here.
 #+END_SRC
 
 *** lua/löve
-
 #+BEGIN_SRC emacs-lisp
   (add-hook 'lua-mode-hook 'yas-minor-mode)
   (add-hook 'lua-mode-hook 'flycheck-mode)
@@ -1211,7 +1206,6 @@ Packages and settings that make working in specific languages easier go here.
 #+END_SRC
 
 *** golang
-
 #+BEGIN_SRC emacs-lisp
   ;; Set environment variables. Needed for the major mode/LSP to see go commands
   (setenv "PATH"
