@@ -1244,6 +1244,20 @@ Packages and settings that make working in specific languages easier go here.
       (define-key go-mode-map (kbd "C-<tab>") 'company-lsp)))
 #+END_SRC
 
+*** Markup languages
+As much as I like org mode, it can't replace things like JSON, XML, or YAML, so we need some syntax checking for them.
+**** YAML
+#+BEGIN_SRC emacs-lisp
+    (use-package yaml-mode
+      :ensure t
+      :config
+      (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+      (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
+      (add-hook 'yaml-mode-hook
+                '(lambda ()
+                   (define-key yaml-mode-map "\C-m" 'newline-and-indent))))
+#+END_SRC
+
 * Misc
 ** Org
 The most useful mode in Emacs, bar none. This entire document is written in it, my schedule is written it, my contact book is written in it, my papers are written in it, etc.
