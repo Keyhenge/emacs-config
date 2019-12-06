@@ -634,7 +634,7 @@ Command completion isn't that great in eshell, so let's leech from the great com
   (use-package fish-completion
     :ensure t)
   (when (and (executable-find "fish")
-             (require 'fish-completion nil t))
+            (require 'fish-completion nil t))
     (global-fish-completion-mode))
   (add-hook 'eshell-mode-hook
             (lambda ()
@@ -788,8 +788,8 @@ As a small TODO, maybe later I'll put in a light theme and keyboard macro to swi
          (background-red (if (true-color-p) "#4c3840" "#5f5f5f"))
          (bright-background-red (if (true-color-p) "#744a5b" "#744a5b"))
          (background-purple (if (true-color-p) "#48384c" "#5f5f5f"))
-         (background-blue (if (true-color-p) "#38394c" "#444444"))
-         (bright-background-blue (if (true-color-p) "#4e5079" "#4e5079"))
+         (background-blue (if (true-color-p) "#1a1a3c" "#1f1f4f"))
+         (bright-background-blue (if (true-color-p) "#1a2069" "#2a306c"))
          (background-green (if (true-color-p) "#3d4a41" "#5f5f5f"))
          (bright-background-green (if (true-color-p) "#3f6d54" "#3f6d54"))
          (background-orange (if (true-color-p) "#4a473d" "#5f5f5f"))
@@ -832,38 +832,34 @@ As a small TODO, maybe later I'll put in a light theme and keyboard macro to swi
       `(font-lock-variable-name-face ((,class (:foreground ,blue))))
       `(font-lock-warning-face ((,class (:foreground ,red :weight bold :background ,background-red))))
 
-      `(fancy-battery-charging ((,class (:background ,background-green :height 1.0 :bold t))))
-      `(fancy-battery-discharging ((,class (:background ,background-green :height 1.0))))
-      `(fancy-battery-critical ((,class (:background ,background-green :height 1.0))))
+      `(fancy-battery-charging ((,class (:background ,background-green :height 0.85 :bold t))))
+      `(fancy-battery-discharging ((,class (:background ,background-green :height 0.85))))
+      `(fancy-battery-critical ((,class (:background ,background-green :height 0.85))))
 
       ;; mode line stuff
-      `(mode-line ((,class (:background ,background-green :height 1.0 :foreground ,green
-                                        :distant-foreground ,background-green
-                                        :box ,(when zerodark-use-paddings-in-mode-line
-                                                (list :line-width 1 :color background-green))))))
+      `(mode-line ((,class (:background ,background-green :height 0.9 :foreground ,green
+                                        :distant-foreground ,background-green))))
 
-      `(mode-line-inactive ((,class (:background ,background-green :height 1.0 :foreground ,default
-                                                 :distant-foreground ,background-green
-                                                 :box ,(when zerodark-use-paddings-in-mode-line
-                                                         (list :line-width 1 :color background-green))))))
+      `(mode-line-inactive ((,class (:background ,background-green :height 0.9 :foreground ,green
+                                                 :distant-foreground ,green-light))))
 
       `(header-line ((,class (:inherit mode-line-inactive))))
 
-      `(powerline-active0 ((,class (:height 0.9 :foreground ,green :background ,background-green
+      `(powerline-active0 ((,class (:height 0.85 :foreground ,green :background ,background-green
                                             :distant-foreground ,background-green))))
-      `(powerline-active1 ((,class (:height 0.9 :foreground ,green :background ,green-light
+      `(powerline-active1 ((,class (:height 0.85 :foreground ,green :background ,green-light
                                             :distant-foreground ,background-green))))
-      `(powerline-active2 ((,class (:height 0.9 :foreground ,green :background ,background-green
+      `(powerline-active2 ((,class (:height 0.85 :foreground ,green :background ,background-green
                                             :distant-foreground ,background-green))))
-      `(powerline-inactive0 ((,class (:height 0.9 :foreground ,green :background ,background-green
+      `(powerline-inactive0 ((,class (:height 0.85 :foreground ,green :background ,background-green
                                               :distant-foreground ,background-green))))
-      `(powerline-inactive1 ((,class (:height 0.9 :foreground ,green :background ,green-light
-                                              distant-foreground ,background-green))))
-      `(powerline-inactive2 ((,class (:height 0.9 :foreground ,green :background ,background-green
+      `(powerline-inactive1 ((,class (:height 0.85 :foreground ,green :background ,green-light
+                                              :distant-foreground ,background-green))))
+      `(powerline-inactive2 ((,class (:height 0.85 :foreground ,green :background ,background-green
                                               :distant-foreground ,background-green))))
 
       `(dashboard-heading-face ((,class (:background ,background-dark :foreground ,green
-                                                     :bold t :height 1.0))))
+                                                     :bold t :height 1.2))))
       `(dashboard-banner-logo-title-face ((,class (:background ,background-dark :foreground ,green
                                                                :bold t :height 1.0))))
       `(widget-button ((,class (:background ,background-dark :foreground ,default :bold nil
