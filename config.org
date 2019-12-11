@@ -71,6 +71,337 @@ As mentioned in the [[Quick Installation]] section, this config file is saved as
 For now, this configuration is simply a nice way to use emacs, with a lot of time saving packages, functions and shortcuts. In the future however, I'll be reinstating the [[EXWM]] section to use emacs as a desktop environment. If you don't want that, it's simple enough to delete that section, as the rest of the configuration does not depend on it.
 *** TODO On the keybindings
 
+* TODO Theming
+** TODO Basic Interface Settings
+Some improvements to the look and feel of Emacs that doesn't use any outside packages.
+*** TODO Looks
+**** Remove startup screen
+By default, Emacs has its own startup screen. We'll be replacing it in [[Dashboard]].
+ #+BEGIN_SRC emacs-lisp
+ (setq inhibit-startup-message t)
+ #+END_SRC
+
+**** Disable menus and scrollbars
+Gets rid of the GUI buttons and scrollbars of Emacs. You'll be using your keyboard anyway, so all these do is take up valuable screen space.
+ #+BEGIN_SRC emacs-lisp
+ (tool-bar-mode -1)
+ (menu-bar-mode -1)
+ (scroll-bar-mode -1)
+ #+END_SRC
+
+**** TODO Disable bell
+
+ #+BEGIN_SRC emacs-lisp
+ (setq ring-bell-function 'ignore)
+ #+END_SRC
+
+**** Set UTF-8 encoding
+Sets all text to UTF-8.
+ #+BEGIN_SRC emacs-lisp
+   (setq locale-coding-system 'utf-8)
+   (set-terminal-coding-system 'utf-8)
+   (set-keyboard-coding-system 'utf-8)
+   (set-selection-coding-system 'utf-8)
+   (prefer-coding-system 'utf-8)
+ #+END_SRC
+
+**** Highlight current line
+ #+BEGIN_SRC emacs-lisp
+   (when window-system (add-hook 'prog-mode-hook 'hl-line-mode))
+ #+END_SRC
+
+**** Pretty symbols
+Changes various symbol names (e.g. =lambda=) to their actual symbol.
+ #+BEGIN_SRC emacs-lisp
+   (when window-system
+         (use-package pretty-mode
+         :ensure t
+         :config
+         (global-pretty-mode t)))
+ #+END_SRC
+
+*** Functionality
+**** Backups and auto-saves
+Rather than polluting your directy with obnoxious =#file.etx#= files, this saves your backups to a designated folder.
+ #+BEGIN_SRC emacs-lisp
+ (setq make-backup-files t)
+ (setq auto-save-default t)
+ (setq backup-directory-alist
+          `(("." . ,(concat user-emacs-directory "backups"))))
+ #+END_SRC
+
+**** Change yes-or-no questions into y-or-n questions
+Whenever Emacs asks a yes or no question, you have to type `yes` or `no`, or Emacs refuses to do anything. This shortens that process.
+ #+BEGIN_SRC emacs-lisp
+ (defalias 'yes-or-no-p 'y-or-n-p)
+ #+END_SRC
+
+**** Async
+Uses asynchronous processes when possible.
+ #+BEGIN_SRC emacs-lisp
+   (use-package async
+     :ensure t
+     :init (dired-async-mode 1))
+ #+END_SRC
+
+** Dashboard
+Replaces the standard Emacs splash screen with a more streamlined one relevant to whatever you're working on. Change it at your leisure, documentation details can be found [[https://github.com/emacs-dashboard/emacs-dashboard][here]].
+ #+BEGIN_SRC emacs-lisp
+   (use-package dashboard
+     :ensure t
+     :config
+       (dashboard-setup-startup-hook)
+       (setq dashboard-startup-banner "~/.emacs.d/img/dashLogo.png")
+       (setq dashboard-items '((recents  . 5)
+                               (projects . 5)))
+       (setq dashboard-banner-logo-title ""))  (use-package dashboard
+    :ensure t
+    :config
+      (dashboard-setup-startup-hook)
+      (setq dashboard-startup-banner "~/.emacs.d/img/dashLogo.png")
+      (setq dashboard-banner-logo-title "今日も一日頑張ってくれ！")
+
+      (setq dashboard-set-navigator t)
+      (setq dashboard-set-footer nil)
+      (setq dashboard-set-heading-icons t)
+      (setq dashboard-set-file-icons t)
+
+      (setq dashboard-items '((recents  . 10)
+                              (projects . 10)
+                              (bookmarks . 10))))
+ #+END_SRC
+
+** TODO Theme
+Every good config needs a good theme. I've customized mine to be as easily readible as possible.
+
+As a small TODO, maybe later I'll put in a light theme and keyboard macro to switch between them. I've been reading SICP through w3m in Emacs and the black text images are near unreadable on the dark background.
+*** A nice theme
+ #+BEGIN_SRC emacs-lisp
+   (use-package zerodark-theme
+     :ensure t
+     :init
+       (load-theme 'zerodark t))
+ #+END_SRC
+
+*** Some customization
+ #+BEGIN_SRC emacs-lisp
+   (let ((class '((class color) (min-colors 89)))
+         (default (if (true-color-p) "#abb2bf" "#afafaf"))
+         (light (if (true-color-p) "#ccd4e3" "#d7d7d7"))
+         (background (if (true-color-p) "#22252c" "#333333"))
+         (background-dark (if (true-color-p) "#24282f" "#222222"))
+         (background-darker (if (true-color-p) "#22252c" "#222222"))
+         (mode-line-inactive (if "#1c2129" "#222222"))
+         (mode-line-active (if (true-color-p) "#6f337e" "#875f87"))
+         (background-lighter (if (true-color-p) "#3a3f4b" "#5f5f5f"))
+         (background-red (if (true-color-p) "#4c3840" "#5f5f5f"))
+         (bright-background-red (if (true-color-p) "#744a5b" "#744a5b"))
+         (background-purple (if (true-color-p) "#48384c" "#5f5f5f"))
+         (background-blue (if (true-color-p) "#1a1a3c" "#1f1f4f"))
+         (bright-background-blue (if (true-color-p) "#1a2069" "#2a306c"))
+         (background-green (if (true-color-p) "#3d4a41" "#5f5f5f"))
+         (bright-background-green (if (true-color-p) "#3f6d54" "#3f6d54"))
+         (background-orange (if (true-color-p) "#4a473d" "#5f5f5f"))
+         (hl-line (if (true-color-p) "#2c323b" "#333333"))
+         (grey (if (true-color-p) "#cccccc" "#cccccc"))
+         (grey-dark (if (true-color-p) "#666666" "#666666"))
+         (highlight (if (true-color-p) "#3e4451" "#5f5f5f"))
+         (comment (if (true-color-p) "#687080" "#707070"))
+         (orange (if (true-color-p) "#da8548" "#d7875f"))
+         (orange-light (if (true-color-p) "#ddbd78" "#d7af87"))
+         (red (if (true-color-p) "#ff2727" "#ff3a3f"))
+         (red-light (if (true-color-p) "#ff6464" "#ff8070"))
+         (purple (if (true-color-p) "#c678dd" "#d787d7"))
+         (purple-dark (if (true-color-p) "#64446d" "#5f5f5f"))
+         (blue (if (true-color-p) "#61afef" "#5fafff"))
+         (blue-dark (if (true-color-p) "#1f5582" "#005f87"))
+         (green (if (true-color-p) "#98be65" "#87af5f"))
+         (green-light (if (true-color-p) "#9eac8c" "#afaf87"))
+         (peach "PeachPuff3")
+         (diff-added-background (if (true-color-p) "#284437" "#284437"))
+         (diff-added-refined-background (if (true-color-p) "#1e8967" "#1e8967"))
+         (diff-removed-background (if (true-color-p) "#583333" "#580000"))
+         (diff-removed-refined-background (if (true-color-p) "#b33c49" "#b33c49"))
+         (diff-current-background (if (true-color-p) "#29457b" "#29457b"))
+         (diff-current-refined-background (if (true-color-p) "#4174ae" "#4174ae")))
+
+     (custom-theme-set-faces
+      'zerodark
+      `(default ((,class (:background ,background-darker :foreground ,default))))
+
+      ;; Font lock faces
+      `(font-lock-builtin-face ((,class (:foreground ,blue :weight bold))))
+      `(font-lock-comment-face ((,class (:foreground ,comment :slant italic))))
+      `(font-lock-constant-face ((,class (:foreground ,orange :weight bold))))
+      `(font-lock-function-name-face ((,class (:foreground ,blue))))
+      `(font-lock-keyword-face ((,class (:foreground ,red-light :weight bold))))
+      `(font-lock-string-face ((,class (:foreground ,green))))
+      `(font-lock-doc-face ((,class (:foreground ,green-light))))
+      `(font-lock-type-face ((,class (:foreground ,blue))))
+      `(font-lock-variable-name-face ((,class (:foreground ,blue))))
+      `(font-lock-warning-face ((,class (:foreground ,red :weight bold :background ,background-red))))
+
+      `(fancy-battery-charging ((,class (:background ,background-green :height 0.85 :bold t))))
+      `(fancy-battery-discharging ((,class (:background ,background-green :height 0.85))))
+      `(fancy-battery-critical ((,class (:background ,background-green :height 0.85))))
+
+      ;; mode line stuff
+      `(mode-line ((,class (:background ,background-green :height 0.9 :foreground ,green
+                                        :distant-foreground ,background-green))))
+
+      `(mode-line-inactive ((,class (:background ,background-green :height 0.9 :foreground ,green
+                                                 :distant-foreground ,green-light))))
+
+      `(header-line ((,class (:inherit mode-line-inactive))))
+
+      `(powerline-active0 ((,class (:height 0.85 :foreground ,green :background ,background-green
+                                            :distant-foreground ,background-green))))
+      `(powerline-active1 ((,class (:height 0.85 :foreground ,green :background ,green-light
+                                            :distant-foreground ,background-green))))
+      `(powerline-active2 ((,class (:height 0.85 :foreground ,green :background ,background-green
+                                            :distant-foreground ,background-green))))
+      `(powerline-inactive0 ((,class (:height 0.85 :foreground ,green :background ,background-green
+                                              :distant-foreground ,background-green))))
+      `(powerline-inactive1 ((,class (:height 0.85 :foreground ,green :background ,green-light
+                                              :distant-foreground ,background-green))))
+      `(powerline-inactive2 ((,class (:height 0.85 :foreground ,green :background ,background-green
+                                              :distant-foreground ,background-green))))
+
+      `(dashboard-heading-face ((,class (:background ,background-dark :foreground ,green
+                                                     :bold t :height 1.2))))
+      `(dashboard-banner-logo-title-face ((,class (:background ,background-dark :foreground ,green
+                                                               :bold t :height 1.0))))
+      `(widget-button ((,class (:background ,background-dark :foreground ,default :bold nil
+                                            :underline t :height 1.0))))
+
+      ;; erc stuff
+      `(erc-nick-default-face ((,class :foreground ,green :background ,background-dark :weight bold)))
+
+      ;; org stuff
+      `(outline-1 ((,class (:foreground ,blue :weight bold :height 1.8 :bold nil))))
+      `(outline-2 ((,class (:foreground ,red-light :weight bold :height 1.7 :bold nil))))
+      `(outline-3 ((,class (:foreground ,peach :weight bold :height 1.6 :bold nil))))
+      `(outline-4 ((,class (:foreground ,green-light :weight bold :height 1.5 :bold nil))))
+      `(outline-5 ((,class (:foreground ,purple :weight bold :height 1.4 :bold nil))))
+      `(outline-6 ((,class (:foreground ,orange :weight bold :height 1.3 :bold nil))))
+      `(outline-7 ((,class (:foreground ,grey :weight bold :height 1.2 :bold nil))))
+      `(outline-8 ((,class (:foreground ,blue-dark :weight bold :height 1.1 :bold nil))))
+      `(org-block-begin-line ((,class (:background ,background-green :foreground ,green
+                                                   :bold t :height 1.0))))
+      `(org-block-end-line ((,class (:background ,background-green :foreground ,green
+                                                 :bold t :height 1.0))))
+      `(org-ellipses nil))
+
+     (use-package dired-rainbow
+       :ensure t
+       :config
+       (progn
+         (dired-rainbow-define-chmod directory "#61afef" "d.*")
+         (dired-rainbow-define html "#ff8070" ("css" "less" "sass" "scss" "htm" "html" "jhtm" "mht" "eml" "mustache" "xhtml"))
+         (dired-rainbow-define xml "#ddbd78" ("xml" "xsd" "xsl" "xslt" "wsdl" "bib" "json" "msg" "pgn" "rss" "yaml" "yml" "rdata"))
+         (dired-rainbow-define document "#c678dd" ("docm" "doc" "docx" "odb" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub" "odp" "ppt" "pptx"))
+         (dired-rainbow-define markdown "#da8548" ("org" "etx" "info" "markdown" "md" "mkd" "nfo" "pod" "rst" "tex" "textfile" "txt"))
+         (dired-rainbow-define database "#005f87" ("xlsx" "xls" "csv" "accdb" "db" "mdb" "sqlite" "nc"))
+         (dired-rainbow-define media "#98be65" ("mp3" "mp4" "MP3" "MP4" "avi" "mpeg" "mpg" "flv" "ogg" "mov" "mid" "midi" "wav" "aiff" "flac"))
+         (dired-rainbow-define image "#9eac8c" ("tiff" "tif" "cdr" "gif" "ico" "jpeg" "jpg" "png" "psd" "eps" "svg"))
+         (dired-rainbow-define log "#687080" ("log"))
+         (dired-rainbow-define shell "#ccd4e3" ("awk" "bash" "bat" "sed" "sh" "zsh" "vim"))
+         (dired-rainbow-define interpreted "#ff6464" ("py" "ipynb" "rb" "pl" "t" "msql" "mysql" "pgsql" "sql" "r" "clj" "cljs" "scala" "js"))
+         (dired-rainbow-define compiled "#ff6464" ("asm" "cl" "lisp" "el" "c" "h" "c++" "h++" "hpp" "hxx" "m" "cc" "cs" "cp" "cpp" "go" "f" "for" "ftn" "f90" "f95" "f03" "f08" "s" "rs" "hi" "hs" "pyc" ".java"))
+         (dired-rainbow-define executable "PeachPuff3" ("exe" "msi"))
+         (dired-rainbow-define compressed "#b33c49" ("7z" "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
+         (dired-rainbow-define packaged "#afaf87" ("deb" "rpm" "apk" "jad" "jar" "cab" "pak" "pk3" "vdf" "vpk" "bsp"))
+         (dired-rainbow-define encrypted "#87af5f" ("gpg" "pgp" "asc" "bfe" "enc" "signature" "sig" "p12" "pem"))
+         (dired-rainbow-define fonts "#5fafff" ("afm" "fon" "fnt" "pfb" "pfm" "ttf" "otf"))
+         (dired-rainbow-define partition "#ff2727" ("dmg" "iso" "bin" "nrg" "qcow" "toast" "vcd" "vmdk" "bak"))
+         (dired-rainbow-define vc "Orange" ("git" "gitignore" "gitattributes" "gitmodules"))
+         (dired-rainbow-define-chmod executable-unix "#38c172" "-.*x.*")
+         )) 
+     )
+ #+END_SRC
+
+** TODO Modeline
+The modeline is at the bottom of every single buffer in Emacs and contains all of the information you would need. If we're going to use EXWM, it also needs to contain system information and anything that would appear on a standard status bar.
+*** Spaceline
+A modified powerline used in spacemacs. Easy configuration and looks good with the theme.
+ #+BEGIN_SRC emacs-lisp
+   (use-package spaceline
+     :ensure t
+     :config
+     (require 'spaceline-config)
+       (setq spaceline-buffer-encoding-abbrev-p nil)
+       (setq spaceline-line-column-p nil)
+       (setq spaceline-line-p nil)
+       (setq powerline-default-separator (quote arrow))
+       (spaceline-spacemacs-theme))
+ #+END_SRC
+
+*** TODO Cursor position
+Does this do anything right now?
+ #+BEGIN_SRC emacs-lisp
+   (setq line-number-mode t)
+   (setq column-number-mode t)
+ #+END_SRC
+
+*** Clock
+Shows a clock and the date to the bottom right. 
+**** Time format
+If you don't want a 24-hour clock, set the first line to `nil`.
+ #+BEGIN_SRC emacs-lisp
+   (setq display-time-24hr-format t)
+   (setq display-time-format "%H:%M - %d %B %Y")
+ #+END_SRC
+
+**** Enabling the mode
+ #+BEGIN_SRC emacs-lisp
+   (display-time-mode 1)
+ #+END_SRC
+
+*** TODO Battery indicator
+
+ +BEGIN_SRC emacs-lisp
+   (use-package fancy-battery
+     :ensure t
+     :config
+       (setq fancy-battery-show-percentage t)
+       (setq battery-update-interval 15)
+       (if window-system
+         (fancy-battery-mode)
+         (display-battery-mode)))
+ #+END_SRC
+
+*** TODO System monitor
+Activates a small system monitor in the minibuffer showing CPU usage, memory, networking, etc.
+This is currently marked as TODO since sometimes it won't turn off.
+ #+BEGIN_SRC emacs-lisp
+   (use-package symon
+     :ensure t
+     :bind
+     ("s-h" . symon-mode))
+ #+END_SRC
+
+*** Diminishing modes
+Hides the following modes from your modeline in order to save room.
+ #+BEGIN_SRC emacs-lisp
+   (use-package diminish
+     :ensure t
+     :init
+     (diminish 'which-key-mode)
+     (diminish 'linum-relative-mode)
+     (diminish 'hungry-delete-mode)
+     (diminish 'visual-line-mode)
+     (diminish 'subword-mode)
+     (diminish 'beacon-mode)
+     (diminish 'irony-mode)
+     (diminish 'page-break-lines-mode)
+     (diminish 'auto-revert-mode)
+     (diminish 'rainbow-delimiters-mode)
+     (diminish 'rainbow-mode)
+     (diminish 'yas-minor-mode)
+     (diminish 'flycheck-mode)
+     (diminish 'helm-mode))
+ #+END_SRC
+
 * TODO Interface
 ** TODO Window Manager
  Everything surrounding EXWM is contained here, as well as a few extra controls which will only be accesible while Emacs is in focus.
@@ -665,8 +996,8 @@ For the rare times I need to use a terminal in emacs that isn't eshell, it shoul
  #+END_SRC
 
 ** TODO File manager
-*** Dired subtrees
-Lets you open subdirectories in a dired buffer with =tab=. Cycle depth with =shift tab=.
+*** TODO Dired
+
 #+BEGIN_SRC emacs-lisp
   (use-package dired
     :ensure nil
@@ -678,11 +1009,6 @@ Lets you open subdirectories in a dired buffer with =tab=. Cycle depth with =shi
     (dired-listing-switches "-alh")
     (dired-ls-F-marks-symlinks nil)
     (dired-recursive-copies 'always))
-  (use-package dired-subtree
-    :ensure t
-    :bind (:map dired-mode-map
-                ("<backtab>" . dired-subtree-cycle)
-                ("<tab>" . dired-subtree-toggle)))
 #+END_SRC
 
 *** All the icons
@@ -716,346 +1042,109 @@ Makes it easier to differentiate files in dired, making it a lot more pleasant.
     (add-hook 'dired-subtree-after-insert-hook 'ess/dired-subtree-icons))
 #+END_SRC
 
-*** TODO Dired hacks
-
-*** Open with
-
+*** Dired hacks
 #+BEGIN_SRC emacs-lisp
-    (use-package openwith
-      :ensure t
-      :config
-      (add-to-list  'mm-inhibit-file-name-handlers 'openwith-file-handler) ;; Stops open-with from messing with outbound email
-      (setq openwith-associations
-            (list
-             (list (openwith-make-extension-regexp
-                    '("mpg" "mpeg" "mp3" "mp4"
-                      "avi" "wmv" "wav" "mov" "flv"
-                      "ogm" "ogg" "mkv" "webm"))
-                   "mpv"
-                   '(file))
-             (list (openwith-make-extension-regexp
-                    '("xbm" "pbm" "pgm" "ppm" "pnm"
-                      "png" "gif" "bmp" "tif" "jpeg" "jpg"))
-                   "sxiv"
-                   '(file))
-             (list (openwith-make-extension-regexp
-                    '("doc" "xls" "ppt" "odt" "ods" "odg" "odp"))
-                   "libreoffice"
-                   '(file))
-             '("\\.lyx" "lyx" (file))
-             '("\\.chm" "kchmviewer" (file))
-             (list (openwith-make-extension-regexp
-                    '("pdf" "ps" "ps.gz" "dvi"))
-                   "zathura"
-                   '(file))
-             ))
-      (openwith-mode 1)
-      )
+  (use-package dired-hacks-utils
+    :ensure t)
 #+END_SRC
 
-* TODO Theming
-** TODO Basic Interface Settings
-Some improvements to the look and feel of Emacs that doesn't use any outside packages.
-*** TODO Looks
-**** Remove startup screen
-By default, Emacs has its own startup screen. We'll be replacing it in [[Dashboard]].
- #+BEGIN_SRC emacs-lisp
- (setq inhibit-startup-message t)
- #+END_SRC
-
-**** Disable menus and scrollbars
-Gets rid of the GUI buttons and scrollbars of Emacs. You'll be using your keyboard anyway, so all these do is take up valuable screen space.
- #+BEGIN_SRC emacs-lisp
- (tool-bar-mode -1)
- (menu-bar-mode -1)
- (scroll-bar-mode -1)
- #+END_SRC
-
-**** TODO Disable bell
-
- #+BEGIN_SRC emacs-lisp
- (setq ring-bell-function 'ignore)
- #+END_SRC
-
-**** Set UTF-8 encoding
-Sets all text to UTF-8.
- #+BEGIN_SRC emacs-lisp
-   (setq locale-coding-system 'utf-8)
-   (set-terminal-coding-system 'utf-8)
-   (set-keyboard-coding-system 'utf-8)
-   (set-selection-coding-system 'utf-8)
-   (prefer-coding-system 'utf-8)
- #+END_SRC
-
-**** Highlight current line
- #+BEGIN_SRC emacs-lisp
-   (when window-system (add-hook 'prog-mode-hook 'hl-line-mode))
- #+END_SRC
-
-**** Pretty symbols
-Changes various symbol names (e.g. =lambda=) to their actual symbol.
- #+BEGIN_SRC emacs-lisp
-   (when window-system
-         (use-package pretty-mode
-         :ensure t
-         :config
-         (global-pretty-mode t)))
- #+END_SRC
-
-*** Functionality
-**** Backups and auto-saves
-Rather than polluting your directy with obnoxious =#file.etx#= files, this saves your backups to a designated folder.
- #+BEGIN_SRC emacs-lisp
- (setq make-backup-files t)
- (setq auto-save-default t)
- (setq backup-directory-alist
-          `(("." . ,(concat user-emacs-directory "backups"))))
- #+END_SRC
-
-**** Change yes-or-no questions into y-or-n questions
-Whenever Emacs asks a yes or no question, you have to type `yes` or `no`, or Emacs refuses to do anything. This shortens that process.
- #+BEGIN_SRC emacs-lisp
- (defalias 'yes-or-no-p 'y-or-n-p)
- #+END_SRC
-
-**** Async
-Uses asynchronous processes when possible.
- #+BEGIN_SRC emacs-lisp
-   (use-package async
-     :ensure t
-     :init (dired-async-mode 1))
- #+END_SRC
-
-** Dashboard
-Replaces the standard Emacs splash screen with a more streamlined one relevant to whatever you're working on. Change it at your leisure, documentation details can be found [[https://github.com/emacs-dashboard/emacs-dashboard][here]].
- #+BEGIN_SRC emacs-lisp
-   (use-package dashboard
-     :ensure t
-     :config
-       (dashboard-setup-startup-hook)
-       (setq dashboard-startup-banner "~/.emacs.d/img/dashLogo.png")
-       (setq dashboard-items '((recents  . 5)
-                               (projects . 5)))
-       (setq dashboard-banner-logo-title ""))  (use-package dashboard
+Dired hacks is a collection of utilities and improvements to dired. The ones I use are:
+**** Filter
+Filters allow you to group files/directories in dired in a number of different ways, including regular expressions and predefined groups. Simply activating grouping is bound to =C-f= while marking files with a filter is done with =C-j=.
+#+BEGIN_SRC emacs-lisp
+  (use-package dired-filter
     :ensure t
     :config
-      (dashboard-setup-startup-hook)
-      (setq dashboard-startup-banner "~/.emacs.d/img/dashLogo.png")
-      (setq dashboard-banner-logo-title "今日も一日頑張ってくれ！")
+    (define-key dired-mode-map (kbd "C-f") dired-filter-map)
+    (define-key dired-mode-map (kbd "C-j") dired-filter-mark-map))
+#+END_SRC
 
-      (setq dashboard-set-navigator t)
-      (setq dashboard-set-footer nil)
-      (setq dashboard-set-heading-icons t)
-      (setq dashboard-set-file-icons t)
+**** avfs
+avfs allows dired to browse archives.
+#+BEGIN_SRC emacs-lisp
+  (use-package dired-avfs
+    :ensure t)
+#+END_SRC
 
-      (setq dashboard-items '((recents  . 10)
-                              (projects . 10)
-                              (bookmarks . 10))))
- #+END_SRC
+**** Subtree
+Lets you open subdirectories in a dired buffer. =<Tab>= and =<Backtab>= cycle depth while the =C-,= prefix gives you access to subdirectory functions.
+#+BEGIN_SRC emacs-lisp
+  (use-package dired-subtree
+    :ensure t
+    :bind (:map dired-mode-map
+                ("<backtab>" . dired-subtree-cycle)
+                ("<tab>" . dired-subtree-toggle)
+                ("C-, i" . dired-subtree-insert)
+                ("C-, r" . dired-subtree-remove)
+                ("C-, v" . dired-subtree-revert)
+                ("C-, t" . dired-subtree-narrow)
+                ("C-, p" . dired-subtree-up)
+                ("C-, n" . dired-subtree-down)
+                ("C-, f" . dired-subtree-next-sibling)
+                ("C-, b" . dired-subtree-previous-sibling)
+                ("C-, a" . dired-subtree-beginning)
+                ("C-, e" . dired-subtree-end)
+                ("C-, m" . dired-subtree-mark-subtree)
+                ("C-, u" . dired-subtree-unmark-subtree)))
+#+END_SRC
 
-** TODO Theme
-Every good config needs a good theme. I've customized mine to be as easily readible as possible.
+**** ranger
+Not actually ranger, but brings some useful features like multi-stage copy-pasting and bookmarks. As a quick note, the bookmarks aren't persistent across Emacs sessions.
+#+BEGIN_SRC emacs-lisp
+  (use-package dired-ranger
+    :ensure t
+    :bind (:map dired-mode-map
+                ("C-w" . dired-ranger-copy)
+                ("C-y" . dired-ranger-paste)
+                ("M-y" . dired-ranger-move)
+                ("`" . dired-ranger-bookmark-visit)
+                ("M-b" . dired-ranger-bookmark)))
+#+END_SRC
 
-As a small TODO, maybe later I'll put in a light theme and keyboard macro to switch between them. I've been reading SICP through w3m in Emacs and the black text images are near unreadable on the dark background.
-*** A nice theme
- #+BEGIN_SRC emacs-lisp
-   (use-package zerodark-theme
-     :ensure t
-     :init
-       (load-theme 'zerodark t))
- #+END_SRC
+**** Collapse
+Collapses nested directories with only one file in them to just point to that file. For example, where the path /foo/bar/file.org took 3 clicks before, it now takes one.
+#+BEGIN_SRC emacs-lisp
+    (use-package dired-collapse
+      :ensure t
+      :config
+      (add-hook 'dired-mode-hook 'dired-collapse-mode))
+#+END_SRC
 
-*** Some customization
- #+BEGIN_SRC emacs-lisp
-   (let ((class '((class color) (min-colors 89)))
-         (default (if (true-color-p) "#abb2bf" "#afafaf"))
-         (light (if (true-color-p) "#ccd4e3" "#d7d7d7"))
-         (background (if (true-color-p) "#22252c" "#333333"))
-         (background-dark (if (true-color-p) "#24282f" "#222222"))
-         (background-darker (if (true-color-p) "#22252c" "#222222"))
-         (mode-line-inactive (if "#1c2129" "#222222"))
-         (mode-line-active (if (true-color-p) "#6f337e" "#875f87"))
-         (background-lighter (if (true-color-p) "#3a3f4b" "#5f5f5f"))
-         (background-red (if (true-color-p) "#4c3840" "#5f5f5f"))
-         (bright-background-red (if (true-color-p) "#744a5b" "#744a5b"))
-         (background-purple (if (true-color-p) "#48384c" "#5f5f5f"))
-         (background-blue (if (true-color-p) "#1a1a3c" "#1f1f4f"))
-         (bright-background-blue (if (true-color-p) "#1a2069" "#2a306c"))
-         (background-green (if (true-color-p) "#3d4a41" "#5f5f5f"))
-         (bright-background-green (if (true-color-p) "#3f6d54" "#3f6d54"))
-         (background-orange (if (true-color-p) "#4a473d" "#5f5f5f"))
-         (hl-line (if (true-color-p) "#2c323b" "#333333"))
-         (grey (if (true-color-p) "#cccccc" "#cccccc"))
-         (grey-dark (if (true-color-p) "#666666" "#666666"))
-         (highlight (if (true-color-p) "#3e4451" "#5f5f5f"))
-         (comment (if (true-color-p) "#687080" "#707070"))
-         (orange (if (true-color-p) "#da8548" "#d7875f"))
-         (orange-light (if (true-color-p) "#ddbd78" "#d7af87"))
-         (red (if (true-color-p) "#ff2727" "#ff3a3f"))
-         (red-light (if (true-color-p) "#ff6464" "#ff8070"))
-         (purple (if (true-color-p) "#c678dd" "#d787d7"))
-         (purple-dark (if (true-color-p) "#64446d" "#5f5f5f"))
-         (blue (if (true-color-p) "#61afef" "#5fafff"))
-         (blue-dark (if (true-color-p) "#1f5582" "#005f87"))
-         (green (if (true-color-p) "#98be65" "#87af5f"))
-         (green-light (if (true-color-p) "#9eac8c" "#afaf87"))
-         (peach "PeachPuff3")
-         (diff-added-background (if (true-color-p) "#284437" "#284437"))
-         (diff-added-refined-background (if (true-color-p) "#1e8967" "#1e8967"))
-         (diff-removed-background (if (true-color-p) "#583333" "#580000"))
-         (diff-removed-refined-background (if (true-color-p) "#b33c49" "#b33c49"))
-         (diff-current-background (if (true-color-p) "#29457b" "#29457b"))
-         (diff-current-refined-background (if (true-color-p) "#4174ae" "#4174ae")))
+*** PDF-Tools
+PDF tools allows us to view/edit pdf/
+#+BEGIN_SRC emacs-lisp
+  (use-package pdf-tools
+    :ensure t)
+#+END_SRC
 
-     (custom-theme-set-faces
-      'zerodark
-      `(default ((,class (:background ,background-darker :foreground ,default))))
-
-      ;; Font lock faces
-      `(font-lock-builtin-face ((,class (:foreground ,blue :weight bold))))
-      `(font-lock-comment-face ((,class (:foreground ,comment :slant italic))))
-      `(font-lock-constant-face ((,class (:foreground ,orange :weight bold))))
-      `(font-lock-function-name-face ((,class (:foreground ,blue))))
-      `(font-lock-keyword-face ((,class (:foreground ,red-light :weight bold))))
-      `(font-lock-string-face ((,class (:foreground ,green))))
-      `(font-lock-doc-face ((,class (:foreground ,green-light))))
-      `(font-lock-type-face ((,class (:foreground ,blue))))
-      `(font-lock-variable-name-face ((,class (:foreground ,blue))))
-      `(font-lock-warning-face ((,class (:foreground ,red :weight bold :background ,background-red))))
-
-      `(fancy-battery-charging ((,class (:background ,background-green :height 0.85 :bold t))))
-      `(fancy-battery-discharging ((,class (:background ,background-green :height 0.85))))
-      `(fancy-battery-critical ((,class (:background ,background-green :height 0.85))))
-
-      ;; mode line stuff
-      `(mode-line ((,class (:background ,background-green :height 0.9 :foreground ,green
-                                        :distant-foreground ,background-green))))
-
-      `(mode-line-inactive ((,class (:background ,background-green :height 0.9 :foreground ,green
-                                                 :distant-foreground ,green-light))))
-
-      `(header-line ((,class (:inherit mode-line-inactive))))
-
-      `(powerline-active0 ((,class (:height 0.85 :foreground ,green :background ,background-green
-                                            :distant-foreground ,background-green))))
-      `(powerline-active1 ((,class (:height 0.85 :foreground ,green :background ,green-light
-                                            :distant-foreground ,background-green))))
-      `(powerline-active2 ((,class (:height 0.85 :foreground ,green :background ,background-green
-                                            :distant-foreground ,background-green))))
-      `(powerline-inactive0 ((,class (:height 0.85 :foreground ,green :background ,background-green
-                                              :distant-foreground ,background-green))))
-      `(powerline-inactive1 ((,class (:height 0.85 :foreground ,green :background ,green-light
-                                              :distant-foreground ,background-green))))
-      `(powerline-inactive2 ((,class (:height 0.85 :foreground ,green :background ,background-green
-                                              :distant-foreground ,background-green))))
-
-      `(dashboard-heading-face ((,class (:background ,background-dark :foreground ,green
-                                                     :bold t :height 1.2))))
-      `(dashboard-banner-logo-title-face ((,class (:background ,background-dark :foreground ,green
-                                                               :bold t :height 1.0))))
-      `(widget-button ((,class (:background ,background-dark :foreground ,default :bold nil
-                                            :underline t :height 1.0))))
-
-      ;; erc stuff
-      `(erc-nick-default-face ((,class :foreground ,green :background ,background-dark :weight bold)))
-
-      ;; org stuff
-      `(outline-1 ((,class (:foreground ,blue :weight bold :height 1.8 :bold nil))))
-      `(outline-2 ((,class (:foreground ,red-light :weight bold :height 1.7 :bold nil))))
-      `(outline-3 ((,class (:foreground ,peach :weight bold :height 1.6 :bold nil))))
-      `(outline-4 ((,class (:foreground ,green-light :weight bold :height 1.5 :bold nil))))
-      `(outline-5 ((,class (:foreground ,purple :weight bold :height 1.4 :bold nil))))
-      `(outline-6 ((,class (:foreground ,orange :weight bold :height 1.3 :bold nil))))
-      `(outline-7 ((,class (:foreground ,grey :weight bold :height 1.2 :bold nil))))
-      `(outline-8 ((,class (:foreground ,blue-dark :weight bold :height 1.1 :bold nil))))
-      `(org-block-begin-line ((,class (:background ,background-green :foreground ,green
-                                                   :bold t :height 1.0))))
-      `(org-block-end-line ((,class (:background ,background-green :foreground ,green
-                                                 :bold t :height 1.0))))
-      `(org-ellipses nil)))
- #+END_SRC
-
-** TODO Modeline
-The modeline is at the bottom of every single buffer in Emacs and contains all of the information you would need. If we're going to use EXWM, it also needs to contain system information and anything that would appear on a standard status bar.
-*** Spaceline
-A modified powerline used in spacemacs. Easy configuration and looks good with the theme.
- #+BEGIN_SRC emacs-lisp
-   (use-package spaceline
-     :ensure t
-     :config
-     (require 'spaceline-config)
-       (setq spaceline-buffer-encoding-abbrev-p nil)
-       (setq spaceline-line-column-p nil)
-       (setq spaceline-line-p nil)
-       (setq powerline-default-separator (quote arrow))
-       (spaceline-spacemacs-theme))
- #+END_SRC
-
-*** TODO Cursor position
-Does this do anything right now?
- #+BEGIN_SRC emacs-lisp
-   (setq line-number-mode t)
-   (setq column-number-mode t)
- #+END_SRC
-
-*** Clock
-Shows a clock and the date to the bottom right. 
-**** Time format
-If you don't want a 24-hour clock, set the first line to `nil`.
- #+BEGIN_SRC emacs-lisp
-   (setq display-time-24hr-format t)
-   (setq display-time-format "%H:%M - %d %B %Y")
- #+END_SRC
-
-**** Enabling the mode
- #+BEGIN_SRC emacs-lisp
-   (display-time-mode 1)
- #+END_SRC
-
-*** TODO Battery indicator
-
- +BEGIN_SRC emacs-lisp
-   (use-package fancy-battery
-     :ensure t
-     :config
-       (setq fancy-battery-show-percentage t)
-       (setq battery-update-interval 15)
-       (if window-system
-         (fancy-battery-mode)
-         (display-battery-mode)))
- #+END_SRC
-
-*** TODO System monitor
-Activates a small system monitor in the minibuffer showing CPU usage, memory, networking, etc.
-This is currently marked as TODO since sometimes it won't turn off.
- #+BEGIN_SRC emacs-lisp
-   (use-package symon
-     :ensure t
-     :bind
-     ("s-h" . symon-mode))
- #+END_SRC
-
-*** Diminishing modes
-Hides the following modes from your modeline in order to save room.
- #+BEGIN_SRC emacs-lisp
-   (use-package diminish
-     :ensure t
-     :init
-     (diminish 'which-key-mode)
-     (diminish 'linum-relative-mode)
-     (diminish 'hungry-delete-mode)
-     (diminish 'visual-line-mode)
-     (diminish 'subword-mode)
-     (diminish 'beacon-mode)
-     (diminish 'irony-mode)
-     (diminish 'page-break-lines-mode)
-     (diminish 'auto-revert-mode)
-     (diminish 'rainbow-delimiters-mode)
-     (diminish 'rainbow-mode)
-     (diminish 'yas-minor-mode)
-     (diminish 'flycheck-mode)
-     (diminish 'helm-mode))
- #+END_SRC
+*** Open with
+Configures Emacs to always open certain file extensions with certain programs. While dired hacks gives us dired-open, I prefer to use this since it applies to everything Emacs tries to open, whether it's through dired or not.
+#+BEGIN_SRC emacs-lisp
+  (use-package openwith
+    :ensure t
+    :config
+    (add-to-list  'mm-inhibit-file-name-handlers 'openwith-file-handler) ;; Stops open-with from messing with outbound email
+    (setq openwith-associations
+          (list
+           (list (openwith-make-extension-regexp
+                  '("mpg" "mpeg" "mp3" "mp4" "opus"
+                    "avi" "wmv" "wav" "mov" "flv"
+                    "ogm" "ogg" "mkv" "webm"))
+                 "mpv"
+                 '(file))
+           (list (openwith-make-extension-regexp
+                  '("xbm" "pbm" "pgm" "ppm" "pnm"
+                    "png" "gif" "bmp" "tif" "jpeg" "jpg"))
+                 "sxiv"
+                 '(file))
+           (list (openwith-make-extension-regexp
+                  '("doc" "xls" "ppt" "odt" "ods" "odg" "odp"))
+                 "libreoffice"
+                 '(file))
+           ))
+    (openwith-mode 1)
+    )
+#+END_SRC
 
 * Programming
 While Emacs is great for general text editing among many other features, let's be real: if you're reading this, you're a programmer. Therefore, we need some accessories to greatly improve the general programming workflow.
@@ -1444,6 +1533,45 @@ Elfeed is an RSS newsfeed with tagging, searching, autodownloads, the works.
 EMMS hasn't been working out for me so I've taken to using Mingus/beets instead. Generally it works out fine, 
 though I'm still on the lookout for something with a better browser and a tag editor, similar to ncmpcpp
 so that I can completely replace it.
+*** EMMS
+
+#+BEGIN_SRC emacs-lisp
+  (require 'emms)
+
+  (emms-all)
+  (emms-history-load)
+  (setq emms-player-list (list emms-player-mpv)
+        emms-source-file-default-directory (expand-file-name "~/music")
+        emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find
+        emms-browser-covers 'emms-browser-cache-thumbnail)
+  (add-to-list 'emms-player-mpv-parameters "--no-audio-display")
+  (add-to-list 'emms-info-functions 'emms-info-cueinfo)
+  (if (executable-find "emms-print-metadata")
+      (progn
+        (require 'emms-info-libtag)
+        (add-to-list 'emms-info-functions 'emms-info-libtag)
+        (delete 'emms-info-ogginfo emms-info-functions)
+        (delete 'emms-info-mp3info emms-info-functions))
+    (add-to-list 'emms-info-functions 'emms-info-ogginfo)
+    (add-to-list 'emms-info-functions 'emms-info-mp3info))
+
+  (defun ambrevar/emms-play-on-add (old-pos)
+    "Play tracks when calling `emms-browser-add-tracks' if nothing
+  is currently playing."
+    (interactive)
+    (when (or (not emms-player-playing-p)
+             emms-player-paused-p
+             emms-player-stopped-p)
+      (with-current-emms-playlist
+       (goto-char old-pos)
+       ;; if we're sitting on a group name, move forward
+       (unless (emms-playlist-track-at (point))
+         (emms-playlist-next))
+       (emms-playlist-select (point)))
+      (emms-stop)
+      (emms-start)))
+  (add-hook 'emms-browser-tracks-added-hook 'ambrevar/emms-play-on-add)
+#+END_SRC
 
 *** Mingus with mpd
 
