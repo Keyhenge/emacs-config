@@ -24,6 +24,26 @@ openwith dependencies
 make sure to use all-the-icons-install-fonts
 ag
 avfs
+*** Keybindings
+I bind =control= to =caps_lock= and =caps_lock= to both shift keys. This frees up left control to be used as Hyper whenever we need emacs-wide bindings that we know won't interfere with other modes. To use my setup, copy the following into ~/.Xmodmap and add the command =setxkbmap -option 'shift:both_capslock'= to your ~/.Xprofile.
+#+BEGIN_SRC
+clear      lock 
+clear   control
+clear      mod1
+clear      mod2
+clear      mod3
+clear      mod4
+clear      mod5
+keycode      37 = Hyper_L
+keycode      66 = Control_L
+add     control = Control_L Control_R
+add        mod1 = Alt_L Alt_R Meta_L
+add        mod2 = Num_Lock
+add        mod3 = Hyper_L
+add        mod4 = Super_L Super_R
+add        mod5 = Mode_switch ISO_Level3_Shift
+#+END_SRC
+Alternatively if you like your current setup, find a place to bind hyper.
 *** EXWM
 EXWM is a window manager with Emacs as its base. Everything is treated as a buffer, allowing us to use Emacs bindings across the entire system and keep "mode-switching" to a minimum.
 
@@ -148,17 +168,10 @@ Uses asynchronous processes when possible.
 Replaces the standard Emacs splash screen with a more streamlined one relevant to whatever you're working on. Change it at your leisure, documentation details can be found [[https://github.com/emacs-dashboard/emacs-dashboard][here]].
  #+BEGIN_SRC emacs-lisp
    (use-package dashboard
-     :ensure t
-     :config
-       (dashboard-setup-startup-hook)
-       (setq dashboard-startup-banner "~/.emacs.d/img/dashLogo.png")
-       (setq dashboard-items '((recents  . 5)
-                               (projects . 5)))
-       (setq dashboard-banner-logo-title ""))  (use-package dashboard
     :ensure t
     :config
       (dashboard-setup-startup-hook)
-      (setq dashboard-startup-banner "~/.emacs.d/img/dashLogo.png")
+      (setq dashboard-startup-banner "~/.emacs.d/img/Gnus-logo.svg")
       (setq dashboard-banner-logo-title "今日も一日頑張ってくれ！")
 
       (setq dashboard-set-navigator t)
@@ -839,7 +852,7 @@ It's often cumbersome to go looking for this file, so binding it to =C-c e= mean
    (defun config-visit ()
      (interactive)
      (find-file "~/.emacs.d/config.org"))
-   (global-set-key (kbd "C-c e") 'config-visit)
+   (global-set-key (kbd "H-c e") 'config-visit)
  #+END_SRC
 
 *** Reloading the configuration
@@ -849,7 +862,7 @@ Rather than typing out =config-reload= into =M-x=, we'll just bind it to =C-c r=
      "Reloads ~/.emacs.d/config.org at runtime"
      (interactive)
      (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
-   (global-set-key (kbd "C-c r") 'config-reload)
+   (global-set-key (kbd "H-c r") 'config-reload)
  #+END_SRC
 
 *** Subwords
@@ -935,14 +948,14 @@ Allows you to export your buffer to HTML while respecting your tabs, theming, fo
      :ensure t)
  #+END_SRC
 
-** TODO Remote editing
+** Remote editing
 *** Editing with sudo
-
+Whenever you're editing system files, it's nice to have a shortcut so you don't have to go through tramp for privileges.
  #+BEGIN_SRC emacs-lisp
    (use-package sudo-edit
      :ensure t
      :bind
-       ("s-e" . sudo-edit))
+       ("H-e" . sudo-edit))
  #+END_SRC
 
 ** Kill ring
@@ -978,10 +991,9 @@ Command completion isn't that great in eshell, so let's leech from the great com
               (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history)))
 #+END_SRC
 
-*** Easy to remember keybinding
- Keeping consistent with my old WM, Super + Enter opens up a shell.
+*** Shortcut
  #+BEGIN_SRC emacs-lisp
- (global-set-key (kbd "<s-return>") 'eshell)
+ (global-set-key (kbd "<H-return>") 'eshell)
  #+END_SRC
 
 ** Regular shell
@@ -1014,14 +1026,6 @@ For the rare times I need to use a terminal in emacs that isn't eshell, it shoul
 *** All the icons
 Makes it easier to differentiate files in dired, making it a lot more pleasant.
 #+BEGIN_SRC emacs-lisp
-  (use-package all-the-icons
-    :ensure t
-    :init
-    (unless (file-exists-p
-             (concat (or (getenv "XDG_DATA_HOME")
-                        (concat (getenv "HOME") "/.local/share"))
-                     "/fonts/"))
-      (all-the-icons-install-fonts)))
   (use-package all-the-icons-dired
     :after all-the-icons
     :hook dired)
@@ -1123,7 +1127,6 @@ Configures Emacs to always open certain file extensions with certain programs. W
   (use-package openwith
     :ensure t
     :config
-    (add-to-list  'mm-inhibit-file-name-handlers 'openwith-file-handler) ;; Stops open-with from messing with outbound email
     (setq openwith-associations
           (list
            (list (openwith-make-extension-regexp
@@ -1432,7 +1435,7 @@ As much as I like org mode, it can't replace things like JSON, XML, or YAML, so 
                    (define-key yaml-mode-map "\C-m" 'newline-and-indent))))
 #+END_SRC
 
-* Misc
+* TODO Misc
 ** Org
 The most useful mode in Emacs, bar none. This entire document is written in it, my schedule is written it, my contact book is written in it, my papers are written in it, etc.
 *** Common settings
@@ -1526,13 +1529,11 @@ Elfeed is an RSS newsfeed with tagging, searching, autodownloads, the works.
 #+BEGIN_SRC emacs-lisp
   (use-package elfeed
     :ensure t)
-  (global-set-key (kbd "C-c f") 'elfeed)
+  (global-set-key (kbd "H-f") 'elfeed)
 #+END_SRC
 
-** Media
-EMMS hasn't been working out for me so I've taken to using Mingus/beets instead. Generally it works out fine, 
-though I'm still on the lookout for something with a better browser and a tag editor, similar to ncmpcpp
-so that I can completely replace it.
+** TODO Media
+EMMS hasn't been working out for me so I've taken to using Mingus instead. Generally it works out fine, though I'm still on the lookout for something with a better browser and a tag editor, similar to ncmpcpp so that I can completely replace it.
 *** EMMS
 
 #+BEGIN_SRC emacs-lisp
@@ -1581,11 +1582,11 @@ so that I can completely replace it.
    (use-package mingus
      :ensure t
      :bind
-     ("M-p p" . mingus)
-     ("C-<f5>" . mingus-prev)
-     ("C-<f8>" . mingus-next)
-     ("C-<f7>" . mingus-pause)
-     ("C-<f6>" . mingus-stop))
+     ("H-p" . mingus)
+     ("H-h" . mingus-prev)
+     ("H-l" . mingus-next)
+     ("H-k" . mingus-pause)
+     ("H-j" . mingus-stop))
  #+END_SRC
 
 **** MPC Setup
