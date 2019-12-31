@@ -89,12 +89,10 @@ You'll also need various programs for code completion, REPLs, and style guide en
 As mentioned in the [[Quick Installation]] section, this config file is saved as a .org file, which is a markup language and one of the best packages in emacs. At launch, this file is stripped of all of its text save for sections labeled as emacs-lisp, which is then parsed into config.el and used. You can find some more info on Org-mode [[https://orgmode.org/manual/][here]], and my custom configuration in the [[Org]] section. 
 *** TODO On the use case of this configuration
 For now, this configuration is simply a nice way to use emacs, with a lot of time saving packages, functions and shortcuts. In the future however, I'll be reinstating the [[EXWM]] section to use emacs as a desktop environment. If you don't want that, it's simple enough to delete that section, as the rest of the configuration does not depend on it.
-*** TODO On the keybindings
-
-* TODO Theming
-** TODO Basic Interface Settings
+* Theming
+** Basic Interface Settings
 Some improvements to the look and feel of Emacs that doesn't use any outside packages.
-*** TODO Looks
+*** Looks
 **** Remove startup screen
 By default, Emacs has its own startup screen. We'll be replacing it in [[Dashboard]].
  #+BEGIN_SRC emacs-lisp
@@ -109,8 +107,8 @@ Gets rid of the GUI buttons and scrollbars of Emacs. You'll be using your keyboa
  (scroll-bar-mode -1)
  #+END_SRC
 
-**** TODO Disable bell
-
+**** Disable bell
+Gets rid of the audible/visible notifications of things happening, which usually show up on the minibuffer anyway.
  #+BEGIN_SRC emacs-lisp
  (setq ring-bell-function 'ignore)
  #+END_SRC
@@ -333,7 +331,7 @@ As a small TODO, maybe later I'll put in a light theme and keyboard macro to swi
      )
  #+END_SRC
 
-** TODO Modeline
+** Modeline
 The modeline is at the bottom of every single buffer in Emacs and contains all of the information you would need. If we're going to use EXWM, it also needs to contain system information and anything that would appear on a standard status bar.
 *** Spaceline
 A modified powerline used in spacemacs. Easy configuration and looks good with the theme.
@@ -347,13 +345,6 @@ A modified powerline used in spacemacs. Easy configuration and looks good with t
        (setq spaceline-line-p nil)
        (setq powerline-default-separator (quote arrow))
        (spaceline-spacemacs-theme))
- #+END_SRC
-
-*** TODO Cursor position
-Does this do anything right now?
- #+BEGIN_SRC emacs-lisp
-   (setq line-number-mode t)
-   (setq column-number-mode t)
  #+END_SRC
 
 *** Clock
@@ -370,9 +361,9 @@ If you don't want a 24-hour clock, set the first line to `nil`.
    (display-time-mode 1)
  #+END_SRC
 
-*** TODO Battery indicator
-
- +BEGIN_SRC emacs-lisp
+*** Battery indicator
+Shows battery percentage left on laptops.
+ #+BEGIN_SRC emacs-lisp
    (use-package fancy-battery
      :ensure t
      :config
@@ -383,14 +374,13 @@ If you don't want a 24-hour clock, set the first line to `nil`.
          (display-battery-mode)))
  #+END_SRC
 
-*** TODO System monitor
+*** System monitor
 Activates a small system monitor in the minibuffer showing CPU usage, memory, networking, etc.
-This is currently marked as TODO since sometimes it won't turn off.
  #+BEGIN_SRC emacs-lisp
    (use-package symon
      :ensure t
      :bind
-     ("s-h" . symon-mode))
+     ("H-s" . symon-mode))
  #+END_SRC
 
 *** Diminishing modes
@@ -415,7 +405,7 @@ Hides the following modes from your modeline in order to save room.
      (diminish 'helm-mode))
  #+END_SRC
 
-* TODO Interface
+* Interface
 ** TODO Window Manager
  Everything surrounding EXWM is contained here, as well as a few extra controls which will only be accesible while Emacs is in focus.
 *** TODO EXWM
@@ -1007,20 +997,20 @@ For the rare times I need to use a terminal in emacs that isn't eshell, it shoul
    (ad-activate 'ansi-term)
  #+END_SRC
 
-** TODO File manager
-*** TODO Dired
-
+** File manager
+*** Dired
+Dired is the default Emacs file manager. Below are some customizations for it.
 #+BEGIN_SRC emacs-lisp
   (use-package dired
     :ensure nil
     :delight "Dired "
     :custom
-    (dired-auto-revert-buffer t)
-    (dired-dwim-target t)
-    (dired-hide-details-hide-symlink-targets nil)
-    (dired-listing-switches "-alh")
-    (dired-ls-F-marks-symlinks nil)
-    (dired-recursive-copies 'always))
+    (dired-auto-revert-buffer t) ;; Refreshes the dired buffer upon revisiting
+    (dired-dwim-target t) ;; If two dired buffers are open, save in the other when trying to copy
+    (dired-hide-details-hide-symlink-targets nil) ;; Don't hide symlink targets
+    (dired-listing-switches "-alh") ;; Have dired view all folders, in lengty format, with data amounts in human readable format
+    (dired-ls-F-marks-symlinks nil) ;; Informs dired about how 'ls -lF' marks symbolic links, see help page for more details
+    (dired-recursive-copies 'always)) ;; Always copy recursively without asking
 #+END_SRC
 
 *** All the icons
