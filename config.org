@@ -7,7 +7,7 @@
 This repo was adapted/modifed from Uncle Dave's Emacs, found here: =https://github.com/daedreth/UncleDavesEmacs=
 The majority of the configuration and especially the functions were written by him, so a huge thank you for making my emacs experience a lot more pleasant.
 
-* TODO Installation
+* Installation
 ** Quick Installation
 :PROPERTIES:
 :CUSTOM_ID: quick-install
@@ -18,12 +18,7 @@ Running the above command will clone this repository into your emacs settings, o
 
 This config file is saved as an org file, then parsed into valid emacs-lisp. As such, most sections have some sort of rambling attached explaining what the keybindings are, what packages I've added, why things are the way they are, etc. You should read through them to get the full benefit of the configuration. Also, if you do decide to download, try deleting these ramblings and filling them in with your own. Doing so helped me understand each part of the config, customize it further to my liking, and got me more familiar with the programs I was using.
 
-** TODO Dependencies for:
-*** TODO things to do
-openwith dependencies
-make sure to use all-the-icons-install-fonts
-ag
-avfs
+** Dependencies for:
 *** Keybindings
 I bind =control= to =caps_lock= and =caps_lock= to both shift keys. This frees up left control to be used as Hyper whenever we need emacs-wide bindings that we know won't interfere with other modes. To use my setup, copy the following into ~/.Xmodmap and add the command =setxkbmap -option 'shift:both_capslock'= to your ~/.Xprofile.
 #+BEGIN_SRC
@@ -65,29 +60,40 @@ TRAMP (Transparent Remote Access, Multiple Protocols), is used to ssh into other
 **** From the package manager:
  - =sudo=, properly configured for your user.
 
-*** TODO EMMS
+*** EMMS
+**** For EMMS itself
+- Run =git clone git://git.sv.gnu.org/emms.git ~/.emacs.d/emms/= to clone the latest stable release of EMMS.
 **** From the package manager:
- - =mpd=, 
- - =mpv=, 
+- =mpd=, to play music
+- =mpv=, to watch video
 
-*** TODO Programming
+*** Programming
 You'll also need various programs for code completion, REPLs, and style guide enforcement.
 **** Package manager
- - =clang=, for c/c++ completion.
- - =sbcl=, for clisp completion and its REPL.
- - =virtualenv=, for python completion.
- - =lua=, to run lua code, completion, and REPL.
-
+- =clang=, for c/c++ completion.
+- =sbcl=, for clisp completion and its REPL.
+- =virtualenv=, for python completion.
+- =lua=, to run lua code, completion, and REPL.
+- =guile=, to run a scheme REPL.
 **** pip (python package manager)
  - =pip install jedi flake8 autopep8=, for code completion and style enforcement.
-
-**** TODO Go
-** TODO Some notes
+**** Go
+- =gopls=, downloaded [[https://github.com/golang/tools/blob/master/gopls/doc/user.md][here]].
+*** Helm/Dired
+- =all-the-icons-fonts=, for icons that match file types. This also affects the dashboard.
+- =ag=, for grepping/finding strings inside files
+- =avfs=, for looking inside archives
+*** Open With
+These are the programs I use to open various file types, feel free to change them in [[Openwith][Openwith]].
+- =mpv= for video/sound files
+- =sxiv= for images
+- =libreoffice= for various documents
+** Some notes
 *** On use-package
 =use-package= automatically downloads and configures our packages with minimal effort. Our =init.el= automatically checks for whether =use-package= is installed, and downloads/installs it if it is not.
 *** On the format of the configuration
 As mentioned in the [[Quick Installation]] section, this config file is saved as a .org file, which is a markup language and one of the best packages in emacs. At launch, this file is stripped of all of its text save for sections labeled as emacs-lisp, which is then parsed into config.el and used. You can find some more info on Org-mode [[https://orgmode.org/manual/][here]], and my custom configuration in the [[Org]] section. 
-*** TODO On the use case of this configuration
+*** On the use case of this configuration
 For now, this configuration is simply a nice way to use emacs, with a lot of time saving packages, functions and shortcuts. In the future however, I'll be reinstating the [[EXWM]] section to use emacs as a desktop environment. If you don't want that, it's simple enough to delete that section, as the rest of the configuration does not depend on it.
 * Theming
 ** Basic Interface Settings
@@ -1111,7 +1117,7 @@ PDF tools allows us to view/edit pdf/
     :ensure t)
 #+END_SRC
 
-*** Open with
+*** Openwith
 Configures Emacs to always open certain file extensions with certain programs. While dired hacks gives us dired-open, I prefer to use this since it applies to everything Emacs tries to open, whether it's through dired or not.
 #+BEGIN_SRC emacs-lisp
   (use-package openwith
@@ -1526,9 +1532,9 @@ Elfeed is an RSS newsfeed with tagging, searching, autodownloads, the works.
 EMMS hasn't been working out for me so I've taken to using Mingus instead. Generally it works out fine, though I'm still on the lookout for something with a better browser and a tag editor, similar to ncmpcpp so that I can completely replace it.
 *** EMMS
 
-#+BEGIN_SRC emacs-lisp
++BEGIN_SRC emacs-lisp
   (require 'emms)
-
+  (add-to-list 'load-path "~/.emacs.d/emms/")
   (emms-all)
   (emms-history-load)
   (setq emms-player-list (list emms-player-mpv)
