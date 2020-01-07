@@ -15,12 +15,9 @@ The majority of the configuration and especially the functions were written by h
 =git clone https://github.com/Keyhenge/emacs-config.git ~/.emacs.d=
 
 Running the above command will clone this repository into your emacs settings, overwriting anything you have there already. I highly recommend backing up your current settings by copying them into another repository (e.g. =cp ~/.emacs.d ~/.emacs.d.bak=).
-
-This config file is saved as an org file, then parsed into valid emacs-lisp. As such, most sections have some sort of rambling attached explaining what the keybindings are, what packages I've added, why things are the way they are, etc. You should read through them to get the full benefit of the configuration. Also, if you do decide to download, try deleting these ramblings and filling them in with your own. Doing so helped me understand each part of the config, customize it further to my liking, and got me more familiar with the programs I was using.
-
 ** Dependencies for:
 *** Keybindings
-I bind =control= to =caps_lock= and =caps_lock= to both shift keys. This frees up left control to be used as Hyper whenever we need emacs-wide bindings that we know won't interfere with other modes. To use my setup, copy the following into ~/.Xmodmap and add the command =setxkbmap -option 'shift:both_capslock'= to your ~/.Xprofile.
+I bind =control= to =caps_lock= and =caps_lock= to both shift keys. This frees up left control to be used as Hyper whenever we need emacs-wide bindings that we know won't interfere with other modes. To use my setup, copy the following into ~/.Xmodmap and add the command *setxkbmap -option 'shift:both_capslock'* to your ~/.Xprofile.
 #+BEGIN_SRC
 clear      lock 
 clear   control
@@ -98,7 +95,7 @@ These are the programs I use to open various file types, feel free to change the
 *** On use-package
 =use-package= automatically downloads and configures our packages with minimal effort. Our =init.el= automatically checks for whether =use-package= is installed, and downloads/installs it if it is not.
 *** On the format of the configuration
-As mentioned in the [[Quick Installation]] section, this config file is saved as a .org file, which is a markup language and one of the best packages in emacs. At launch, this file is stripped of all of its text save for sections labeled as emacs-lisp, which is then parsed into config.el and used. You can find some more info on Org-mode [[https://orgmode.org/manual/][here]], and my custom configuration in the [[Org]] section. 
+This config file is saved as a .org file, which is a markup language and one of the best packages in emacs. At launch, this file is stripped of all of its text save for sections labeled as emacs-lisp, which is then parsed into config.el and used. You can find some more info on Org-mode [[https://orgmode.org/manual/][here]], and my custom configuration in the [[Org]] section. As such, most sections have some sort of rambling attached explaining what the keybindings are, what packages I've added, why things are the way they are, etc. You should read through them to get the full benefit of the configuration. Also, if you do decide to download, try deleting these ramblings and filling them in with your own. Doing so helped me understand each part of the config, customize it further to my liking, and got me more familiar with the programs I was using.
 *** On the use case of this configuration
 For now, this configuration is simply a nice way to use emacs, with a lot of time saving packages, functions and shortcuts. In the future however, I'll be reinstating the [[EXWM]] section to use emacs as a desktop environment. If you don't want that, it's simple enough to delete that section, as the rest of the configuration does not depend on it.
 * Theming
@@ -764,6 +761,8 @@ Helm is another extremely useful package that is used almost everywhere. Efficie
            helm-ff-search-library-in-sexp t
            helm-scroll-amount 8
            helm-echo-input-in-header-line t)
+     (add-to-list 'helm-completing-read-handlers-alist
+                  '(dired . nil))
      :init
      (helm-mode 1))
    (use-package helm-projectile
