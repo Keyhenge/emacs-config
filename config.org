@@ -38,7 +38,13 @@ add        mod3 = Hyper_L
 add        mod4 = Super_L Super_R
 add        mod5 = Mode_switch ISO_Level3_Shift
 #+END_SRC
-Alternatively if you like your current setup, find a place to bind hyper.
+
+If you use OSX, the following binds fn to Hyper in Emacs.
+#+BEGIN_SRC emacs-lisp
+  (setq ns-function-modifier 'hyper) 
+#+END_SRC
+
+Alternatively if you like your current setup, find a place to bind hyper as it's used for many personalized functions in this config.
 *** EXWM
 EXWM is a window manager with Emacs as its base. Everything is treated as a buffer, allowing us to use Emacs bindings across the entire system and keep "mode-switching" to a minimum.
 
