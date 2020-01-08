@@ -212,7 +212,7 @@ The result is cached for one second to avoid hiccups."
       (background-blue (if (true-color-p) "#aadfff" "#1f1f4f"))
       (bright-background-blue (if (true-color-p) "#1a2069" "#2a306c"))
       (background-green (if (true-color-p) "#9dcaa1" "#5f5f5f"))
-      (bright-background-green (if (true-color-p) "#3f6d54" "#3f6d54"))
+      (bright-background-green (if (true-color-p) "#3f7d54" "#3f6d54"))
       (background-orange (if (true-color-p) "#4a473d" "#5f5f5f"))
       (hl-line (if (true-color-p) "#dae2da" "#333333"))
       (grey (if (true-color-p) "#cccccc" "#cccccc"))
@@ -263,7 +263,7 @@ The result is cached for one second to avoid hiccups."
    `(font-lock-constant-face ((,class (:foreground ,orange :weight bold))))
    `(font-lock-function-name-face ((,class (:foreground ,blue))))
    `(font-lock-keyword-face ((,class (:foreground ,red-light :weight bold))))
-   `(font-lock-string-face ((,class (:foreground ,green))))
+   `(font-lock-string-face ((,class (:foreground ,bright-background-green))))
    `(font-lock-doc-face ((,class (:foreground ,green-light))))
    `(font-lock-type-face ((,class (:foreground ,blue))))
    `(font-lock-variable-name-face ((,class (:foreground ,blue))))
@@ -377,12 +377,12 @@ The result is cached for one second to avoid hiccups."
 
    ;; diff
    `(diff-removed ((,class (:background ,background-red :foreground ,red))))
-   `(diff-added ((,class (:background ,background-green :foreground ,green))))
+   `(diff-added ((,class (:background ,background-green :foreground ,bright-background-green))))
    `(diff-hunk-header ((,class (:background ,background-blue :weight bold :foreground ,blue))))
    `(diff-file-header ((,class (:weight bold))))
    `(diff-header ((,class (:background ,background :foreground ,blue))))
    `(diff-context ((,class (:foreground ,default))))
-   `(diff-refine-added ((,class (:foreground ,green :background ,bright-background-green))))
+   `(diff-refine-added ((,class (:foreground ,green-light :background ,bright-background-green))))
    `(diff-refine-removed ((,class (:background ,bright-background-red :foreground ,red))))
 
    ;; ediff
@@ -406,7 +406,7 @@ The result is cached for one second to avoid hiccups."
    `(magit-diff-hunk-heading-highlight ((,class (:background ,blue-dark))))
    `(magit-diff-hunk-heading ((,class (:background ,background-lighter))))
 
-   `(magit-process-ok ((,class (:foreground ,green :weight bold))))
+   `(magit-process-ok ((,class (:foreground ,green-light :weight bold))))
 
    `(magit-section-highlight ((,class (:background ,background-blue))))
    `(magit-section-heading ((,class (:foreground ,red-light :weight bold))))
@@ -417,7 +417,7 @@ The result is cached for one second to avoid hiccups."
    `(magit-reflog-reset ((,class (:background ,background-red :foreground ,red :weight bold))))
    `(magit-reflog-amend ((,class (:background ,background-blue :foreground ,blue :weight bold))))
    `(magit-reflog-rebase ((,class (:background ,background-blue :foreground ,blue :weight bold))))
-   `(magit-reflog-commit ((,class (:background ,background-green :foreground ,green :weight bold))))
+   `(magit-reflog-commit ((,class (:background ,background-green :foreground ,green-light :weight bold))))
    `(magit-reflog-checkout ((,class (:background ,background-orange :foreground ,orange :weight bold))))
    `(magit-reflog-cherry-pick ((,class (:background ,background-purple :foreground ,purple :weight bold))))
 
@@ -429,7 +429,7 @@ The result is cached for one second to avoid hiccups."
    `(magit-signature-bad ((,class (:foreground ,red))))
    `(magit-signature-good ((,class (:foreground ,blue))))
 
-   `(magit-blame-heading ((,class (:foreground ,green :background ,background-green :box 1))))
+   `(magit-blame-heading ((,class (:foreground ,green-light :background ,background-green :box 1))))
 
    `(git-commit-summary ((,class (:weight bold))))
 
