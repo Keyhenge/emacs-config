@@ -14,8 +14,11 @@ The majority of the configuration and especially the functions were written by h
 :END:
 =git clone https://github.com/Keyhenge/emacs-config.git ~/.emacs.d=
 
-Running the above command will clone this repository into your emacs settings, overwriting anything you have there already. I highly recommend backing up your current settings by copying them into another repository (e.g. =cp ~/.emacs.d ~/.emacs.d.bak=).
-** Dependencies for:
+Running the above command will clone this repository into your emacs settings, overwriting anything you have there already. I highly recommend backing up your current settings by copying them into another repository (e.g. =cp ~/.emacs.d ~/.emacs.d.bak=). You should also read the [[dep][dependencies]] section before installing and consider disabling [[EXWM][EXWM]] if you want to use another window manager.
+** Dependencies for
+:PROPERTIES:
+:CUSTOM_ID: dep
+:END:
 *** Keybindings
 I bind =control= to =caps_lock= and =caps_lock= to both shift keys. This frees up left control to be used as Hyper whenever we need emacs-wide bindings that we know won't interfere with other modes. To use my setup, copy the following into ~/.Xmodmap and add the command *setxkbmap -option 'shift:both_capslock'* to your ~/.Xprofile.
 #+BEGIN_SRC
@@ -193,10 +196,8 @@ Replaces the standard Emacs splash screen with a more streamlined one relevant t
 
 ** Theme
 Every good config needs a good theme. I've customized mine to be as easily readible as possible.
-*** TODO A nice theme
+*** A nice theme
 Zeronight/Zerolight is really just Zerodark (by Nicolas Petton) with minor tweaks. Still, putting the customized versions into their own files allows us to switch between dark and light themes quickly.
-
-The TODO is because the light theme hasn't been fully customized yet, meaning there are a bunch of places where text is unreadable because of being black on a dark background, or out of place dark areas, etc.
  #+BEGIN_SRC emacs-lisp
       (load-theme 'zeronight t)
 
@@ -329,7 +330,7 @@ Hides the following modes from your modeline in order to save room.
 ** TODO Window Manager
  Everything surrounding EXWM is contained here, as well as a few extra controls which will only be accesible while Emacs is in focus.
 *** TODO EXWM
- Currently I'm still using i3 due to disappointing bugs plaguing EXWM in NixOS. This will probably change upon changing to Guix.
+ Currently I'm still using i3 due to disappointing bugs plaguing EXWM in NixOS. This is likely to change once I start using the appropriate overlay.
 **** Installation
  +BEGIN_SRC emacs-lisp
    (use-package exwm
@@ -1545,4 +1546,3 @@ I haven't finished configuring EMMS quite yet, so I'm using Mingus/ncmpcpp for t
      (message "MPD Database Updated!"))
    (global-set-key (kbd "M-p u") 'mpd/update-database)
  #+END_SRC
-
