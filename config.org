@@ -191,153 +191,62 @@ Replaces the standard Emacs splash screen with a more streamlined one relevant t
                               (bookmarks . 10))))
  #+END_SRC
 
-** TODO Theme
+** Theme
 Every good config needs a good theme. I've customized mine to be as easily readible as possible.
+*** TODO A nice theme
+Zeronight/Zerolight is really just Zerodark (by Nicolas Petton) with minor tweaks. Still, putting the customized versions into their own files allows us to switch between dark and light themes quickly.
 
-As a small TODO, maybe later I'll put in a light theme and keyboard macro to switch between them. I've been reading SICP through w3m in Emacs and the black text images are near unreadable on the dark background.
-*** A nice theme
+The TODO is because the light theme hasn't been fully customized yet, meaning there are a bunch of places where text is unreadable because of being black on a dark background, or out of place dark areas, etc.
  #+BEGIN_SRC emacs-lisp
-   (use-package zerodark-theme
-     :ensure t
-     :init
-       (load-theme 'zerodark t))
+   (load-theme 'zeronight t)
+
+   (defvar *theme-dark* 'zeronight)
+   (defvar *theme-light* 'zerolight)
+   (defvar *current-theme* *theme-dark*)
+
+   ;; disable other themes before loading new one
+   (defadvice load-theme (before theme-dont-propagate activate)
+     "Disable theme before loading new one."
+     (mapc #'disable-theme custom-enabled-themes))
+
+   (defun haba/next-theme (theme)
+     (load-theme theme t)
+     (setq *current-theme* theme))
+
+   (defun haba/toggle-theme ()
+     (interactive)
+     (cond ((eq *current-theme* *theme-dark*) (haba/next-theme *theme-light*))
+           ((eq *current-theme* *theme-light*) (haba/next-theme *theme-dark*))))
+
+   (global-set-key (kbd "H-t") 'haba/toggle-theme)
  #+END_SRC
 
 *** Some customization
  #+BEGIN_SRC emacs-lisp
-   (let ((class '((class color) (min-colors 89)))
-         (default (if (true-color-p) "#abb2bf" "#afafaf"))
-         (light (if (true-color-p) "#ccd4e3" "#d7d7d7"))
-         (background (if (true-color-p) "#22252c" "#333333"))
-         (background-dark (if (true-color-p) "#24282f" "#222222"))
-         (background-darker (if (true-color-p) "#22252c" "#222222"))
-         (mode-line-inactive (if "#1c2129" "#222222"))
-         (mode-line-active (if (true-color-p) "#6f337e" "#875f87"))
-         (background-lighter (if (true-color-p) "#3a3f4b" "#5f5f5f"))
-         (background-red (if (true-color-p) "#4c3840" "#5f5f5f"))
-         (bright-background-red (if (true-color-p) "#744a5b" "#744a5b"))
-         (background-purple (if (true-color-p) "#48384c" "#5f5f5f"))
-         (background-blue (if (true-color-p) "#1a1a3c" "#1f1f4f"))
-         (bright-background-blue (if (true-color-p) "#1a2069" "#2a306c"))
-         (background-green (if (true-color-p) "#3d4a41" "#5f5f5f"))
-         (bright-background-green (if (true-color-p) "#3f6d54" "#3f6d54"))
-         (background-orange (if (true-color-p) "#4a473d" "#5f5f5f"))
-         (hl-line (if (true-color-p) "#2c323b" "#333333"))
-         (grey (if (true-color-p) "#cccccc" "#cccccc"))
-         (grey-dark (if (true-color-p) "#666666" "#666666"))
-         (highlight (if (true-color-p) "#3e4451" "#5f5f5f"))
-         (comment (if (true-color-p) "#687080" "#707070"))
-         (orange (if (true-color-p) "#da8548" "#d7875f"))
-         (orange-light (if (true-color-p) "#ddbd78" "#d7af87"))
-         (red (if (true-color-p) "#ff2727" "#ff3a3f"))
-         (red-light (if (true-color-p) "#ff6464" "#ff8070"))
-         (purple (if (true-color-p) "#c678dd" "#d787d7"))
-         (purple-dark (if (true-color-p) "#64446d" "#5f5f5f"))
-         (blue (if (true-color-p) "#61afef" "#5fafff"))
-         (blue-dark (if (true-color-p) "#1f5582" "#005f87"))
-         (green (if (true-color-p) "#98be65" "#87af5f"))
-         (green-light (if (true-color-p) "#9eac8c" "#afaf87"))
-         (peach "PeachPuff3")
-         (diff-added-background (if (true-color-p) "#284437" "#284437"))
-         (diff-added-refined-background (if (true-color-p) "#1e8967" "#1e8967"))
-         (diff-removed-background (if (true-color-p) "#583333" "#580000"))
-         (diff-removed-refined-background (if (true-color-p) "#b33c49" "#b33c49"))
-         (diff-current-background (if (true-color-p) "#29457b" "#29457b"))
-         (diff-current-refined-background (if (true-color-p) "#4174ae" "#4174ae")))
-
-     (custom-theme-set-faces
-      'zerodark
-      `(default ((,class (:background ,background-darker :foreground ,default))))
-
-      ;; Font lock faces
-      `(font-lock-builtin-face ((,class (:foreground ,blue :weight bold))))
-      `(font-lock-comment-face ((,class (:foreground ,comment :slant italic))))
-      `(font-lock-constant-face ((,class (:foreground ,orange :weight bold))))
-      `(font-lock-function-name-face ((,class (:foreground ,blue))))
-      `(font-lock-keyword-face ((,class (:foreground ,red-light :weight bold))))
-      `(font-lock-string-face ((,class (:foreground ,green))))
-      `(font-lock-doc-face ((,class (:foreground ,green-light))))
-      `(font-lock-type-face ((,class (:foreground ,blue))))
-      `(font-lock-variable-name-face ((,class (:foreground ,blue))))
-      `(font-lock-warning-face ((,class (:foreground ,red :weight bold :background ,background-red))))
-
-      `(fancy-battery-charging ((,class (:background ,background-green :height 0.85 :bold t))))
-      `(fancy-battery-discharging ((,class (:background ,background-green :height 0.85))))
-      `(fancy-battery-critical ((,class (:background ,background-green :height 0.85))))
-
-      ;; mode line stuff
-      `(mode-line ((,class (:background ,background-green :height 0.9 :foreground ,green
-                                        :distant-foreground ,background-green))))
-
-      `(mode-line-inactive ((,class (:background ,background-green :height 0.9 :foreground ,green
-                                                 :distant-foreground ,green-light))))
-
-      `(header-line ((,class (:inherit mode-line-inactive))))
-
-      `(powerline-active0 ((,class (:height 0.85 :foreground ,green :background ,background-green
-                                            :distant-foreground ,background-green))))
-      `(powerline-active1 ((,class (:height 0.85 :foreground ,green :background ,green-light
-                                            :distant-foreground ,background-green))))
-      `(powerline-active2 ((,class (:height 0.85 :foreground ,green :background ,background-green
-                                            :distant-foreground ,background-green))))
-      `(powerline-inactive0 ((,class (:height 0.85 :foreground ,green :background ,background-green
-                                              :distant-foreground ,background-green))))
-      `(powerline-inactive1 ((,class (:height 0.85 :foreground ,green :background ,green-light
-                                              :distant-foreground ,background-green))))
-      `(powerline-inactive2 ((,class (:height 0.85 :foreground ,green :background ,background-green
-                                              :distant-foreground ,background-green))))
-
-      `(dashboard-heading-face ((,class (:background ,background-dark :foreground ,green
-                                                     :bold t :height 1.2))))
-      `(dashboard-banner-logo-title-face ((,class (:background ,background-dark :foreground ,green
-                                                               :bold t :height 1.0))))
-      `(widget-button ((,class (:background ,background-dark :foreground ,default :bold nil
-                                            :underline t :height 1.0))))
-
-      ;; erc stuff
-      `(erc-nick-default-face ((,class :foreground ,green :background ,background-dark :weight bold)))
-
-      ;; org stuff
-      `(outline-1 ((,class (:foreground ,blue :weight bold :height 1.8 :bold nil))))
-      `(outline-2 ((,class (:foreground ,red-light :weight bold :height 1.7 :bold nil))))
-      `(outline-3 ((,class (:foreground ,peach :weight bold :height 1.6 :bold nil))))
-      `(outline-4 ((,class (:foreground ,green-light :weight bold :height 1.5 :bold nil))))
-      `(outline-5 ((,class (:foreground ,purple :weight bold :height 1.4 :bold nil))))
-      `(outline-6 ((,class (:foreground ,orange :weight bold :height 1.3 :bold nil))))
-      `(outline-7 ((,class (:foreground ,grey :weight bold :height 1.2 :bold nil))))
-      `(outline-8 ((,class (:foreground ,blue-dark :weight bold :height 1.1 :bold nil))))
-      `(org-block-begin-line ((,class (:background ,background-green :foreground ,green
-                                                   :bold t :height 1.0))))
-      `(org-block-end-line ((,class (:background ,background-green :foreground ,green
-                                                 :bold t :height 1.0))))
-      `(org-ellipses nil))
-
-     (use-package dired-rainbow
-       :ensure t
-       :config
-       (progn
-         (dired-rainbow-define-chmod directory "#61afef" "d.*")
-         (dired-rainbow-define html "#ff8070" ("css" "less" "sass" "scss" "htm" "html" "jhtm" "mht" "eml" "mustache" "xhtml"))
-         (dired-rainbow-define xml "#ddbd78" ("xml" "xsd" "xsl" "xslt" "wsdl" "bib" "json" "msg" "pgn" "rss" "yaml" "yml" "rdata"))
-         (dired-rainbow-define document "#c678dd" ("docm" "doc" "docx" "odb" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub" "odp" "ppt" "pptx"))
-         (dired-rainbow-define markdown "#da8548" ("org" "etx" "info" "markdown" "md" "mkd" "nfo" "pod" "rst" "tex" "textfile" "txt"))
-         (dired-rainbow-define database "#005f87" ("xlsx" "xls" "csv" "accdb" "db" "mdb" "sqlite" "nc"))
-         (dired-rainbow-define media "#98be65" ("mp3" "mp4" "MP3" "MP4" "avi" "mpeg" "mpg" "flv" "ogg" "mov" "mid" "midi" "wav" "aiff" "flac"))
-         (dired-rainbow-define image "#9eac8c" ("tiff" "tif" "cdr" "gif" "ico" "jpeg" "jpg" "png" "psd" "eps" "svg"))
-         (dired-rainbow-define log "#687080" ("log"))
-         (dired-rainbow-define shell "#ccd4e3" ("awk" "bash" "bat" "sed" "sh" "zsh" "vim"))
-         (dired-rainbow-define interpreted "#ff6464" ("py" "ipynb" "rb" "pl" "t" "msql" "mysql" "pgsql" "sql" "r" "clj" "cljs" "scala" "js"))
-         (dired-rainbow-define compiled "#ff6464" ("asm" "cl" "lisp" "el" "c" "h" "c++" "h++" "hpp" "hxx" "m" "cc" "cs" "cp" "cpp" "go" "f" "for" "ftn" "f90" "f95" "f03" "f08" "s" "rs" "hi" "hs" "pyc" ".java"))
-         (dired-rainbow-define executable "PeachPuff3" ("exe" "msi"))
-         (dired-rainbow-define compressed "#b33c49" ("7z" "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
-         (dired-rainbow-define packaged "#afaf87" ("deb" "rpm" "apk" "jad" "jar" "cab" "pak" "pk3" "vdf" "vpk" "bsp"))
-         (dired-rainbow-define encrypted "#87af5f" ("gpg" "pgp" "asc" "bfe" "enc" "signature" "sig" "p12" "pem"))
-         (dired-rainbow-define fonts "#5fafff" ("afm" "fon" "fnt" "pfb" "pfm" "ttf" "otf"))
-         (dired-rainbow-define partition "#ff2727" ("dmg" "iso" "bin" "nrg" "qcow" "toast" "vcd" "vmdk" "bak"))
-         (dired-rainbow-define vc "Orange" ("git" "gitignore" "gitattributes" "gitmodules"))
-         (dired-rainbow-define-chmod executable-unix "#38c172" "-.*x.*")
-         )) 
-     )
+   (use-package dired-rainbow
+     :ensure t
+     :config
+     (progn
+       (dired-rainbow-define-chmod directory "#61afef" "d.*")
+       (dired-rainbow-define html "#ff8070" ("css" "less" "sass" "scss" "htm" "html" "jhtm" "mht" "eml" "mustache" "xhtml"))
+       (dired-rainbow-define xml "#ddbd78" ("xml" "xsd" "xsl" "xslt" "wsdl" "bib" "json" "msg" "pgn" "rss" "yaml" "yml" "rdata"))
+       (dired-rainbow-define document "#c678dd" ("docm" "doc" "docx" "odb" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub" "odp" "ppt" "pptx"))
+       (dired-rainbow-define markdown "#da8548" ("org" "etx" "info" "markdown" "md" "mkd" "nfo" "pod" "rst" "tex" "textfile" "txt"))
+       (dired-rainbow-define database "#005f87" ("xlsx" "xls" "csv" "accdb" "db" "mdb" "sqlite" "nc"))
+       (dired-rainbow-define media "#98be65" ("mp3" "mp4" "MP3" "MP4" "avi" "mpeg" "mpg" "flv" "ogg" "mov" "mid" "midi" "wav" "aiff" "flac"))
+       (dired-rainbow-define image "#9eac8c" ("tiff" "tif" "cdr" "gif" "ico" "jpeg" "jpg" "png" "psd" "eps" "svg"))
+       (dired-rainbow-define log "#687080" ("log"))
+       (dired-rainbow-define shell "#ccd4e3" ("awk" "bash" "bat" "sed" "sh" "zsh" "vim"))
+       (dired-rainbow-define interpreted "#ff6464" ("py" "ipynb" "rb" "pl" "t" "msql" "mysql" "pgsql" "sql" "r" "clj" "cljs" "scala" "js"))
+       (dired-rainbow-define compiled "#ff6464" ("asm" "cl" "lisp" "el" "c" "h" "c++" "h++" "hpp" "hxx" "m" "cc" "cs" "cp" "cpp" "go" "f" "for" "ftn" "f90" "f95" "f03" "f08" "s" "rs" "hi" "hs" "pyc" ".java"))
+       (dired-rainbow-define executable "PeachPuff3" ("exe" "msi"))
+       (dired-rainbow-define compressed "#b33c49" ("7z" "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
+       (dired-rainbow-define packaged "#afaf87" ("deb" "rpm" "apk" "jad" "jar" "cab" "pak" "pk3" "vdf" "vpk" "bsp"))
+       (dired-rainbow-define encrypted "#87af5f" ("gpg" "pgp" "asc" "bfe" "enc" "signature" "sig" "p12" "pem"))
+       (dired-rainbow-define fonts "#5fafff" ("afm" "fon" "fnt" "pfb" "pfm" "ttf" "otf"))
+       (dired-rainbow-define partition "#ff2727" ("dmg" "iso" "bin" "nrg" "qcow" "toast" "vcd" "vmdk" "bak"))
+       (dired-rainbow-define vc "Orange" ("git" "gitignore" "gitattributes" "gitmodules"))
+       (dired-rainbow-define-chmod executable-unix "#38c172" "-.*x.*")))
  #+END_SRC
 
 ** Modeline
@@ -1534,12 +1443,12 @@ Elfeed is an RSS newsfeed with tagging, searching, autodownloads, the works.
 #+END_SRC
 
 ** TODO Media
-EMMS hasn't been working out for me so I've taken to using Mingus instead. Generally it works out fine, though I'm still on the lookout for something with a better browser and a tag editor, similar to ncmpcpp so that I can completely replace it.
-*** EMMS
+I haven't finished configuring EMMS quite yet, so I'm using Mingus/ncmpcpp for the meantime.
+*** TODO EMMS
 
-+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (require 'emms)
-  (add-to-list 'load-path "~/.emacs.d/emms/")
+ 
   (emms-all)
   (emms-history-load)
   (setq emms-player-list (list emms-player-mpv)
@@ -1575,7 +1484,7 @@ EMMS hasn't been working out for me so I've taken to using Mingus instead. Gener
   (add-hook 'emms-browser-tracks-added-hook 'ambrevar/emms-play-on-add)
 #+END_SRC
 
-*** Mingus with mpd
+*** TODO Mingus with mpd
 
 **** Basic setup for mpd
 
@@ -1597,7 +1506,7 @@ EMMS hasn't been working out for me so I've taken to using Mingus instead. Gener
    (setq mpc-host "localhost:6601")
  #+END_SRC
 
-**** Some more fun stuff
+**** TODO Some more fun stuff
 ***** Starting the daemon from within emacs
 
  #+BEGIN_SRC emacs-lisp
