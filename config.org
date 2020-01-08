@@ -198,27 +198,28 @@ Zeronight/Zerolight is really just Zerodark (by Nicolas Petton) with minor tweak
 
 The TODO is because the light theme hasn't been fully customized yet, meaning there are a bunch of places where text is unreadable because of being black on a dark background, or out of place dark areas, etc.
  #+BEGIN_SRC emacs-lisp
-   (load-theme 'zeronight t)
+      (load-theme 'zeronight t)
 
-   (defvar *theme-dark* 'zeronight)
-   (defvar *theme-light* 'zerolight)
-   (defvar *current-theme* *theme-dark*)
+      (defvar *theme-dark* 'zeronight)
+      (defvar *theme-light* 'zerolight)
+      (defvar *current-theme* *theme-dark*)
 
-   ;; disable other themes before loading new one
-   (defadvice load-theme (before theme-dont-propagate activate)
-     "Disable theme before loading new one."
-     (mapc #'disable-theme custom-enabled-themes))
+      ;; disable other themes before loading new one
+      (defadvice load-theme (before theme-dont-propagate activate)
+        "Disable theme before loading new one."
+        (mapc #'disable-theme custom-enabled-themes))
 
-   (defun haba/next-theme (theme)
-     (load-theme theme t)
-     (setq *current-theme* theme))
+      (defun haba/next-theme (theme)
+        (load-theme theme t)
+        (setq *current-theme* theme))
 
-   (defun haba/toggle-theme ()
-     (interactive)
-     (cond ((eq *current-theme* *theme-dark*) (haba/next-theme *theme-light*))
-           ((eq *current-theme* *theme-light*) (haba/next-theme *theme-dark*))))
+      (defun haba/toggle-theme ()
+        (interactive)
+        (cond ((eq *current-theme* *theme-dark*) (haba/next-theme *theme-light*))
+              ((eq *current-theme* *theme-light*) (haba/next-theme *theme-dark*)))
+        (powerline-reset))
 
-   (global-set-key (kbd "H-t") 'haba/toggle-theme)
+      (global-set-key (kbd "H-t") 'haba/toggle-theme)
  #+END_SRC
 
 *** Some customization
@@ -258,11 +259,12 @@ A modified powerline used in spacemacs. Easy configuration and looks good with t
      :ensure t
      :config
      (require 'spaceline-config)
-       (setq spaceline-buffer-encoding-abbrev-p nil)
-       (setq spaceline-line-column-p nil)
-       (setq spaceline-line-p nil)
-       (setq powerline-default-separator (quote arrow))
-       (spaceline-spacemacs-theme))
+     (setq spaceline-buffer-encoding-abbrev-p nil)
+     (setq spaceline-line-column-p nil)
+     (setq spaceline-line-p nil)
+     (setq powerline-default-separator (quote arrow))
+     (spaceline-spacemacs-theme)
+     (powerline-reset))
  #+END_SRC
 
 *** Clock

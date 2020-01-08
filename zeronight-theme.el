@@ -236,6 +236,7 @@ The result is cached for one second to avoid hiccups."
       (diff-removed-refined-background (if (true-color-p) "#b33c49" "#b33c49"))
       (diff-current-background (if (true-color-p) "#29457b" "#29457b"))
       (diff-current-refined-background (if (true-color-p) "#4174ae" "#4174ae")))
+  (set-fringe-style 5)
   (custom-theme-set-faces
    'zeronight
    `(default ((,class (:background ,background :foreground ,default))))

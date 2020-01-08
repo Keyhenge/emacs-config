@@ -1,4 +1,4 @@
-;;; zerodark-theme.el --- A dark, medium contrast theme for Emacs -*- lexical-binding: t -*-
+;;; zerodark-theme.el --- A light, medium contrast theme for Emacs -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2015-2018  Nicolas Petton
 
@@ -27,10 +27,10 @@
 
 ;;; Commentary:
 ;;
-;; A dark theme inspired from One Dark and Niflheim.
+;; A light theme inspired from One Dark and Niflheim.
 ;;
 ;; An optional mode-line format can be enabled with
-;; `zerolight-setup-modeline-format'.
+;; `zerodark-setup-modeline-format'.
 ;;
 
 ;;; Code:
@@ -50,99 +50,99 @@
          ,cache))))
 
 (deftheme zerolight
-  "A dark medium contrast theme")
+  "A light medium contrast theme")
 
 (defgroup zerolight
   nil
-  "A dark theme inspired from One Dark and Niflheim."
+  "A light theme inspired from One Dark and Niflheim."
   :group 'faces)
 
-(defcustom zerolight-use-paddings-in-mode-line t
+(defcustom zerodark-use-paddings-in-mode-line t
   "When non-nil, use top and bottom paddings in the mode-line."
   :type 'boolean)
 
-(defcustom zerolight-theme-display-vc-status 'full
+(defcustom zerodark-theme-display-vc-status 'full
   "Control how version control information is displayed."
   :type '(choice (const :tag "Display fork symbol and branch name" 'full)
                  (const :tag "Display fork symbol only" t)
                  (const :tag "Do not display any version control information" nil)))
 
-(defface zerolight-ro-face
+(defface zerodark-ro-face
   '((t :foreground "#0088CC" :weight bold))
   "Face for read-only buffer in the mode-line.")
 
-(defface zerolight-modified-face
+(defface zerodark-modified-face
   '((t :foreground "#ff6c6b" :height 0.9))
   "Face for modified buffers in the mode-line.")
 
-(defface zerolight-not-modified-face
+(defface zerodark-not-modified-face
   '((t :foreground "#98be65" :height 0.9))
   "Face for not modified buffers in the mode-line.")
 
-(defface zerolight-buffer-position-face
+(defface zerodark-buffer-position-face
   '((t :height 0.9))
   "Face for line/column numbers in the mode-line.")
 
-(defface zerolight-vc-face
+(defface zerodark-vc-face
   '((t :foreground "#61afef"))
   "Face for vc status in the mode-line.")
 
-(defface zerolight-ok-face
+(defface zerodark-ok-face
   '((t :foreground "#61afef"))
   "Face for ok status in the mode-line.")
 
-(defface zerolight-warning-face
+(defface zerodark-warning-face
   '((t :foreground "#da8548"))
   "Face for warning status in the mode-line.")
 
-(defface zerolight-error-face
+(defface zerodark-error-face
   '((t :foreground "#ff6c6b"))
   "Face for error status in the mode-line.")
 
-(defvar zerolight-modeline-position '(:eval (propertize ":%l:%c %p " 'face (if (zerolight--active-window-p)
-                                                                              'zerolight-buffer-position-face
+(defvar zerodark-modeline-position '(:eval (propertize ":%l:%c %p " 'face (if (zerodark--active-window-p)
+                                                                              'zerodark-buffer-position-face
                                                                             'mode-line-inactive)))
   "Mode line construct for displaying the position in the buffer.")
 
-(defvar zerolight-modeline-buffer-identification '(:eval (propertize "%b" 'face 'bold))
+(defvar zerodark-modeline-buffer-identification '(:eval (propertize "%b" 'face 'bold))
   "Mode line construct for displaying the position in the buffer.")
 
-(defvar zerolight-modeline-modified '(:eval (if (buffer-modified-p (current-buffer))
+(defvar zerodark-modeline-modified '(:eval (if (buffer-modified-p (current-buffer))
                                                (all-the-icons-faicon "floppy-o"
                                                                      :height 0.9
                                                                      :v-adjust 0
-                                                                     :face (if (zerolight--active-window-p)
-                                                                               'zerolight-modified-face
+                                                                     :face (if (zerodark--active-window-p)
+                                                                               'zerodark-modified-face
                                                                              'mode-line-inactive))
                                              (all-the-icons-faicon "check"
                                                                    :height 0.9
                                                                    :v-adjust 0
-                                                                   :face (if (zerolight--active-window-p)
-                                                                             'zerolight-not-modified-face
+                                                                   :face (if (zerodark--active-window-p)
+                                                                             'zerodark-not-modified-face
                                                                            'mode-line-inactive)))))
 
-(defvar zerolight-modeline-ro '(:eval (if buffer-read-only
-                                         (if (zerolight--active-window-p)
+(defvar zerodark-modeline-ro '(:eval (if buffer-read-only
+                                         (if (zerodark--active-window-p)
                                              (progn
-                                               (propertize "RO " 'face 'zerolight-ro-face))
+                                               (propertize "RO " 'face 'zerodark-ro-face))
                                            (propertize "RO " 'face 'bold))
                                        "")))
 
-(defvar zerolight-buffer-coding '(:eval (unless (eq buffer-file-coding-system (default-value 'buffer-file-coding-system))
+(defvar zerodark-buffer-coding '(:eval (unless (eq buffer-file-coding-system (default-value 'buffer-file-coding-system))
                                          mode-line-mule-info)))
 
-(defvar zerolight-modeline-vc '(vc-mode ("   "
+(defvar zerodark-modeline-vc '(vc-mode ("   "
                                         (:eval (all-the-icons-faicon "code-fork"
                                                                      :height 0.9
                                                                      :v-adjust 0
-                                                                     :face (when (zerolight--active-window-p)
-                                                                             (zerolight-git-face))))
-                                        (:eval (when (eq zerolight-theme-display-vc-status 'full)
+                                                                     :face (when (zerodark--active-window-p)
+                                                                             (zerodark-git-face))))
+                                        (:eval (when (eq zerodark-theme-display-vc-status 'full)
                                                  (propertize (truncate-string-to-width vc-mode 25 nil nil "...")
-                                                             'face (when (zerolight--active-window-p)
-                                                                     (zerolight-git-face))))))))
+                                                             'face (when (zerodark--active-window-p)
+                                                                     (zerodark-git-face))))))))
 
-(defun zerolight-modeline-flycheck-status ()
+(defun zerodark-modeline-flycheck-status ()
   "Return the status of flycheck to be displayed in the mode-line."
   (when flycheck-mode
     (let* ((text (pcase flycheck-last-status-change
@@ -150,18 +150,18 @@
                                   (let ((count (let-alist (flycheck-count-errors flycheck-current-errors)
                                                  (+ (or .warning 0) (or .error 0)))))
                                     (propertize (format "✖ %s Issue%s" count (if (eq 1 count) "" "s"))
-                                                'face (zerolight-face-when-active 'zerolight-error-face)))
+                                                'face (zerodark-face-when-active 'zerodark-error-face)))
                                 (propertize "✔ No Issues"
-                                            'face (zerolight-face-when-active 'zerolight-ok-face))))
+                                            'face (zerodark-face-when-active 'zerodark-ok-face))))
                    (`running     (propertize "⟲ Running"
-                                             'face (zerolight-face-when-active 'zerolight-warning-face)))
+                                             'face (zerodark-face-when-active 'zerodark-warning-face)))
                    (`no-checker  (propertize "⚠ No Checker"
-                                             'face (zerolight-face-when-active 'zerolight-warning-face)))
+                                             'face (zerodark-face-when-active 'zerodark-warning-face)))
                    (`not-checked "✖ Disabled")
                    (`errored     (propertize "⚠ Error"
-                                             'face (zerolight-face-when-active 'zerolight-error-face)))
+                                             'face (zerodark-face-when-active 'zerodark-error-face)))
                    (`interrupted (propertize "⛔ Interrupted"
-                                             'face (zerolight-face-when-active 'zerolight-error-face)))
+                                             'face (zerodark-face-when-active 'zerodark-error-face)))
                    (`suspicious  ""))))
       (propertize text
                   'help-echo "Show Flycheck Errors"
@@ -174,9 +174,9 @@
    (display-graphic-p)
    (= (tty-display-color-cells) 16777216)))
 
-(defvar zerolight--git-face-cached (cached-for 1 (zerolight--git-face-intern)))
+(defvar zerodark--git-face-cached (cached-for 1 (zerodark--git-face-intern)))
 
-(defun zerolight--git-face-intern ()
+(defun zerodark--git-face-intern ()
   "Return the face to use based on the current repository status."
   (if (magit-git-success "diff" "--quiet")
       ;; nothing to commit because nothing changed
@@ -186,75 +186,76 @@
                                              ".."
                                              (magit-get-current-branch)))))
           ;; nothing to push as well
-          'zerolight-ok-face
+          'zerodark-ok-face
         ;; nothing to commit, but some commits must be pushed
-        'zerolight-warning-face)
-    'zerolight-error-face))
+        'zerodark-warning-face)
+    'zerodark-error-face))
 
-(defun zerolight-git-face ()
+(defun zerodark-git-face ()
   "Return the face to use based on the current repository status.
 The result is cached for one second to avoid hiccups."
-  (funcall zerolight--git-face-cached))
+  (funcall zerodark--git-face-cached))
 
 
 (let ((class '((class color) (min-colors 89)))
-      (default (if (true-color-p) "#abb2bf" "#afafaf"))
-      (light (if (true-color-p) "#efefef" "#d7d7d7"))
-      (background (if (true-color-p) "#22252c" "#333333"))
-      (background-dark (if (true-color-p) "#24282f" "#222222"))
-      (background-darker (if (true-color-p) "#22252c" "#222222"))
-      (mode-line-inactive (if "#1c2129" "#222222"))
+      (default (if (true-color-p) "#1f1f1f" "#afafaf"))
+      (light (if (true-color-p) "#ccd4e3" "#d7d7d7"))
+      (background (if (true-color-p) "#cbcfcb" "#333333"))
+      (background-dark (if (true-color-p) "#cedfce" "#222222"))
+      (background-darker (if (true-color-p) "#ffffff" "#222222"))
+      (mode-line-inactive (if "#1c1129" "#222222"))
       (mode-line-active (if (true-color-p) "#6f337e" "#875f87"))
-      (background-lighter (if (true-color-p) "#3a3f4b" "#5f5f5f"))
+      (background-lighter (if (true-color-p) "#bbbfbb" "#5f5f5f"))
       (background-red (if (true-color-p) "#4c3840" "#5f5f5f"))
       (bright-background-red (if (true-color-p) "#744a5b" "#744a5b"))
-      (background-purple (if (true-color-p) "#48384c" "#5f5f5f"))
-      (background-blue (if (true-color-p) "#1a1a3c" "#1f1f4f"))
+      (background-purple (if (true-color-p) "#a838ac" "#5f5f5f"))
+      (background-blue (if (true-color-p) "#aadfff" "#1f1f4f"))
       (bright-background-blue (if (true-color-p) "#1a2069" "#2a306c"))
-      (background-green (if (true-color-p) "#3d4a41" "#5f5f5f"))
+      (background-green (if (true-color-p) "#9dcaa1" "#5f5f5f"))
       (bright-background-green (if (true-color-p) "#3f6d54" "#3f6d54"))
       (background-orange (if (true-color-p) "#4a473d" "#5f5f5f"))
-      (hl-line (if (true-color-p) "#2c323b" "#333333"))
+      (hl-line (if (true-color-p) "#dae2da" "#333333"))
       (grey (if (true-color-p) "#cccccc" "#cccccc"))
-      (grey-light (if (true-color-p) "#dedede" "#cccccc"))
       (grey-dark (if (true-color-p) "#666666" "#666666"))
-      (highlight (if (true-color-p) "#3e4451" "#5f5f5f"))
+      (highlight (if (true-color-p) "#8e9481" "#5f5f5f"))
       (comment (if (true-color-p) "#687080" "#707070"))
       (orange (if (true-color-p) "#da8548" "#d7875f"))
       (orange-light (if (true-color-p) "#ddbd78" "#d7af87"))
       (red (if (true-color-p) "#ff2727" "#ff3a3f"))
-      (red-light (if (true-color-p) "#ff6464" "#ff8070"))
+      (red-light (if (true-color-p) "#df3434" "#ff8070"))
       (purple (if (true-color-p) "#c678dd" "#d787d7"))
       (purple-dark (if (true-color-p) "#64446d" "#5f5f5f"))
-      (blue (if (true-color-p) "#61afef" "#5fafff"))
+      (blue (if (true-color-p) "#317fbf" "#5fafff"))
       (blue-dark (if (true-color-p) "#1f5582" "#005f87"))
       (green (if (true-color-p) "#98be65" "#87af5f"))
-      (green-light (if (true-color-p) "#9eac8c" "#afaf87"))
-      (peach "PeachPuff3")
-      (diff-added-background (if (true-color-p) "#284437" "#284437"))
+      (green-light (if (true-color-p) "#6e9c5c" "#afaf87"))
+      (peach "PeachPuff4")
+      (diff-added-background (if (true-color-p) "#9dcaa1" "#284437"))
       (diff-added-refined-background (if (true-color-p) "#1e8967" "#1e8967"))
       (diff-removed-background (if (true-color-p) "#583333" "#580000"))
       (diff-removed-refined-background (if (true-color-p) "#b33c49" "#b33c49"))
       (diff-current-background (if (true-color-p) "#29457b" "#29457b"))
       (diff-current-refined-background (if (true-color-p) "#4174ae" "#4174ae")))
+  (set-fringe-style 1)
   (custom-theme-set-faces
    'zerolight
-   `(default ((,class (:background ,light :foreground ,background-dark))))
+   `(default ((,class (:background ,background :foreground ,default))))
    `(cursor ((,class (:background ,default))))
 
    ;; Highlighting faces
-   `(fringe ((,class (:background ,light :foreground ,comment))))
-   `(border ((,class (:foreground ,default))))
-   `(vertical-border ((,class (:foreground ,default))))
-   `(highlight ((,class (:background ,grey :foreground ,background-dark :underline nil))))
-   `(region ((,class (:background ,grey))))
-   `(secondary-selection ((,class (:background ,grey :foreground ,background-dark))))
+   
+   `(fringe ((,class (:background ,grey :foreground ,comment))))
+   `(border ((,class (:foreground ,background-lighter))))
+   `(vertical-border ((,class (:foreground ,background-lighter))))
+   `(highlight ((,class (:background ,highlight :foreground ,default :underline nil))))
+   `(region ((,class (:background ,highlight))))
+   `(secondary-selection ((,class (:background ,highlight :foreground ,default))))
    `(isearch ((,class (:background ,orange-light :foreground ,highlight))))
    `(lazy-highlight ((,class (:background ,grey-dark :foreground ,orange-light))))
-   `(hl-line ((,class (:background ,grey-light :underline unspecified :inherit nil))))
+   `(hl-line ((,class (:background ,hl-line :underline unspecified :inherit nil))))
    `(shadow ((,class (:foreground ,comment))))
 
-   `(match ((,class (:background ,grey))))
+   `(match ((,class (:background ,background-green))))
 
    ;; Font lock faces
    `(font-lock-builtin-face ((,class (:foreground ,blue :weight bold))))
@@ -269,7 +270,7 @@ The result is cached for one second to avoid hiccups."
    `(font-lock-warning-face ((,class (:foreground ,red :weight bold :background ,background-red))))
 
    ;; Mode line faces
-   `(mode-line ((,class (:background ,background-green :height 0.9 :foreground ,green
+   `(mode-line ((,class (:background ,background-green :height 0.9 :foreground ,default
                                      :distant-foreground ,background-green))))
    `(mode-line-inactive ((,class (:background ,background-green :height 0.9 :foreground ,default
                                               :distant-foreground ,background-green))))
@@ -281,18 +282,18 @@ The result is cached for one second to avoid hiccups."
    `(success ((,class (:foreground ,green :weight bold))))
 
    ;; powerline
-   `(powerline-active0 ((,class (:height 0.85 :foreground ,green :background ,background-green
-                                         :distant-foreground ,background-green))))
-   `(powerline-active1 ((,class (:height 0.85 :foreground ,green :background ,green-light
-                                         :distant-foreground ,background-green))))
-   `(powerline-active2 ((,class (:height 0.85 :foreground ,green :background ,background-green
-                                         :distant-foreground ,background-green))))
+   `(powerline-active0 ((,class (:height 0.85 :foreground ,green-light :background ,background-green
+                                         :distant-foreground ,default))))
+   `(powerline-active1 ((,class (:height 0.85 :foreground ,green-light :background ,green-light
+                                         :distant-foreground ,default))))
+   `(powerline-active2 ((,class (:height 0.85 :foreground ,green-light :background ,background-green
+                                         :distant-foreground ,default))))
    `(powerline-inactive0 ((,class (:height 0.85 :foreground ,default :background ,background-green
-                                           :distant-foreground ,background-green))))
+                                           :distant-foreground ,default))))
    `(powerline-inactive1 ((,class (:height 0.85 :foreground ,default :background ,green-light
-                                           :distant-foreground ,background-green))))
+                                           :distant-foreground ,default))))
    `(powerline-inactive2 ((,class (:height 0.85 :foreground ,default :background ,background-green
-                                           :distant-foreground ,background-green))))
+                                           :distant-foreground ,default))))
    
    ;; mml
    `(message-mml-face ((,class (:foreground ,comment))))
@@ -305,7 +306,7 @@ The result is cached for one second to avoid hiccups."
    `(escape-glyph ((,class (:foreground ,blue :weight bold))))
 
    ;; linum
-   `(linum ((,class (:foreground ,comment :background ,light))))
+   `(linum ((,class (:foreground ,comment :background ,background))))
    ;; from hlinum
    `(linum-highlight-face ((,class (:foreground ,blue ,background ,background-blue))))
 
@@ -365,8 +366,14 @@ The result is cached for one second to avoid hiccups."
    `(compilation-mode-line-fail ((,class (:foreground ,red :weight bold))))
 
    ;; dired
-   `(dired-header ((,class (:foreground ,blue :background ,background-blue :weight bold))))
+   `(dired-header ((,class (:foreground ,blue :background ,background-green :weight bold))))
    `(dired-directory ((,class (:foreground ,purple :weight bold))))
+   `(dired-subtree-depth-1-face ((,class (:background ,background-green))))
+   `(dired-subtree-depth-2-face ((,class (:background ,background-green))))
+   `(dired-subtree-depth-3-face ((,class (:background ,background-green))))
+   `(dired-subtree-depth-4-face ((,class (:background ,background-green))))
+   `(dired-subtree-depth-5-face ((,class (:background ,background-green))))
+   `(dired-subtree-depth-6-face ((,class (:background ,background-green))))
 
    ;; diff
    `(diff-removed ((,class (:background ,background-red :foreground ,red))))
@@ -401,8 +408,8 @@ The result is cached for one second to avoid hiccups."
 
    `(magit-process-ok ((,class (:foreground ,green :weight bold))))
 
-   `(magit-section-highlight ((,class (:background ,background-darker))))
-   `(magit-section-heading ((,class (:foreground ,grey :weight bold))))
+   `(magit-section-highlight ((,class (:background ,background-blue))))
+   `(magit-section-heading ((,class (:foreground ,red-light :weight bold))))
    `(magit-branch-current ((,class (:foreground ,blue :background ,background-darker :box 1))))
    `(magit-branch-local ((,class (:foreground ,purple :background ,background-darker :box 1))))
    `(magit-branch-remote ((,class (:foreground ,green :background ,background-darker :box 1))))
@@ -500,7 +507,15 @@ The result is cached for one second to avoid hiccups."
    ;; FIC
    `(font-lock-fic-face ((,class (:foreground ,background :background ,red :weight bold))))
 
-   ;; org-mode todo
+   ;; Dashboard
+   `(dashboard-heading-face ((,class (:background ,background-dark :foreground ,green
+                                                  :bold t :height 1.2))))
+   `(dashboard-banner-logo-title-face ((,class (:background ,background-dark :foreground ,green
+                                                            :bold t :height 1.0))))
+   `(widget-button ((,class (:background ,background-dark :foreground ,default :bold nil
+                                         :underline t :height 1.0))))
+   
+   ;; Org mode
    `(org-hide ((,class (:foreground ,background))))
    `(org-todo ((,class (:foreground ,red :background ,background-red :weight bold))))
    `(org-done ((,class (:foreground ,blue :background ,background-blue :weight bold))))
@@ -509,14 +524,14 @@ The result is cached for one second to avoid hiccups."
    `(org-scheduled ((,class (:foreground ,default))))
    `(org-upcoming-deadline ((,class (:foreground ,orange))))
    `(org-headline-done ((,class (:foreground ,comment))))
-   `(outline-1 ((,class (:foreground ,blue :weight bold))))
-   `(outline-2 ((,class (:foreground ,purple :weight bold))))
-   `(outline-3 ((,class (:foreground ,peach :weight bold))))
-   `(outline-4 ((,class (:foreground ,green-light :weight bold))))
-   `(outline-5 ((,class (:foreground ,blue :weight bold))))
-   `(outline-6 ((,class (:foreground ,purple :weight bold))))
-   `(outline-7 ((,class (:foreground ,peach :weight bold))))
-   `(outline-8 ((,class (:foreground ,green-light :weight bold))))
+   `(outline-1 ((,class (:foreground ,blue :weight bold :height 1.8 :bold nil))))
+   `(outline-2 ((,class (:foreground ,red-light :weight bold :height 1.7 :bold nil))))
+   `(outline-3 ((,class (:foreground ,peach :weight bold :height 1.6 :bold nil))))
+   `(outline-4 ((,class (:foreground ,green-light :weight bold :height 1.5 :bold nil))))
+   `(outline-5 ((,class (:foreground ,purple :weight bold :height 1.4 :bold nil))))
+   `(outline-6 ((,class (:foreground ,orange :weight bold :height 1.3 :bold nil))))
+   `(outline-7 ((,class (:foreground ,grey :weight bold :height 1.2 :bold nil))))
+   `(outline-8 ((,class (:foreground ,blue-dark :weight bold :height 1.1 :bold nil))))
    `(org-column-title ((,class (:foreground unspecified :background unspecified))))
    `(org-agenda-date ((,class (:foreground ,purple :weight bold))))
    `(org-agenda-date-today ((,class (:foreground ,blue :weight bold :background ,background-blue :box 1))))
@@ -524,6 +539,11 @@ The result is cached for one second to avoid hiccups."
    `(org-scheduled-today ((,class (:foreground ,default :weight bold))))
    `(org-agenda-done ((,class (:foreground ,comment))))
    `(org-time-grid ((,class (:foreground ,comment))))
+;;   `(org-block-begin-line ((,class (:background ,background-green :foreground ,green
+;;						:bold t :height 1.0))))
+;;   `(org-block-end-line ((,class (:background ,background-green :foreground ,green
+;;                                              :bold t :height 1.0))))
+;;   `(org-ellipses nil))
 
    ;; org columns
    `(org-column ((,class (:background ,background-darker))))
@@ -587,14 +607,14 @@ The result is cached for one second to avoid hiccups."
    ;; helm
    `(helm-candidate-number ((,class (:weight bold))))
    `(helm-header-line-left-margin ((,class (:weight bold :foreground ,red))))
-   `(helm-source-header ((,class (:height 1.2 :weight bold :foreground ,background-green :background ,green-light))))
-   `(helm-selection ((,class (:background ,grey))))
+   `(helm-source-header ((,class (:height 1.2 :weight bold :foreground ,blue :background ,background-blue))))
+   `(helm-selection ((,class (:background ,background-lighter))))
    `(helm-match ((,class (:foreground ,purple :background ,background-purple :weight bold))))
    `(helm-match-item ((,class (:inherit isearch))))
-   `(helm-M-x-key ((,class (:foreground ,background-green :weight bold :background ,green-light))))
-   `(helm-visible-mark ((,class (:weight bold :foreground ,orange :background ,grey-light))))
+   `(helm-M-x-key ((,class (:foreground ,blue :weight bold :background ,background-blue))))
+   `(helm-visible-mark ((,class (:weight bold :foreground ,orange :background ,background-darker))))
    `(helm-prefarg ((,class (:weight bold :foreground ,red :background ,background-red))))
-   `(helm-separator ((,class (:weight bold :foreground , blue))))
+   `(helm-separator ((,class (:weight bold :foreground ,blue :background ,light))))
 
    `(helm-grep-file ((,class ())))
    `(helm-grep-finish ((,class (:foreground ,green))))
@@ -675,7 +695,7 @@ The result is cached for one second to avoid hiccups."
    `(avy-lead-face-1 ((,class :foreground ,blue :background ,background-blue)))
    `(avy-lead-face-2 ((,class :foreground ,green :background ,background-green)))
 
-   `(erc-nick-default-face ((,class :foreground ,blue :background ,background)))
+   `(erc-nick-default-face ((,class :foreground ,green :background ,background-dark :weight bold)))
    `(erc-current-nick-face ((,class :foreground ,purple :weight bold)))
    `(erc-my-nick-face ((,class :foreground ,purple :weight bold)))
    `(erc-notice-face ((,class :foreground ,comment)))
@@ -790,35 +810,35 @@ The result is cached for one second to avoid hiccups."
                               ,blue-dark
                               ,default])))
 
-(defun zerolight-face-when-active (face)
+(defun zerodark-face-when-active (face)
   "Return FACE if the window is active."
-  (when (zerolight--active-window-p)
+  (when (zerodark--active-window-p)
     face))
 
 ;; So the mode-line can keep track of "the current window"
-(defvar zerolight-selected-window nil
+(defvar zerodark-selected-window nil
   "Selected window.")
 
-(defun zerolight--set-selected-window (&rest _)
+(defun zerodark--set-selected-window (&rest _)
   "Set the selected window."
   (let ((window (frame-selected-window)))
     (when (and (windowp window)
                (not (minibuffer-window-active-p window)))
-      (setq zerolight-selected-window window))))
+      (setq zerodark-selected-window window))))
 
-(defun zerolight--active-window-p ()
+(defun zerodark--active-window-p ()
   "Return non-nil if the current window is active."
-  (eq (selected-window) zerolight-selected-window))
+  (eq (selected-window) zerodark-selected-window))
 
-(add-hook 'window-configuration-change-hook #'zerolight--set-selected-window)
-(add-hook 'focus-in-hook #'zerolight--set-selected-window)
-(advice-add 'select-window :after #'zerolight--set-selected-window)
-(advice-add 'select-frame  :after #'zerolight--set-selected-window)
+(add-hook 'window-configuration-change-hook #'zerodark--set-selected-window)
+(add-hook 'focus-in-hook #'zerodark--set-selected-window)
+(advice-add 'select-window :after #'zerodark--set-selected-window)
+(advice-add 'select-frame  :after #'zerodark--set-selected-window)
 
 
 ;;;###autoload
-(defun zerolight-setup-modeline-format ()
-  "Setup the mode-line format for zerolight."
+(defun zerodark-setup-modeline-format ()
+  "Setup the mode-line format for zerodark."
   (interactive)
   (require 'flycheck)
   (require 'magit)
@@ -835,12 +855,12 @@ The result is cached for one second to avoid hiccups."
      `(mode-line ((,class (:background ,mode-line
                                        :height 0.9
                                        :foreground ,light
-                                       :box ,(when zerolight-use-paddings-in-mode-line
+                                       :box ,(when zerodark-use-paddings-in-mode-line
                                                (list :line-width 6 :color mode-line))))))
      `(mode-line-inactive ((,class (:background ,mode-line
                                                 :height 0.9
                                                 :foreground ,comment
-                                                :box ,(when zerolight-use-paddings-in-mode-line
+                                                :box ,(when zerodark-use-paddings-in-mode-line
                                                         (list :line-width 6 :color mode-line))))))
      `(anzu-mode-line ((,class :inherit mode-line :foreground ,purple :weight bold)))
      ))
@@ -848,19 +868,19 @@ The result is cached for one second to avoid hiccups."
   (setq-default mode-line-format
                 `("%e"
                   " "
-                  ,zerolight-modeline-ro " "
-                  ,zerolight-buffer-coding
+                  ,zerodark-modeline-ro " "
+                  ,zerodark-buffer-coding
                   mode-line-frame-identification " "
                   " "
-                  ,zerolight-modeline-modified
+                  ,zerodark-modeline-modified
                   " "
-                  ,zerolight-modeline-buffer-identification
-                  ,zerolight-modeline-position
-                  ,(if zerolight-theme-display-vc-status
-                       zerolight-modeline-vc
+                  ,zerodark-modeline-buffer-identification
+                  ,zerodark-modeline-position
+                  ,(if zerodark-theme-display-vc-status
+                       zerodark-modeline-vc
                      "")
                   "  "
-                  (:eval (zerolight-modeline-flycheck-status))
+                  (:eval (zerodark-modeline-flycheck-status))
                   "  " mode-line-modes mode-line-misc-info mode-line-end-spaces
                   )))
 
@@ -875,4 +895,4 @@ The result is cached for one second to avoid hiccups."
 ;; no-byte-compile: t
 ;; End:
 
-;;; zerolight-theme.el ends here
+;;; zerodark-theme.el ends here
