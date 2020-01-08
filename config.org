@@ -1399,9 +1399,9 @@ Adds the ability to export your org documents to LaTeX.
  #+END_SRC
 
 *** Agenda
-If you really want to stay organized, I highly recommend starting an agenda.org file and adding tasks and deadlines, then adding it to the org agenda list. Once you do both, you can pull up a 10 day summary (3 days before and the week ahead) of your schedule with =C-c a=.
+If you really want to stay organized, I highly recommend starting an agenda.org file and adding tasks and deadlines, then adding it to the org agenda list. Once you do both, you can pull up a 10 day summary (3 days before and the week ahead) of your schedule with =H-a=.
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-c a") 'org-agenda-list)
+  (global-set-key (kbd "H-a") 'org-agenda-list)
   (setq org-agenda-start-day "-3d")
   (setq org-agenda-span 10)
 #+END_SRC
