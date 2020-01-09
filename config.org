@@ -5,7 +5,7 @@
 #+ATTR_HTML: :style margin-left: auto; margin-right: auto;
 * Credit
 This repo was adapted/modifed from Uncle Dave's Emacs, found here: =https://github.com/daedreth/UncleDavesEmacs=
-The majority of the configuration and especially the functions were written by him, so a huge thank you for making my emacs experience a lot more pleasant.
+The majority of the configuration and especially the functions were written by him, so a huge thank you for making my Emacs experience a lot more pleasant.
 
 * Installation
 ** Quick Installation
@@ -14,13 +14,13 @@ The majority of the configuration and especially the functions were written by h
 :END:
 =git clone https://github.com/Keyhenge/emacs-config.git ~/.emacs.d=
 
-Running the above command will clone this repository into your emacs settings, overwriting anything you have there already. I highly recommend backing up your current settings by copying them into another repository (e.g. =cp ~/.emacs.d ~/.emacs.d.bak=). You should also read the [[dep][dependencies]] section before installing and consider disabling [[EXWM][EXWM]] if you want to use another window manager.
+Running the above command will clone this repository into your Emacs settings, overwriting anything you have there already. I highly recommend backing up your current settings by copying them into another repository (e.g. =cp ~/.emacs.d ~/.emacs.d.bak=). You should also read the [[dep][dependencies]] section before installing and consider disabling [[EXWM][EXWM]] if you want to use another window manager.
 ** Dependencies for
 :PROPERTIES:
 :CUSTOM_ID: dep
 :END:
 *** Keybindings
-I bind =control= to =caps_lock= and =caps_lock= to both shift keys. This frees up left control to be used as Hyper whenever we need emacs-wide bindings that we know won't interfere with other modes. To use my setup, copy the following into ~/.Xmodmap and add the command *setxkbmap -option 'shift:both_capslock'* to your ~/.Xprofile.
+I bind =control= to =caps_lock= and =caps_lock= to both shift keys. This frees up left control to be used as Hyper whenever we need Emacs-wide bindings that we know won't interfere with other modes. To use my setup, copy the following into ~/.Xmodmap and add the command *setxkbmap -option 'shift:both_capslock'* to your ~/.Xprofile.
 #+BEGIN_SRC
 clear      lock 
 clear   control
@@ -98,9 +98,9 @@ These are the programs I use to open various file types, feel free to change the
 *** On use-package
 =use-package= automatically downloads and configures our packages with minimal effort. Our =init.el= automatically checks for whether =use-package= is installed, and downloads/installs it if it is not.
 *** On the format of the configuration
-This config file is saved as a .org file, which is a markup language and one of the best packages in emacs. At launch, this file is stripped of all of its text save for sections labeled as emacs-lisp, which is then parsed into config.el and used. You can find some more info on Org-mode [[https://orgmode.org/manual/][here]], and my custom configuration in the [[Org]] section. As such, most sections have some sort of rambling attached explaining what the keybindings are, what packages I've added, why things are the way they are, etc. You should read through them to get the full benefit of the configuration. Also, if you do decide to download, try deleting these ramblings and filling them in with your own. Doing so helped me understand each part of the config, customize it further to my liking, and got me more familiar with the programs I was using.
+This config file is saved as a .org file, which is a markup language and one of the best packages in Emacs. At launch, this file is stripped of all of its text save for sections labeled as emacs-lisp, which is then parsed into config.el and used. You can find some more info on Org-mode [[https://orgmode.org/manual/][here]], and my custom configuration in the [[Org]] section. As such, most sections have some sort of rambling attached explaining what the keybindings are, what packages I've added, why things are the way they are, etc. You should read through them to get the full benefit of the configuration. Also, if you do decide to download, try deleting these ramblings and filling them in with your own. Doing so helped me understand each part of the config, customize it further to my liking, and got me more familiar with the programs I was using.
 *** On the use case of this configuration
-For now, this configuration is simply a nice way to use emacs, with a lot of time saving packages, functions and shortcuts. In the future however, I'll be reinstating the [[EXWM]] section to use emacs as a desktop environment. If you don't want that, it's simple enough to delete that section, as the rest of the configuration does not depend on it.
+For now, this configuration is simply a nice way to use Emacs, with a lot of time saving packages, functions and shortcuts. In the future however, I'll be reinstating the [[EXWM]] section to use Emacs as a desktop environment. If you don't want that, it's simple enough to delete that section, as the rest of the configuration does not depend on it.
 * Theming
 ** Basic Interface Settings
 Some improvements to the look and feel of Emacs that doesn't use any outside packages.
@@ -436,7 +436,7 @@ EXWM makes Emacs into your window manager, making the entire system far more con
  #+END_SRC
 
 *** Launchers
-**** dmenu for emacs
+**** dmenu for Emacs
 A great little application launcher that works with helm.
  #+BEGIN_SRC emacs-lisp
    (use-package dmenu
@@ -470,7 +470,7 @@ A few useful processes linked to keybinds. The shutdown bind is every modifier k
  #+END_SRC
 
 *** Audio controls
-A set of controls/settings to manipulate audio from inside emacs.
+A set of controls/settings to manipulate audio from inside Emacs.
 **** Volume
  Some functions we'll be using in a second to mute/raise/lower volume. The volume modifier describes how much the volume will be raised or lowered by.
  #+BEGIN_SRC emacs-lisp
@@ -539,7 +539,7 @@ Bound to <Scroll Lock>, which I can practically guarantee you don't use.
          browse-url-generic-program "firefox")
  #+END_SRC
 
-** Moving around emacs
+** Moving around Emacs
  Emacs is a great text editor that can be even better if you actually use it properly. That means remembering the keybindings for whatever task you're doing and using them as often as possible. These configs aim to make those even more useful and waste as little of your time as possible.
 *** Prerequisites for other packages
  #+BEGIN_SRC emacs-lisp
@@ -548,13 +548,13 @@ Bound to <Scroll Lock>, which I can practically guarantee you don't use.
  #+END_SRC
 
 *** Scrolling
-This setting should make emacs never re-center the cursor while scrolling down, instead scrolling line-by-line as you would expect.
+This setting should make Emacs never re-center the cursor while scrolling down, instead scrolling line-by-line as you would expect.
  #+BEGIN_SRC emacs-lisp
    (setq scroll-conservatively 100)
  #+END_SRC
 
 *** Which-key
-No matter what you're doing in emacs, you WILL frequently forget what key does what. Fortunately, emacs is self documenting and allows you to search for specific functions/describe key combinations. Even more fortunately, the =which-key= package will automatically open a small buffer at the bottom of the screen showing all possible completions of a command.
+No matter what you're doing in Emacs, you WILL frequently forget what key does what. Fortunately, Emacs is self documenting and allows you to search for specific functions/describe key combinations. Even more fortunately, the =which-key= package will automatically open a small buffer at the bottom of the screen showing all possible completions of a command.
  #+BEGIN_SRC emacs-lisp
    (use-package which-key
      :ensure t
@@ -607,7 +607,7 @@ A much better searching package than the default. Shows a preview of instances o
  #+END_SRC
 
 *** Buffers
-Buffers contain just about everything in emacs, so we should make them better.
+Buffers contain just about everything in Emacs, so we should make them better.
 **** Always murder current buffer
 =C-x k= should always kill the buffer that currently has focus.
  #+BEGIN_SRC emacs-lisp
@@ -634,7 +634,7 @@ Sets =Ctrl+Mod+Super+k= to kill all buffers. The key combination should ensure t
  #+END_SRC
 
 *** Line Numbers
-Many commands in emacs are more useful when you specify how many times you want to do them. Making line numbers relative relieves you of the stress of calculating how many lines you want to affect when doing such a command.
+Many commands in Emacs are more useful when you specify how many times you want to do them. Making line numbers relative relieves you of the stress of calculating how many lines you want to affect when doing such a command.
  #+BEGIN_SRC emacs-lisp
    (use-package linum-relative
      :ensure t
@@ -807,7 +807,7 @@ Changing buffers, windows, moving up/down with =M-v= and =C-v= etc. dramatically
  #+END_SRC
 
 *** Rainbow
-Any time you enter a hexidecimal that resembles a colorcode, it will automatically highlight the code with that color. See [[Some customization]] under Theming (while running this config in your emacs) for an example.
+Any time you enter a hexidecimal that resembles a colorcode, it will automatically highlight the code with that color. See [[Some customization]] under Theming (while running this config in your Emacs) for an example.
  #+BEGIN_SRC emacs-lisp
    (use-package rainbow-mode
      :ensure t
@@ -881,7 +881,7 @@ Doubles the size of the default kill ring.
  #+END_SRC
 
 *** popup-kill-ring
-Default emacs behavior is to cycle through the kill ring with =M-y=. This changes it so that =M-y= brings up a popup, where you can preview and select what you want to paste.
+Default Emacs behavior is to cycle through the kill ring with =M-y=. This changes it so that =M-y= brings up a popup, where you can preview and select what you want to paste.
  #+BEGIN_SRC emacs-lisp
    (use-package popup-kill-ring
      :ensure t
@@ -889,7 +889,7 @@ Default emacs behavior is to cycle through the kill ring with =M-y=. This change
  #+END_SRC
 
 ** Eshell
-Part of the reason to move to emacs over other text editors is all of the great replacements for standard terminal programs. Sometimes you still need access to a shell for various commands though, and eshell is a great replacement for bash/zsh/fish that integrates directly with helm.
+Part of the reason to move to Emacs over other text editors is all of the great replacements for standard terminal programs. Sometimes you still need access to a shell for various commands though, and eshell is a great replacement for bash/zsh/fish that integrates directly with helm.
 *** Completion
 Command completion isn't that great in eshell, so let's leech from the great completion fish provides.
 #+BEGIN_SRC emacs-lisp
@@ -911,9 +911,9 @@ Command completion isn't that great in eshell, so let's leech from the great com
  #+END_SRC
 
 ** Regular shell
-Generally I want to use eshell for its emacs integration, and use a terminal emulator for curses programs. However, there are still a few times where I want a shell, emacs integration, and POSIX compliance.
+Generally I want to use eshell for its Emacs integration, and use a terminal emulator for curses programs. However, there are still a few times where I want a shell, Emacs integration, and POSIX compliance.
 *** Default shell should be zsh
-For the rare times I need to use a terminal in emacs that isn't eshell, it should at least be using zsh. This used to be fish, but eshell replacing most of my shell use means it's better to have a POSIX compliant shell.
+For the rare times I need to use a terminal in Emacs that isn't eshell, it should at least be using zsh. This used to be fish, but eshell replacing most of my shell use means it's better to have a POSIX compliant shell.
  #+BEGIN_SRC emacs-lisp
    (defvar my-term-shell "/bin/zsh")
    (defadvice ansi-term (before force-zsh)
@@ -1152,7 +1152,7 @@ While this doesn't matter for older languages like Python and C that already hav
 #+END_SRC
 
 ** Specific languages
-Packages and settings that make working in specific languages easier go here.
+Packages and settings that make working in specific languages easier.
 *** C/C++
 #+BEGIN_SRC emacs-lisp
   (add-hook 'c++-mode-hook 'yas-minor-mode)
@@ -1213,7 +1213,7 @@ Packages and settings that make working in specific languages easier go here.
       (add-hook 'python-mode-hook 'python-mode-company-init))
 #+END_SRC
 
-*** Emacs Lisp
+*** ELisp
 #+BEGIN_SRC emacs-lisp
   (use-package lispy
     :ensure t)
@@ -1388,7 +1388,7 @@ Replaces the asterisks you usually get in Org mode with more visually interestin
      (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
       #+END_SRC
 
-*** Easy-to-add emacs-lisp template
+*** Easy-to-add Elisp template
 Great for editing this document in paticular. If you ever need to add a new block of code just type "<el" and then hit =Tab=.
  #+BEGIN_SRC emacs-lisp
    (add-to-list 'org-structure-template-alist
@@ -1491,7 +1491,7 @@ Since EMMS will be using MPD to play music, it's also nice to have some controls
    (setq mpc-host "localhost:6600")
  #+END_SRC
 
-**** Starting the daemon from within emacs
+**** Starting the daemon from within Emacs
  #+BEGIN_SRC emacs-lisp
    (defun mpd/start-music-daemon ()
      "Start MPD, connects to it and syncs the metadata cache."
@@ -1504,7 +1504,7 @@ Since EMMS will be using MPD to play music, it's also nice to have some controls
    (global-set-key (kbd "H-m c") 'mpd/start-music-daemon)
  #+END_SRC
 
-**** Killing the daemon from within emacs
+**** Killing the daemon from within Emacs
  #+BEGIN_SRC emacs-lisp
    (defun mpd/kill-music-daemon ()
      "Stops playback and kill the music daemon."
