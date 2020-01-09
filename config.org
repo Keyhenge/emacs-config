@@ -1153,7 +1153,7 @@ While this doesn't matter for older languages like Python and C that already hav
 
 ** Specific languages
 Packages and settings that make working in specific languages easier go here.
-*** c/c++
+*** C/C++
 #+BEGIN_SRC emacs-lisp
   (add-hook 'c++-mode-hook 'yas-minor-mode)
   (add-hook 'c-mode-hook 'yas-minor-mode)
@@ -1187,7 +1187,7 @@ Packages and settings that make working in specific languages easier go here.
     (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 #+END_SRC
 
-*** python
+*** Python
 #+BEGIN_SRC emacs-lisp
   (add-hook 'python-mode-hook 'yas-minor-mode)
   (add-hook 'python-mode-hook 'flycheck-mode)
@@ -1213,26 +1213,28 @@ Packages and settings that make working in specific languages easier go here.
       (add-hook 'python-mode-hook 'python-mode-company-init))
 #+END_SRC
 
-*** emacs-lisp
+*** Emacs Lisp
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+  (use-package lispy
+    :ensure t)
+
   (add-hook 'emacs-lisp-mode-hook 'yas-minor-mode)
   (add-hook 'emacs-lisp-mode-hook 'company-mode)
-
-  (use-package slime
-    :ensure t
-    :config
-    (setq inferior-lisp-program "/usr/bin/sbcl")
-    (setq slime-contribs '(slime-fancy)))
-
-  (use-package slime-company
-    :ensure t
-    :init
-      (require 'company)
-      (slime-setup '(slime-fancy slime-company)))
+  (add-hook 'emacs-lisp-mode-hook 'lispy-mode)
 #+END_SRC
 
-*** bash
+*** Scheme
+#+BEGIN_SRC emacs-lisp
+  (use-package geiser
+    :ensure t)
+
+  (add-hook 'scheme-mode-hook 'run-guile)
+  (add-hook 'scheme-mode-hook 'lispy-mode)
+  (add-hook 'scheme-mode-hook 'yas-minor-mode)
+  (add-hook 'scheme-mode-hook 'company-mode)
+#+END_SRC
+
+*** Bash
 #+BEGIN_SRC emacs-lisp
   (add-hook 'shell-mode-hook 'yas-minor-mode)
   (add-hook 'shell-mode-hook 'flycheck-mode)
@@ -1251,7 +1253,7 @@ Packages and settings that make working in specific languages easier go here.
       (add-hook 'shell-mode-hook 'shell-mode-company-init))
 #+END_SRC
 
-*** lua/löve
+*** Lua/löve
 #+BEGIN_SRC emacs-lisp
   (add-hook 'lua-mode-hook 'yas-minor-mode)
   (add-hook 'lua-mode-hook 'flycheck-mode)
@@ -1302,7 +1304,7 @@ Packages and settings that make working in specific languages easier go here.
   (global-set-key (kbd "<f9>") '(lambda () (interactive) (start-process "love-play-game" nil "love" default-directory)))
 #+END_SRC
 
-*** golang
+*** Golang
 #+BEGIN_SRC emacs-lisp
   ;; Set environment variables. Needed for the major mode/LSP to see go commands
   (setenv "PATH"
