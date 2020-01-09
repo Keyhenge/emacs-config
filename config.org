@@ -47,22 +47,19 @@ If you use OSX, the following binds fn to Hyper in Emacs. Consider using Karabin
 Alternatively if you like your current setup, find a place to bind hyper as it's used for many personalized functions in this config.
 *** EXWM
 EXWM is a window manager with Emacs as its base. Everything is treated as a buffer, allowing us to use Emacs bindings across the entire system and keep "mode-switching" to a minimum.
-**** From the package manager:
  - =xorg-server=, the windowing system ubiquitous among Linux distros, though slowly being replaced by Wayland. Unfortunately, Emacs doesn't support Wayland as of yet, and there is no EXWM equivalent.
  - =pulsemixer=, a CLI/curses mixer for PulseAudio. Used for audio control functions.
  - =imagemagick=, a simple image suite we'll be using to take screenshots with.
  - =fira-code=, a very nice, readable font. If you want to use something else, make sure to edit the init.el file.
-***** Optional
+**** Optional
  - A browser (this config uses =firefox=)
  - A composite manager (recommended, I use =compton=)
  - =noto-cjk=, to display foreign languages correctly
  - =slock=, if you want to lock the screen
 *** TRAMP
 TRAMP (Transparent Remote Access, Multiple Protocols), is used to ssh into other users and machines. We'll primarily use it to make edits as root, but it's also incredibly useful for remote editing.
-**** Package manager:
  - =sudo=, properly configured for your user.
 *** EMMS
-**** Package manager:
 - =mpd=, to play music
 - =mpv=, to watch video
 *** Programming
@@ -78,6 +75,7 @@ You'll also need various programs for code completion, REPLs, and style guide en
 **** Go
 - =gopls=, downloaded [[https://github.com/golang/tools/blob/master/gopls/doc/user.md][here]].
 *** Helm/Dired
+Helm is an easy way to search your filesystem and pretty much anything in Emacs, while Dired is a more simplistic but still useful view of your directories.
 - =all-the-icons-fonts=, for icons that match file types. This also affects the dashboard.
 - =ag=, for grepping/finding strings inside files
 - =avfs=, for looking inside archives
@@ -86,6 +84,11 @@ These are the programs I use to open various file types, feel free to change the
 - =mpv= for video/sound files
 - =sxiv= for images
 - =libreoffice= for various documents
+*** mu4e
+mu4e (mu-for-emacs) is a mailing suite inside of Emacs, allowing us to use Emac's text editing/movement when composing/reading email.
+- =mu=, which actually contains mu4e
+- =isync=, or mbsync which syncs a designated folder with your mailing server
+mu4e is a bit special in that it requires both =mu= and =mbsync= to have already been installed, configured, and run. Check [[https://wiki.archlinux.org/index.php/Isync][here]] for a tutorial on setting up mbsync, and check [[http://www.djcbsoftware.nl/code/mu/mu4e/index.html#Top][here]] for the documentation on both mu and mu4e.
 ** Some notes
 *** On use-package
 =use-package= automatically downloads and configures all of the packages with minimal effort. Meanwhile, =init.el= automatically checks for whether =use-package= is installed, and downloads/installs it if it is not.
@@ -170,20 +173,21 @@ Uses asynchronous processes when possible.
 Replaces the standard Emacs splash screen with a more streamlined one relevant to whatever you're working on. Change it at your leisure, documentation details can be found [[https://github.com/emacs-dashboard/emacs-dashboard][here]].
  #+BEGIN_SRC emacs-lisp
    (use-package dashboard
-    :ensure t
-    :config
-      (dashboard-setup-startup-hook)
-      (setq dashboard-startup-banner "~/.emacs.d/img/Gnus-logo.svg")
-      (setq dashboard-banner-logo-title "今日も一日頑張ってくれ！")
+     :ensure t
+     :init
+     (dashboard-setup-startup-hook)
+     :config
+     (setq dashboard-startup-banner "~/.emacs.d/img/Gnus-logo.svg")
+     (setq dashboard-banner-logo-title "今日も一日頑張ってくれ！")
 
-      (setq dashboard-set-navigator t)
-      (setq dashboard-set-footer nil)
-      (setq dashboard-set-heading-icons t)
-      (setq dashboard-set-file-icons t)
+     (setq dashboard-set-navigator t)
+     (setq dashboard-set-footer nil)
+     (setq dashboard-set-heading-icons t)
+     (setq dashboard-set-file-icons t)
 
-      (setq dashboard-items '((recents  . 10)
-                              (projects . 10)
-                              (bookmarks . 10))))
+     (setq dashboard-items '((recents  . 10)
+                             (projects . 10)
+                             (bookmarks . 10))))
  #+END_SRC
 
 ** Theme
@@ -1407,6 +1411,46 @@ If you really want to stay organized, I highly recommend starting an agenda.org 
 ** TODO Messaging
 Interfaces for several messaging clients. Remember, we want to be using Emacs any time we're editing text.
 Still need to add a matrix client.
+*** mu4e
+mu4e is a search based mail client that can be used inside Emacs.
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
+  (require 'mu4e)
+
+  (setq mu4e-maildir       (expand-file-name "~/maildir") ;; top-level Maildir
+        mu4e-sent-folder   "/sent"    ;; folder for sent messages
+        mu4e-drafts-folder "/drafts"  ;; unfinished messages
+        mu4e-trash-folder  "/trash"   ;; trashed messages
+        mu4e-refile-folder "/archive" ;; saved messages
+
+        mu4e-attachment-dir "~/Downloads"
+        mu4e-get-mail-command "mbsync gmail outlook" ;; Change these to whatever channels you use
+        mu4e-update-interval 300		  ;; Update every 5 minutes
+        mu4e-change-filenames-when-moving t ;; 
+        smtpmail-queue-mail nil		  ;; start in normal mode
+        smtpmail-queue-dir   "~/maildir/queue/cur")
+
+  (use-package mu4e-alert
+    :ensure t
+    :after mu4e
+    :init
+    (setq mu4e-alert-interesting-mail-query
+          (concat
+           "flag:unread maildir:/gmail/Inbox "
+           "OR "
+           "flag:unread maildir:/outlook/Inbox"))
+    (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+    (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+    (mu4e-alert-enable-mode-line-display)
+    (defun gjstein/refresh-mu4e-alert-mode-line ()
+      (interactive)
+      (mu4e~proc-kill)
+      (mu4e-alert-enable-mode-line-display))
+    (run-with-timer 0 60 'gjstein/refresh-mu4e-alert-mode-line))
+
+  (global-set-key (kbd "H-m") 'mu4e)
+#+END_SRC
+
 *** ERC
 Some people still use IRC, and you should too! Remember to edit the nickname to be yours.
 **** Some common settings
@@ -1441,7 +1485,7 @@ Elfeed is an RSS newsfeed with tagging, searching, autodownloads, the works.
 #+END_SRC
 
 ** EMMS
-EMMS allows for audio/video playback in Emacs by leveraging other programs, in this case MPD and MPV respectively.
+EMMS allows for audio/video playback in Emacs by leveraging other programs, in this case MPD and MPV respectively. Use =H-p= to reach its various functions.
 #+BEGIN_SRC emacs-lisp
   (use-package emms
     :ensure t
@@ -1467,9 +1511,9 @@ EMMS allows for audio/video playback in Emacs by leveraging other programs, in t
       (add-to-list 'emms-info-functions 'emms-info-mp3info))
 
     :bind
-    ("H-m p" . emms)
-    ("H-m b" . emms-smart-browse)
-    ("H-m r" . emms-player-mpd-update-all-reset-cache)
+    ("H-p p" . emms)
+    ("H-p b" . emms-smart-browse)
+    ("H-p r" . emms-player-mpd-update-all-reset-cache)
     ("H-<f5>" . emms-previous)
     ("H-<f8>" . emms-next)
     ("H-<f6>" . emms-pause)
@@ -1493,7 +1537,7 @@ Since EMMS will be using MPD to play music, it's also nice to have some controls
      (emms-player-mpd-connect)
      (emms-cache-set-from-mpd-all)
      (message "MPD Started!"))
-   (global-set-key (kbd "H-m c") 'mpd/start-music-daemon)
+   (global-set-key (kbd "H-p c") 'mpd/start-music-daemon)
  #+END_SRC
 
 **** Killing the daemon from within Emacs
@@ -1504,7 +1548,7 @@ Since EMMS will be using MPD to play music, it's also nice to have some controls
      (emms-stop)
      (call-process "killall" nil nil nil "mpd")
      (message "MPD Killed!"))
-   (global-set-key (kbd "H-m k") 'mpd/kill-music-daemon)
+   (global-set-key (kbd "H-p k") 'mpd/kill-music-daemon)
  #+END_SRC
 
 **** Updating the database easily
@@ -1514,6 +1558,6 @@ Since EMMS will be using MPD to play music, it's also nice to have some controls
      (interactive)
      (call-process "mpc" nil nil nil "update")
      (message "MPD Database Updated!"))
-   (global-set-key (kbd "H-m u") 'mpd/update-database)
+   (global-set-key (kbd "H-p u") 'mpd/update-database)
  #+END_SRC
 
