@@ -23,3 +23,4 @@ transient
 auto-complete-love
 auto-complete-lua
 eshell
+init.el
