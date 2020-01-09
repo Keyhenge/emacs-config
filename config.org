@@ -331,10 +331,10 @@ Hides the following modes from your modeline in order to save room.
  #+END_SRC
 
 * Interface
-** TODO Window Manager
- Everything surrounding EXWM is contained here, as well as a few extra controls which will only be accesible while Emacs is in focus.
-*** TODO EXWM
- Currently I'm still using i3 due to disappointing bugs plaguing EXWM in NixOS. This is likely to change once I start using the appropriate overlay.
+** Window Manager
+ Everything surrounding EXWM is contained here, as well as a few extra controls which will only be accessible while Emacs is in focus.
+*** EXWM
+EXWM makes Emacs into your window manager, making the entire system far more consistent. Everything is Emacs, so your color scheme applies everywhere. EXWM can fake keypresses to other applications, so you can use the same keybindings everywhere. Everything is a buffer, so you can use your kill ring anywhere.
 **** Installation
  #+BEGIN_SRC emacs-lisp
    (use-package exwm
@@ -435,10 +435,9 @@ Hides the following modes from your modeline in order to save room.
      (exwm-enable))
  #+END_SRC
 
-*** TODO Launchers
- 
-**** TODO dmenu for emacs
-
+*** Launchers
+**** dmenu for emacs
+A great little application launcher that works with helm.
  #+BEGIN_SRC emacs-lisp
    (use-package dmenu
      :ensure t
@@ -446,13 +445,12 @@ Hides the following modes from your modeline in order to save room.
        ("s-SPC" . 'dmenu))
  #+END_SRC
 
-**** TODO Functions to start processes
-
+**** Various processes
+A few useful processes linked to keybinds. The shutdown bind is every modifier key + p, so that you never accidently press it.
  #+BEGIN_SRC emacs-lisp
    (defun exwm-async-run (name)
      (interactive)
      (start-process name nil name))
-
 
    (defun daedreth/launch-browser ()
      (interactive)
@@ -465,13 +463,10 @@ Hides the following modes from your modeline in order to save room.
    (defun daedreth/shutdown ()
      (interactive)
      (start-process "halt" nil "sudo" "halt"))
- #+END_SRC
 
-**** TODO Keybindings to start processes
- #+BEGIN_SRC emacs-lisp
-   (global-set-key (kbd "<s-tab>") 'daedreth/launch-browser)
-   (global-set-key (kbd "<XF86ScreenSaver>") 'daedreth/lock-screen)
-   (global-set-key (kbd "<XF86PowerOff>") 'daedreth/shutdown)
+   (global-set-key (kbd "<H-tab>") 'daedreth/launch-browser)
+   (global-set-key (kbd "<H-s-l>") 'daedreth/lock-screen)
+   (global-set-key (kbd "<H-s-C-M-p>") 'daedreth/shutdown)
  #+END_SRC
 
 *** Audio controls
@@ -1354,7 +1349,7 @@ As much as I like org mode, it can't replace things like JSON, XML, or YAML, so 
                    (define-key yaml-mode-map "\C-m" 'newline-and-indent))))
 #+END_SRC
 
-* TODO Misc
+* Misc
 ** Org
 The most useful mode in Emacs, bar none. This entire document is written in it, my schedule is written it, my contact book is written in it, my papers are written in it, etc.
 *** Common settings
@@ -1451,10 +1446,8 @@ Elfeed is an RSS newsfeed with tagging, searching, autodownloads, the works.
   (global-set-key (kbd "H-f") 'elfeed)
 #+END_SRC
 
-** TODO Media
-I haven't finished configuring EMMS quite yet, so I'm using Mingus/ncmpcpp for the meantime.
-*** TODO EMMS
-
+** EMMS
+EMMS allows for audio/video playback in Emacs by leveraging other programs, in this case MPD and MPV respectively.
 #+BEGIN_SRC emacs-lisp
   (use-package emms
     :ensure t
@@ -1469,6 +1462,7 @@ I haven't finished configuring EMMS quite yet, so I'm using Mingus/ncmpcpp for t
           emms-player-mpd-server-port "6600"
           emms-player-mpd-music-directory (expand-file-name "~/music"))
     (add-to-list 'emms-info-functions 'emms-info-cueinfo)
+    (add-to-list 'emms-player-list 'emms-player-mpv)
     (if (executable-find "emms-print-metadata")
         (progn
           (require 'emms-info-libtag)
@@ -1488,18 +1482,14 @@ I haven't finished configuring EMMS quite yet, so I'm using Mingus/ncmpcpp for t
     ("H-<f7>" . emms-stop))
 #+END_SRC
 
-*** TODO MPD
-
+*** MPD
+Since EMMS will be using MPD to play music, it's also nice to have some controls we can easily use.
 **** MPC Setup
-***** Setting the default port
-
  #+BEGIN_SRC emacs-lisp
    (setq mpc-host "localhost:6600")
  #+END_SRC
 
-**** TODO Some more fun stuff
-***** Starting the daemon from within emacs
-
+**** Starting the daemon from within emacs
  #+BEGIN_SRC emacs-lisp
    (defun mpd/start-music-daemon ()
      "Start MPD, connects to it and syncs the metadata cache."
@@ -1512,8 +1502,7 @@ I haven't finished configuring EMMS quite yet, so I'm using Mingus/ncmpcpp for t
    (global-set-key (kbd "H-m c") 'mpd/start-music-daemon)
  #+END_SRC
 
-***** Killing the daemon from within emacs
-
+**** Killing the daemon from within emacs
  #+BEGIN_SRC emacs-lisp
    (defun mpd/kill-music-daemon ()
      "Stops playback and kill the music daemon."
@@ -1524,8 +1513,7 @@ I haven't finished configuring EMMS quite yet, so I'm using Mingus/ncmpcpp for t
    (global-set-key (kbd "H-m k") 'mpd/kill-music-daemon)
  #+END_SRC
 
-***** Updating the database easily
-
+**** Updating the database easily
  #+BEGIN_SRC emacs-lisp
    (defun mpd/update-database ()
      "Updates the MPD database synchronously."
