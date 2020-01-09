@@ -39,7 +39,7 @@ add        mod4 = Super_L Super_R
 add        mod5 = Mode_switch ISO_Level3_Shift
 #+END_SRC
 
-If you use OSX, the following binds fn to Hyper in Emacs.
+If you use OSX, the following binds fn to Hyper in Emacs. Consider using Karabiner Elements for further key changes, especially changling =caps_lock= to =control=.
 #+BEGIN_SRC emacs-lisp
   (setq ns-function-modifier 'hyper) 
 #+END_SRC
@@ -47,36 +47,28 @@ If you use OSX, the following binds fn to Hyper in Emacs.
 Alternatively if you like your current setup, find a place to bind hyper as it's used for many personalized functions in this config.
 *** EXWM
 EXWM is a window manager with Emacs as its base. Everything is treated as a buffer, allowing us to use Emacs bindings across the entire system and keep "mode-switching" to a minimum.
-
-At the moment, I'm not using EXWM due to rocky support on NixOS. However, I'm keeping this here for later.
 **** From the package manager:
  - =xorg-server=, the windowing system ubiquitous among Linux distros, though slowly being replaced by Wayland. Unfortunately, Emacs doesn't support Wayland as of yet, and there is no EXWM equivalent.
  - =pulsemixer=, a CLI/curses mixer for PulseAudio. Used for audio control functions.
  - =imagemagick=, a simple image suite we'll be using to take screenshots with.
  - =fira-code=, a very nice, readable font. If you want to use something else, make sure to edit the init.el file.
-
 ***** Optional
  - A browser (this config uses =firefox=)
  - A composite manager (recommended, I use =compton=)
  - =noto-cjk=, to display foreign languages correctly
  - =slock=, if you want to lock the screen
-
 *** TRAMP
 TRAMP (Transparent Remote Access, Multiple Protocols), is used to ssh into other users and machines. We'll primarily use it to make edits as root, but it's also incredibly useful for remote editing.
-**** From the package manager:
+**** Package manager:
  - =sudo=, properly configured for your user.
-
 *** EMMS
-**** For EMMS itself
-- Run =git clone git://git.sv.gnu.org/emms.git ~/.emacs.d/emms/= to clone the latest stable release of EMMS.
-**** From the package manager:
+**** Package manager:
 - =mpd=, to play music
 - =mpv=, to watch video
-
 *** Programming
 You'll also need various programs for code completion, REPLs, and style guide enforcement.
 **** Package manager
-- =clang=, for c/c++ completion.
+- =clang=, for C/C++ completion.
 - =sbcl=, for clisp completion and its REPL.
 - =virtualenv=, for python completion.
 - =lua=, to run lua code, completion, and REPL.
@@ -96,11 +88,11 @@ These are the programs I use to open various file types, feel free to change the
 - =libreoffice= for various documents
 ** Some notes
 *** On use-package
-=use-package= automatically downloads and configures our packages with minimal effort. Our =init.el= automatically checks for whether =use-package= is installed, and downloads/installs it if it is not.
+=use-package= automatically downloads and configures all of the packages with minimal effort. Meanwhile, =init.el= automatically checks for whether =use-package= is installed, and downloads/installs it if it is not.
 *** On the format of the configuration
 This config file is saved as a .org file, which is a markup language and one of the best packages in Emacs. At launch, this file is stripped of all of its text save for sections labeled as emacs-lisp, which is then parsed into config.el and used. You can find some more info on Org-mode [[https://orgmode.org/manual/][here]], and my custom configuration in the [[Org]] section. As such, most sections have some sort of rambling attached explaining what the keybindings are, what packages I've added, why things are the way they are, etc. You should read through them to get the full benefit of the configuration. Also, if you do decide to download, try deleting these ramblings and filling them in with your own. Doing so helped me understand each part of the config, customize it further to my liking, and got me more familiar with the programs I was using.
 *** On the use case of this configuration
-For now, this configuration is simply a nice way to use Emacs, with a lot of time saving packages, functions and shortcuts. In the future however, I'll be reinstating the [[EXWM]] section to use Emacs as a desktop environment. If you don't want that, it's simple enough to delete that section, as the rest of the configuration does not depend on it.
+This configuration is intended to not only be a full configuration for Emacs in terms of text editing/programming/themes/media/etc., but also a complete replacement for whatever window manager you use. However, because all of the configuration is divided into sections, it's relatively trivial to remove a portion you don't want (such as EXWM) without harming the rest of the configuration.
 * Theming
 ** Basic Interface Settings
 Some improvements to the look and feel of Emacs that doesn't use any outside packages.
