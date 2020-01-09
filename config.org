@@ -410,6 +410,8 @@ Hides the following modes from your modeline in order to save room.
         ([?\C-w] . ?\C-x)
         ([?\M-w] . ?\C-c)
         ([?\C-y] . ?\C-v)
+        ;; cancel
+        ([?\C-g] . escape)
         ;; search
         ([?\C-s] . ?\C-f)))
 
