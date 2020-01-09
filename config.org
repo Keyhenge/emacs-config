@@ -199,28 +199,32 @@ Every good config needs a good theme. I've customized mine to be as easily readi
 *** A nice theme
 Zeronight/Zerolight is really just Zerodark (by Nicolas Petton) with minor tweaks. Still, putting the customized versions into their own files allows us to switch between dark and light themes quickly.
  #+BEGIN_SRC emacs-lisp
-      (load-theme 'zeronight t)
+   (load-theme 'zeronight t)
 
-      (defvar *theme-dark* 'zeronight)
-      (defvar *theme-light* 'zerolight)
-      (defvar *current-theme* *theme-dark*)
+   (defvar *theme-dark* 'zeronight)
+   (defvar *theme-light* 'zerolight)
+   (defvar *current-theme* *theme-dark*)
 
-      ;; disable other themes before loading new one
-      (defadvice load-theme (before theme-dont-propagate activate)
-        "Disable theme before loading new one."
-        (mapc #'disable-theme custom-enabled-themes))
+   ;; disable other themes before loading new one
+   (defadvice load-theme (before theme-dont-propagate activate)
+     "Disable theme before loading new one."
+     (mapc #'disable-theme custom-enabled-themes))
 
-      (defun haba/next-theme (theme)
-        (load-theme theme t)
-        (setq *current-theme* theme))
+   (defun haba/next-theme (theme)
+     (load-theme theme t)
+     (setq *current-theme* theme))
 
-      (defun haba/toggle-theme ()
-        (interactive)
-        (cond ((eq *current-theme* *theme-dark*) (haba/next-theme *theme-light*))
-              ((eq *current-theme* *theme-light*) (haba/next-theme *theme-dark*)))
-        (powerline-reset))
+   (defun haba/toggle-theme ()
+     (interactive)
+     (cond ((eq *current-theme* *theme-dark*) (haba/next-theme *theme-light*))
+           ((eq *current-theme* *theme-light*) (haba/next-theme *theme-dark*)))
+     ;; Reset powerline for proper colors
+     (powerline-reset)
+     ;; Reset org bullets to get rid of misplaced asterisks
+     (org-bullets-mode)
+     (org-bullets-mode))
 
-      (global-set-key (kbd "H-t") 'haba/toggle-theme)
+   (global-set-key (kbd "H-t") 'haba/toggle-theme)
  #+END_SRC
 
 *** Some customization
@@ -332,85 +336,85 @@ Hides the following modes from your modeline in order to save room.
 *** TODO EXWM
  Currently I'm still using i3 due to disappointing bugs plaguing EXWM in NixOS. This is likely to change once I start using the appropriate overlay.
 **** Installation
- +BEGIN_SRC emacs-lisp
+ #+BEGIN_SRC emacs-lisp
    (use-package exwm
      :ensure t
      :config
+     ;; necessary to configure exwm manually
+     (require 'exwm-config)
+     (exwm-enable)
 
-       ;; necessary to configure exwm manually
-       (require 'exwm-config)
+     ;; Emacs as a daemon, use "emacsclient <filename>" to seamlessly edit files from the terminal directly in the exwm instance
+     (server-start)
 
-       ;; fringe size, most people prefer 1
-       (fringe-mode 3)
+     ;; Number of workspaces created when EXWM starts. Even though EXWM creates them dynamically, window loss can occur so I just make them all immediately
+     (setq exwm-workspace-number 10)
 
-       ;; emacs as a daemon, use "emacsclient <filename>" to seamlessly edit files from the terminal directly in the exwm instance
-       (server-start)
+     ;; Set name of new program buffers
+     (add-hook 'exwm-update-class-hook
+               (lambda ()
+                 (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+                             (string= "gimp" exwm-instance-name))
+                   (exwm-workspace-rename-buffer exwm-class-name))))
+     (add-hook 'exwm-update-title-hook
+               (lambda ()
+                 (when (or (not exwm-instance-name)
+                           (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+                           (string= "gimp" exwm-instance-name))
+                   (exwm-workspace-rename-buffer exwm-title))))
 
-       ;; this fixes issues with ido mode, if you use helm, get rid of it
-       (exwm-config-ido)
+     ;; Global keybindings. EXWM has the concept of line-mode (which intercepts keys) and char-mode (which doesn't), but these keys override that and always work.
+     (setq exwm-input-global-keys
+           `(
+             ;; Bind "s-r" to exit char-mode and fullscreen mode.
+             ([?\s-r] . exwm-reset)
+             ;; Bind "s-w" to switch workspace interactively.
+             ([?\s-w] . exwm-workspace-switch)
+             ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
+             ,@(mapcar (lambda (i)
+                         `(,(kbd (format "s-%d" i)) .
+                           (lambda ()
+                             (interactive)
+                             (exwm-workspace-switch-create ,i))))
+                       (number-sequence 0 9))
+             ;; Bind "s-&" to launch applications ('M-&' also works if the output
+             ;; buffer does not bother you).
+             ([?\s-&] . (lambda (command)
+                          (interactive (list (read-shell-command "$ ")))
+                          (start-process-shell-command command nil command)))
+             ;; Bind "s-<f2>" to "slock", a simple X display locker.
+             ([s-f2] . (lambda ()
+                         (interactive)
+                         (start-process "" nil "/usr/bin/slock")))))
 
-       ;; a number between 1 and 9, exwm creates workspaces dynamically so I like starting out with 1
-       (setq exwm-workspace-number 1)
+     ;; an easy way to make keybindings work *only* in line mode
+     (define-key exwm-mode-map [?\C-q] #'exwm-input-send-next-key)
 
-       ;; this is a way to declare truly global/always working keybindings
-       ;; this is a nifty way to go back from char mode to line mode without using the mouse
-       (exwm-input-set-key (kbd "s-r") #'exwm-reset)
-       (exwm-input-set-key (kbd "s-k") #'exwm-workspace-delete)
-       (exwm-input-set-key (kbd "s-w") #'exwm-workspace-swap)
+     ;; simulation keys are keys that exwm will send to the exwm buffer upon inputting a key combination
+     (exwm-input-set-simulation-keys
+      '(
+        ;; movement
+        ([?\C-b] . left)
+        ([?\M-b] . C-left)
+        ([?\C-f] . right)
+        ([?\M-f] . C-right)
+        ([?\C-p] . up)
+        ([?\C-n] . down)
+        ([?\C-a] . home)
+        ([?\C-e] . end)
+        ([?\M-v] . prior)
+        ([?\C-v] . next)
+        ([?\C-d] . delete)
+        ([?\C-k] . (S-end delete))
+        ;; cut/paste
+        ([?\C-w] . ?\C-x)
+        ([?\M-w] . ?\C-c)
+        ([?\C-y] . ?\C-v)
+        ;; search
+        ([?\C-s] . ?\C-f)))
 
-       ;; the next loop will bind s-<number> to switch to the corresponding workspace
-       (dotimes (i 10)
-         (exwm-input-set-key (kbd (format "s-%d" i))
-                             `(lambda ()
-                                (interactive)
-                                (exwm-workspace-switch-create ,i))))
-
-       ;; the simplest launcher, I keep it in only if dmenu eventually stopped working or something
-       (exwm-input-set-key (kbd "s-&")
-                           (lambda (command)
-                             (interactive (list (read-shell-command "$ ")))
-                             (start-process-shell-command command nil command)))
-
-       ;; an easy way to make keybindings work *only* in line mode
-       (push ?\C-q exwm-input-prefix-keys)
-       (define-key exwm-mode-map [?\C-q] #'exwm-input-send-next-key)
-
-       ;; simulation keys are keys that exwm will send to the exwm buffer upon inputting a key combination
-       (exwm-input-set-simulation-keys
-        '(
-          ;; movement
-          ([?\C-b] . left)
-          ([?\M-b] . C-left)
-          ([?\C-f] . right)
-          ([?\M-f] . C-right)
-          ([?\C-p] . up)
-          ([?\C-n] . down)
-          ([?\C-a] . home)
-          ([?\C-e] . end)
-          ([?\M-v] . prior)
-          ([?\C-v] . next)
-          ([?\C-d] . delete)
-          ([?\C-k] . (S-end delete))
-          ;; selection
-          ([?\C-B] . Shift-left)
-          ([?\M-B] . C-Shift-left)
-          ([?\C-F] . Shift-right)
-          ([?\M-F] . C-Shift-right)
-          ([?\C-P] . Shift-up)
-          ([?\C-N] . Shift-down)
-          ([?\C-A] . Shift-home)
-          ([?\C-E] . Shift-end)
-          ([?\M-V] . Shift-prior)
-          ([?\C-V] . Shift-next)
-          ;; cut/paste
-          ([?\C-w] . ?\C-x)
-          ([?\M-w] . ?\C-c)
-          ([?\C-y] . ?\C-v)
-          ;; search
-          ([?\C-s] . ?\C-f)))
-
-       ;; this little bit will make sure that XF86 keys work in exwm buffers as well
-       (dolist (k '(XF86AudioLowerVolume
+     ;; this little bit will make sure that XF86 keys work in exwm buffers as well
+     (dolist (k '(XF86AudioLowerVolume
                   XF86AudioRaiseVolume
                   XF86PowerOff
                   XF86AudioMute
@@ -425,10 +429,10 @@ Hides the following modes from your modeline in order to save room.
                   print))
        (cl-pushnew k exwm-input-prefix-keys))
 
-       ;; this just enables exwm, it started automatically once everything is ready
-       (exwm-enable))
- +END_SRC
-p
+     ;; this just enables exwm, it started automatically once everything is ready
+     (exwm-enable))
+ #+END_SRC
+
 *** TODO Launchers
  
 **** TODO dmenu for emacs
@@ -1450,63 +1454,45 @@ I haven't finished configuring EMMS quite yet, so I'm using Mingus/ncmpcpp for t
 *** TODO EMMS
 
 #+BEGIN_SRC emacs-lisp
-  (require 'emms)
- 
-  (emms-all)
-  (emms-history-load)
-  (setq emms-player-list (list emms-player-mpv)
-        emms-source-file-default-directory (expand-file-name "~/music")
-        emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find
-        emms-browser-covers 'emms-browser-cache-thumbnail)
-  (add-to-list 'emms-player-mpv-parameters "--no-audio-display")
-  (add-to-list 'emms-info-functions 'emms-info-cueinfo)
-  (if (executable-find "emms-print-metadata")
-      (progn
-        (require 'emms-info-libtag)
-        (add-to-list 'emms-info-functions 'emms-info-libtag)
-        (delete 'emms-info-ogginfo emms-info-functions)
-        (delete 'emms-info-mp3info emms-info-functions))
-    (add-to-list 'emms-info-functions 'emms-info-ogginfo)
-    (add-to-list 'emms-info-functions 'emms-info-mp3info))
+  (use-package emms
+    :ensure t
+    :config
+    (require 'emms-setup)
+    (require 'emms-player-mpd)
+    (emms-all) ; don't change this to values you see on stackoverflow questions if you expect emms to work
+    (setq emms-seek-seconds 5
+          emms-player-list '(emms-player-mpd)
+          emms-info-functions '(emms-info-mpd)
+          emms-player-mpd-server-name "localhost"
+          emms-player-mpd-server-port "6600"
+          emms-player-mpd-music-directory (expand-file-name "~/music"))
+    (add-to-list 'emms-info-functions 'emms-info-cueinfo)
+    (if (executable-find "emms-print-metadata")
+        (progn
+          (require 'emms-info-libtag)
+          (add-to-list 'emms-info-functions 'emms-info-libtag)
+          (delete 'emms-info-ogginfo emms-info-functions)
+          (delete 'emms-info-mp3info emms-info-functions))
+      (add-to-list 'emms-info-functions 'emms-info-ogginfo)
+      (add-to-list 'emms-info-functions 'emms-info-mp3info))
 
-  (defun ambrevar/emms-play-on-add (old-pos)
-    "Play tracks when calling `emms-browser-add-tracks' if nothing
-  is currently playing."
-    (interactive)
-    (when (or (not emms-player-playing-p)
-             emms-player-paused-p
-             emms-player-stopped-p)
-      (with-current-emms-playlist
-       (goto-char old-pos)
-       ;; if we're sitting on a group name, move forward
-       (unless (emms-playlist-track-at (point))
-         (emms-playlist-next))
-       (emms-playlist-select (point)))
-      (emms-stop)
-      (emms-start)))
-  (add-hook 'emms-browser-tracks-added-hook 'ambrevar/emms-play-on-add)
+    :bind
+    ("H-m p" . emms)
+    ("H-m b" . emms-smart-browse)
+    ("H-m r" . emms-player-mpd-update-all-reset-cache)
+    ("H-<f5>" . emms-previous)
+    ("H-<f8>" . emms-next)
+    ("H-<f6>" . emms-pause)
+    ("H-<f7>" . emms-stop))
 #+END_SRC
 
-*** TODO Mingus with mpd
-
-**** Basic setup for mpd
-
- #+BEGIN_SRC emacs-lisp
-   (use-package mingus
-     :ensure t
-     :bind
-     ("H-p" . mingus)
-     ("H-h" . mingus-prev)
-     ("H-l" . mingus-next)
-     ("H-k" . mingus-pause)
-     ("H-j" . mingus-stop))
- #+END_SRC
+*** TODO MPD
 
 **** MPC Setup
 ***** Setting the default port
 
  #+BEGIN_SRC emacs-lisp
-   (setq mpc-host "localhost:6601")
+   (setq mpc-host "localhost:6600")
  #+END_SRC
 
 **** TODO Some more fun stuff
@@ -1521,7 +1507,7 @@ I haven't finished configuring EMMS quite yet, so I'm using Mingus/ncmpcpp for t
      (emms-player-mpd-connect)
      (emms-cache-set-from-mpd-all)
      (message "MPD Started!"))
-   (global-set-key (kbd "M-p c") 'mpd/start-music-daemon)
+   (global-set-key (kbd "H-m c") 'mpd/start-music-daemon)
  #+END_SRC
 
 ***** Killing the daemon from within emacs
@@ -1533,7 +1519,7 @@ I haven't finished configuring EMMS quite yet, so I'm using Mingus/ncmpcpp for t
      (emms-stop)
      (call-process "killall" nil nil nil "mpd")
      (message "MPD Killed!"))
-   (global-set-key (kbd "M-p k") 'mpd/kill-music-daemon)
+   (global-set-key (kbd "H-m k") 'mpd/kill-music-daemon)
  #+END_SRC
 
 ***** Updating the database easily
@@ -1544,5 +1530,6 @@ I haven't finished configuring EMMS quite yet, so I'm using Mingus/ncmpcpp for t
      (interactive)
      (call-process "mpc" nil nil nil "update")
      (message "MPD Database Updated!"))
-   (global-set-key (kbd "M-p u") 'mpd/update-database)
+   (global-set-key (kbd "H-m u") 'mpd/update-database)
  #+END_SRC
+
