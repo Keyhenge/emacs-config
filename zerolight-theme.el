@@ -517,11 +517,11 @@ The result is cached for one second to avoid hiccups."
 
    ;; Rainbow delimiters
    `(rainbow-delimiters-depth-1-face ((,class (:foreground ,blue))))
-   `(rainbow-delimiters-depth-2-face ((,class (:foreground ,red-light))))
-   `(rainbow-delimiters-depth-3-face ((,class (:foreground ,peach))))
-   `(rainbow-delimiters-depth-4-face ((,class (:foreground ,green))))
+   `(rainbow-delimiters-depth-2-face ((,class (:foreground ,red))))
+   `(rainbow-delimiters-depth-3-face ((,class (:foreground ,orange))))
+   `(rainbow-delimiters-depth-4-face ((,class (:foreground ,background-green))))
    `(rainbow-delimiters-depth-5-face ((,class (:foreground ,purple))))
-   `(rainbow-delimiters-depth-6-face ((,class (:foreground ,orange))))
+   `(rainbow-delimiters-depth-6-face ((,class (:foreground ,peach))))
    `(rainbow-delimiters-depth-7-face ((,class (:foreground ,grey))))
    `(rainbow-delimiters-depth-8-face ((,class (:foreground ,blue-dark))))
    

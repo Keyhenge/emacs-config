@@ -800,7 +800,7 @@ Packages and settings that make working in specific languages easier.
   (use-package geiser
     :ensure t)
 
-  (add-hook 'scheme-mode-hook 'run-guile)
+  ;;(add-hook 'scheme-mode-hook 'run-guile)
   (add-hook 'scheme-mode-hook 'lispy-mode)
   (add-hook 'scheme-mode-hook 'yas-minor-mode)
   (add-hook 'scheme-mode-hook 'company-mode)
@@ -1005,6 +1005,7 @@ mu4e is a search based mail client that can be used inside Emacs.
         smtpmail-queue-mail nil		  ;; start in normal mode
         smtpmail-queue-dir   (expand-file-name "~/maildir/queue/cur"))
 
+  ;; Get alerts when important mail comes in
   (use-package mu4e-alert
     :ensure t
     :after mu4e
@@ -1022,6 +1023,16 @@ mu4e is a search based mail client that can be used inside Emacs.
       (mu4e~proc-kill)
       (mu4e-alert-enable-mode-line-display))
     (run-with-timer 0 60 'gjstein/refresh-mu4e-alert-mode-line))
+
+  ;; Sending mail
+  (setq sendmail-program "/usr/bin/msmtp"
+        send-mail-function 'smtpmail-send-it
+        message-sendmail-f-is-evil t
+        message-sendmail-extra-arguments '("--read-envelope-from")
+        message-send-mail-function 'message-send-mail-with-sendmail)
+
+  ;; don't save messages to Sent Messages, Gmail/IMAP takes care of this
+  (setq mu4e-sent-messages-behavior 'delete)
 
   (global-set-key (kbd "H-m") 'mu4e)
 #+END_SRC
