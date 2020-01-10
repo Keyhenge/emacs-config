@@ -14,13 +14,13 @@ The majority of the configuration and especially the functions were written by h
 :END:
 =git clone https://github.com/Keyhenge/emacs-config.git ~/.emacs.d=
 
-Running the above command will clone this repository into your Emacs settings, overwriting anything you have there already. I highly recommend backing up your current settings by copying them into another repository (e.g. =cp ~/.emacs.d ~/.emacs.d.bak=). You should also read the [[dep][dependencies]] section before installing and consider disabling [[EXWM][EXWM]] if you want to use another window manager.
+Running the above command will clone this repository into your Emacs settings, overwriting anything you have there already. I highly recommend backing up your current settings by copying them into another repository (e.g. =cp ~/.emacs.d ~/.emacs.d.bak=). You should also read the [[dep][dependencies]] section before installing.
 ** Dependencies for
 :PROPERTIES:
 :CUSTOM_ID: dep
 :END:
 *** Keybindings
-I bind =control= to =caps_lock= and =caps_lock= to both shift keys. This frees up left control to be used as Hyper whenever we need Emacs-wide bindings that we know won't interfere with other modes. To use my setup, copy the following into ~/.Xmodmap and add the command *setxkbmap -option 'shift:both_capslock'* to your ~/.Xprofile.
+I bind =control= to =caps_lock= and =caps_lock= to both shift keys. This frees up left control to be used as Hyper whenever we need Emacs-wide bindings that we know won't interfere with other modes. To use my setup, copy the following into ~/.Xmodmap and add the command setxkbmap -option 'shift:both_capslock' to your ~/.Xprofile.
 #+BEGIN_SRC
 clear      lock 
 clear   control
@@ -84,236 +84,6 @@ mu4e is a bit special in that it requires both =mu= and =mbsync= to have already
 This config file is saved as a .org file, which is a markup language and one of the best packages in Emacs. At launch, this file is stripped of all of its text save for sections labeled as emacs-lisp, which is then parsed into config.el and used. You can find some more info on Org-mode [[https://orgmode.org/manual/][here]], and my custom configuration in the [[Org]] section. As such, most sections have some sort of rambling attached explaining what the keybindings are, what packages I've added, why things are the way they are, etc. You should read through them to get the full benefit of the configuration. Also, if you do decide to download, try deleting these ramblings and filling them in with your own. Doing so helped me understand each part of the config, customize it further to my liking, and got me more familiar with the programs I was using.
 *** On the use case of this configuration
 This configuration is intended to be a full documented configuration for Emacs, and touches pretty much every aspect of it. However, if you don't like some portion of the config, nearly every section can be deleted individually without affecting the greater whole. Likewise, you're more than welcome to cherry pick sections into your own config.
-* Theming
-** Basic Interface Settings
-Some improvements to the look and feel of Emacs that doesn't use any outside packages.
-*** Looks
-**** Remove startup screen
-By default, Emacs has its own startup screen. We'll be replacing it in [[Dashboard]].
- #+BEGIN_SRC emacs-lisp
- (setq inhibit-startup-message t)
- #+END_SRC
-
-**** Disable menus and scrollbars
-Gets rid of the GUI buttons and scrollbars of Emacs. You'll be using your keyboard anyway, so all these do is take up valuable screen space.
- #+BEGIN_SRC emacs-lisp
- (tool-bar-mode -1)
- (menu-bar-mode -1)
- (scroll-bar-mode -1)
- #+END_SRC
-
-**** Disable bell
-Gets rid of the audible/visible notifications of things happening, which usually show up on the minibuffer anyway.
- #+BEGIN_SRC emacs-lisp
- (setq ring-bell-function 'ignore)
- #+END_SRC
-
-**** Set UTF-8 encoding
-Sets all text to UTF-8.
- #+BEGIN_SRC emacs-lisp
-   (setq locale-coding-system 'utf-8)
-   (set-terminal-coding-system 'utf-8)
-   (set-keyboard-coding-system 'utf-8)
-   (set-selection-coding-system 'utf-8)
-   (prefer-coding-system 'utf-8)
- #+END_SRC
-
-**** Highlight current line
- #+BEGIN_SRC emacs-lisp
-   (when window-system (add-hook 'prog-mode-hook 'hl-line-mode))
- #+END_SRC
-
-**** Pretty symbols
-Changes various symbol names (e.g. =lambda=) to their actual symbol.
- #+BEGIN_SRC emacs-lisp
-   (when window-system
-         (use-package pretty-mode
-         :ensure t
-         :config
-         (global-pretty-mode t)))
- #+END_SRC
-
-*** Functionality
-**** Backups and auto-saves
-Rather than polluting your directy with obnoxious =#file.etx#= files, this saves your backups to a designated folder.
- #+BEGIN_SRC emacs-lisp
- (setq make-backup-files t)
- (setq auto-save-default t)
- (setq backup-directory-alist
-          `(("." . ,(concat user-emacs-directory "backups"))))
- #+END_SRC
-
-**** Change yes-or-no questions into y-or-n questions
-Whenever Emacs asks a yes or no question, you have to type `yes` or `no`, or Emacs refuses to do anything. This shortens that process.
- #+BEGIN_SRC emacs-lisp
- (defalias 'yes-or-no-p 'y-or-n-p)
- #+END_SRC
-
-**** Async
-Uses asynchronous processes when possible.
- #+BEGIN_SRC emacs-lisp
-   (use-package async
-     :ensure t
-     :init (dired-async-mode 1))
- #+END_SRC
-
-** Dashboard
-Replaces the standard Emacs splash screen with a more streamlined one relevant to whatever you're working on. Change it at your leisure, documentation details can be found [[https://github.com/emacs-dashboard/emacs-dashboard][here]].
- #+BEGIN_SRC emacs-lisp
-   (use-package dashboard
-     :ensure t
-     :init
-     (dashboard-setup-startup-hook)
-     :config
-     (setq dashboard-startup-banner "~/.emacs.d/img/Gnus-logo.svg")
-     (setq dashboard-banner-logo-title "今日も一日頑張ってくれ！")
-
-     (setq dashboard-set-navigator t)
-     (setq dashboard-set-footer nil)
-     (setq dashboard-set-heading-icons t)
-     (setq dashboard-set-file-icons t)
-
-     (setq dashboard-items '((recents  . 10)
-                             (projects . 10)
-                             (bookmarks . 10))))
- #+END_SRC
-
-** Theme
-Every good config needs a good theme. I've customized mine to be as easily readible as possible.
-*** A nice theme
-Zeronight/Zerolight is really just Zerodark (by Nicolas Petton) with minor tweaks. Still, putting the customized versions into their own files allows us to switch between dark and light themes quickly.
- #+BEGIN_SRC emacs-lisp
-   (load-theme 'zeronight t)
-
-   (defvar *theme-dark* 'zeronight)
-   (defvar *theme-light* 'zerolight)
-   (defvar *current-theme* *theme-dark*)
-
-   ;; disable other themes before loading new one
-   (defadvice load-theme (before theme-dont-propagate activate)
-     "Disable theme before loading new one."
-     (mapc #'disable-theme custom-enabled-themes))
-
-   (defun haba/next-theme (theme)
-     (load-theme theme t)
-     (setq *current-theme* theme))
-
-   (defun haba/toggle-theme ()
-     (interactive)
-     (cond ((eq *current-theme* *theme-dark*) (haba/next-theme *theme-light*))
-           ((eq *current-theme* *theme-light*) (haba/next-theme *theme-dark*)))
-     ;; Reset powerline for proper colors
-     (powerline-reset)
-     ;; Reset org bullets to get rid of misplaced asterisks
-     (org-bullets-mode)
-     (org-bullets-mode))
-
-   (global-set-key (kbd "H-t") 'haba/toggle-theme)
- #+END_SRC
-
-*** Some customization
- #+BEGIN_SRC emacs-lisp
-   (use-package dired-rainbow
-     :ensure t
-     :config
-     (progn
-       (dired-rainbow-define-chmod directory "#61afef" "d.*")
-       (dired-rainbow-define html "#ff8070" ("css" "less" "sass" "scss" "htm" "html" "jhtm" "mht" "eml" "mustache" "xhtml"))
-       (dired-rainbow-define xml "#ddbd78" ("xml" "xsd" "xsl" "xslt" "wsdl" "bib" "json" "msg" "pgn" "rss" "yaml" "yml" "rdata"))
-       (dired-rainbow-define document "#c678dd" ("docm" "doc" "docx" "odb" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub" "odp" "ppt" "pptx"))
-       (dired-rainbow-define markdown "#da8548" ("org" "etx" "info" "markdown" "md" "mkd" "nfo" "pod" "rst" "tex" "textfile" "txt"))
-       (dired-rainbow-define database "#005f87" ("xlsx" "xls" "csv" "accdb" "db" "mdb" "sqlite" "nc"))
-       (dired-rainbow-define media "#98be65" ("mp3" "mp4" "MP3" "MP4" "avi" "mpeg" "mpg" "flv" "ogg" "mov" "mid" "midi" "wav" "aiff" "flac"))
-       (dired-rainbow-define image "#9eac8c" ("tiff" "tif" "cdr" "gif" "ico" "jpeg" "jpg" "png" "psd" "eps" "svg"))
-       (dired-rainbow-define log "#687080" ("log"))
-       (dired-rainbow-define shell "#ccd4e3" ("awk" "bash" "bat" "sed" "sh" "zsh" "vim"))
-       (dired-rainbow-define interpreted "#ff6464" ("py" "ipynb" "rb" "pl" "t" "msql" "mysql" "pgsql" "sql" "r" "clj" "cljs" "scala" "js"))
-       (dired-rainbow-define compiled "#ff6464" ("asm" "cl" "lisp" "el" "c" "h" "c++" "h++" "hpp" "hxx" "m" "cc" "cs" "cp" "cpp" "go" "f" "for" "ftn" "f90" "f95" "f03" "f08" "s" "rs" "hi" "hs" "pyc" ".java"))
-       (dired-rainbow-define executable "PeachPuff3" ("exe" "msi"))
-       (dired-rainbow-define compressed "#b33c49" ("7z" "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
-       (dired-rainbow-define packaged "#afaf87" ("deb" "rpm" "apk" "jad" "jar" "cab" "pak" "pk3" "vdf" "vpk" "bsp"))
-       (dired-rainbow-define encrypted "#87af5f" ("gpg" "pgp" "asc" "bfe" "enc" "signature" "sig" "p12" "pem"))
-       (dired-rainbow-define fonts "#5fafff" ("afm" "fon" "fnt" "pfb" "pfm" "ttf" "otf"))
-       (dired-rainbow-define partition "#ff2727" ("dmg" "iso" "bin" "nrg" "qcow" "toast" "vcd" "vmdk" "bak"))
-       (dired-rainbow-define vc "Orange" ("git" "gitignore" "gitattributes" "gitmodules"))
-       (dired-rainbow-define-chmod executable-unix "#38c172" "-.*x.*")))
- #+END_SRC
-
-** Modeline
-The modeline is at the bottom of every single buffer in Emacs and contains all of the information you would need. If we're going to use EXWM, it also needs to contain system information and anything that would appear on a standard status bar.
-*** Spaceline
-A modified powerline used in spacemacs. Easy configuration and looks good with the theme.
- #+BEGIN_SRC emacs-lisp
-   (use-package spaceline
-     :ensure t
-     :config
-     (require 'spaceline-config)
-     (setq spaceline-buffer-encoding-abbrev-p nil)
-     (setq spaceline-line-column-p nil)
-     (setq spaceline-line-p nil)
-     (setq powerline-default-separator (quote arrow))
-     (spaceline-spacemacs-theme)
-     (powerline-reset))
- #+END_SRC
-
-*** Clock
-Shows a clock and the date to the bottom right. 
-**** Time format
-If you don't want a 24-hour clock, set the first line to `nil`.
- #+BEGIN_SRC emacs-lisp
-   (setq display-time-24hr-format t)
-   (setq display-time-format "%H:%M - %d %B %Y")
- #+END_SRC
-
-**** Enabling the mode
- #+BEGIN_SRC emacs-lisp
-   (display-time-mode 1)
- #+END_SRC
-
-*** Battery indicator
-Shows battery percentage left on laptops.
- #+BEGIN_SRC emacs-lisp
-   (use-package fancy-battery
-     :ensure t
-     :config
-       (setq fancy-battery-show-percentage t)
-       (setq battery-update-interval 15)
-       (if window-system
-         (fancy-battery-mode)
-         (display-battery-mode)))
- #+END_SRC
-
-*** System monitor
-Activates a small system monitor in the minibuffer showing CPU usage, memory, networking, etc.
- #+BEGIN_SRC emacs-lisp
-   (use-package symon
-     :ensure t
-     :bind
-     ("H-s" . symon-mode))
- #+END_SRC
-
-*** Diminishing modes
-Hides the following modes from your modeline in order to save room.
- #+BEGIN_SRC emacs-lisp
-   (use-package diminish
-     :ensure t
-     :config
-     (diminish 'which-key-mode "")
-     (diminish 'linum-relative-mode "")
-     (diminish 'hungry-delete-mode "")
-     (diminish 'visual-line-mode "")
-     (diminish 'subword-mode "")
-     (diminish 'beacon-mode "")
-     (diminish 'irony-mode "")
-     (diminish 'page-break-lines-mode "")
-     (diminish 'auto-revert-mode "")
-     (diminish 'rainbow-delimiters-mode "")
-     (diminish 'rainbow-mode "")
-     (diminish 'yas-minor-mode "")
-     (diminish 'flycheck-mode "")
-     (diminish 'helm-mode ""))
- #+END_SRC
-
 * Interface
 ** Moving around Emacs
  Emacs is a great text editor that can be even better if you actually use it properly. That means remembering the keybindings for whatever task you're doing and using them as often as possible. These configs aim to make those even more useful and waste as little of your time as possible.
@@ -351,7 +121,7 @@ Cycling through all of your buffers with =C-x o= is tiresome. How about we press
      (setq switch-window-threshold 2)
      (setq switch-window-shortcut-style 'qwerty)
      (setq switch-window-qwerty-shortcuts
-         '("a" "s" "d" "f" "g" "h" "j" "k" "l" "w" "e" "r" "i" "o" "p"))
+         '("a" "s" "d" "f" "g" "h" "j" "k" "l" ";" "w" "e" "r" "u" "i" "o"))
    :bind
      ([remap other-window] . switch-window))
  #+END_SRC
@@ -515,7 +285,6 @@ Copies the word your cursor is currently on.
 
 *** Copy a line
 Copies the whole line the cursor is on.
- Regardless of where your cursor is, this quickly copies a line. 
  #+BEGIN_SRC emacs-lisp
    (defun daedreth/copy-whole-line ()
      "Copies a line without regard for cursor position."
@@ -537,7 +306,7 @@ Kills the whole like the cursor is on.
 ** Minor conveniences
 Just some minor things that help you out once in a while.
 *** Visiting the configuration
-It's often cumbersome to go looking for this file, so binding it to =C-c e= means you can instantly access it.
+It's often cumbersome to go looking for this file, so binding it to =H-c e= means you can instantly access it.
  #+BEGIN_SRC emacs-lisp
    (defun config-visit ()
      (interactive)
@@ -546,7 +315,7 @@ It's often cumbersome to go looking for this file, so binding it to =C-c e= mean
  #+END_SRC
 
 *** Reloading the configuration
-Rather than typing out =config-reload= into =M-x=, we'll just bind it to =C-c r=
+Rather than typing out =config-reload= into =M-x=, we'll just bind it to =H-c r=
  #+BEGIN_SRC emacs-lisp
    (defun config-reload ()
      "Reloads ~/.emacs.d/config.org at runtime"
@@ -583,7 +352,7 @@ Changing buffers, windows, moving up/down with =M-v= and =C-v= etc. dramatically
  #+END_SRC
 
 *** Rainbow
-Any time you enter a hexidecimal that resembles a colorcode, it will automatically highlight the code with that color. See [[Some customization]] under Theming (while running this config in your Emacs) for an example.
+Any time you enter a hexidecimal that resembles a colorcode, it will automatically highlight the code with that color. See [[Dired Rainbow]] (while running this config in your Emacs) for an example.
  #+BEGIN_SRC emacs-lisp
    (use-package rainbow-mode
      :ensure t
@@ -595,15 +364,6 @@ Any time you enter a hexidecimal that resembles a colorcode, it will automatical
 Highlights matching parens and brackets according to their depth.
  #+BEGIN_SRC emacs-lisp
    (show-paren-mode 1)
- #+END_SRC
-
-*** Rainbow delimiters
-Color parens and brackets according to their depth. Especially useful in lisp.
- #+BEGIN_SRC emacs-lisp
-   (use-package rainbow-delimiters
-     :ensure t
-     :init
-       (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
  #+END_SRC
 
 *** Expand region
@@ -804,8 +564,37 @@ Collapses nested directories with only one file in them to just point to that fi
       (add-hook 'dired-mode-hook 'dired-collapse-mode))
 #+END_SRC
 
+**** Dired Rainbow
+Controls the colors of various files found in dired.
+ #+BEGIN_SRC emacs-lisp
+   (use-package dired-rainbow
+     :ensure t
+     :config
+     (progn
+       (dired-rainbow-define-chmod directory "#61afef" "d.*")
+       (dired-rainbow-define html "#ff8070" ("css" "less" "sass" "scss" "htm" "html" "jhtm" "mht" "eml" "mustache" "xhtml"))
+       (dired-rainbow-define xml "#ddbd78" ("xml" "xsd" "xsl" "xslt" "wsdl" "bib" "json" "msg" "pgn" "rss" "yaml" "yml" "rdata"))
+       (dired-rainbow-define document "#c678dd" ("docm" "doc" "docx" "odb" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub" "odp" "ppt" "pptx"))
+       (dired-rainbow-define markdown "#da8548" ("org" "etx" "info" "markdown" "md" "mkd" "nfo" "pod" "rst" "tex" "textfile" "txt"))
+       (dired-rainbow-define database "#005f87" ("xlsx" "xls" "csv" "accdb" "db" "mdb" "sqlite" "nc"))
+       (dired-rainbow-define media "#98be65" ("mp3" "mp4" "MP3" "MP4" "avi" "mpeg" "mpg" "flv" "ogg" "mov" "mid" "midi" "wav" "aiff" "flac"))
+       (dired-rainbow-define image "#9eac8c" ("tiff" "tif" "cdr" "gif" "ico" "jpeg" "jpg" "png" "psd" "eps" "svg"))
+       (dired-rainbow-define log "#687080" ("log"))
+       (dired-rainbow-define shell "#ccd4e3" ("awk" "bash" "bat" "sed" "sh" "zsh" "vim"))
+       (dired-rainbow-define interpreted "#ff6464" ("py" "ipynb" "rb" "pl" "t" "msql" "mysql" "pgsql" "sql" "r" "clj" "cljs" "scala" "js"))
+       (dired-rainbow-define compiled "#ff6464" ("asm" "cl" "lisp" "el" "c" "h" "c++" "h++" "hpp" "hxx" "m" "cc" "cs" "cp" "cpp" "go" "f" "for" "ftn" "f90" "f95" "f03" "f08" "s" "rs" "hi" "hs" "pyc" ".java"))
+       (dired-rainbow-define executable "PeachPuff3" ("exe" "msi"))
+       (dired-rainbow-define compressed "#b33c49" ("7z" "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
+       (dired-rainbow-define packaged "#afaf87" ("deb" "rpm" "apk" "jad" "jar" "cab" "pak" "pk3" "vdf" "vpk" "bsp"))
+       (dired-rainbow-define encrypted "#87af5f" ("gpg" "pgp" "asc" "bfe" "enc" "signature" "sig" "p12" "pem"))
+       (dired-rainbow-define fonts "#5fafff" ("afm" "fon" "fnt" "pfb" "pfm" "ttf" "otf"))
+       (dired-rainbow-define partition "#ff2727" ("dmg" "iso" "bin" "nrg" "qcow" "toast" "vcd" "vmdk" "bak"))
+       (dired-rainbow-define vc "Orange" ("git" "gitignore" "gitattributes" "gitmodules"))
+       (dired-rainbow-define-chmod executable-unix "#38c172" "-.*x.*")))
+ #+END_SRC
+
 *** PDF-Tools
-PDF tools allows us to view/edit pdf/
+PDF tools allows us to view/edit pdfs.
 #+BEGIN_SRC emacs-lisp
   (use-package pdf-tools
     :ensure t)
@@ -822,7 +611,7 @@ Configures Emacs to always open certain file extensions with certain programs. W
            (list (openwith-make-extension-regexp
                   '("mpg" "mpeg" "mp3" "mp4" "opus"
                     "avi" "wmv" "wav" "mov" "flv"
-                    "ogm" "ogg" "mkv" "webm"))
+                    "ogm" "ogg" "mkv" "webm" "opus"))
                  "mpv"
                  '(file))
            (list (openwith-make-extension-regexp
@@ -839,10 +628,17 @@ Configures Emacs to always open certain file extensions with certain programs. W
     )
 #+END_SRC
 
+*** Disk-Usage
+Lets you view the disk usage of various files and folders from Emacs, in a similar view to Dired.
+#+BEGIN_SRC emacs-lisp
+  (use-package disk-usage
+    :ensure t)
+#+END_SRC
+
 * Programming
 While Emacs is great for general text editing among many other features, let's be real: if you're reading this, you're a programmer. Therefore, we need some accessories to greatly improve the general programming workflow.
 ** Projectile
-Projectile is a flexible project manager that allows you to perform a lot of arbitrary actions, anything from running tests to replacing text project-wide. It automatically recognizes anything being tracked by VCS as a project.
+Projectile is a flexible project manager that allows you to perform a lot of arbitrary actions, anything from running tests to replacing text project-wide. It automatically recognizes anything being tracked by a VCS as a project.
 *** Enable projectile globally
 Allows any folder to be considered a project. Also maps all projectile commands to =C-c p=. Also, don't forget =C-x C-z= to use helm to search over a projectile project!
  #+BEGIN_SRC emacs-lisp
@@ -861,7 +657,7 @@ Binds F5 to compile your project via a Makefile in the root directory.
  #+END_SRC
 
 ** Yasnippet
-Yasnippet gives you access to a bunch of different templates that you can use to quickly define parts of a project. You put in the first few letters of what you want, hit =tab=, and suddenly a template you can fill out appears. Press =tab= while editing the template to jump to the next "part" of the form (like the function name -> parameters -> returned types). =C-m t= brings up a table of the available snippets for your current major mode. =C-c &= is the prefix for various snippet editing commands, like defining new ones or inserting an arbitrary snippet.
+Yasnippet gives you access to a bunch of different templates that you can use to quickly define parts of a project. You put in the first few letters of what you want, hit =tab=, and suddenly a template you can fill out appears. Press =tab= while editing the template to jump to the next "part" of the form (like the function name -> parameters -> returned types). =C-M-y= brings up a table of the available snippets for your current major mode. =C-c &= is the prefix for various snippet editing commands, like defining new ones or inserting an arbitrary snippet.
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
     :ensure t
@@ -869,7 +665,7 @@ Yasnippet gives you access to a bunch of different templates that you can use to
     (use-package yasnippet-snippets
       :ensure t)
     (yas-reload-all))
-  ;;(global-set-key (kbd "C-m t") 'yas-describe-tables)
+  (global-set-key (kbd "C-M-y") 'yas-describe-tables)
 #+END_SRC
 
 ** Flycheck
@@ -1315,5 +1111,213 @@ Since EMMS will be using MPD to play music, it's also nice to have some controls
      (call-process "mpc" nil nil nil "update")
      (message "MPD Database Updated!"))
    (global-set-key (kbd "H-p u") 'mpd/update-database)
+ #+END_SRC
+
+** TODO Transmission
+#+BEGIN_SRC emacs-lisp
+  (use-package transmission
+    :ensure t)
+#+END_SRC
+
+* Theming
+Theming is done last as some of the hooks (namely delimiters) won't work when placed earlier in the config.
+** Basic Interface Settings
+Some improvements to the look and feel of Emacs.
+*** Looks
+**** Remove startup screen
+By default, Emacs has its own startup screen. We'll be replacing it in [[Dashboard]].
+ #+BEGIN_SRC emacs-lisp
+ (setq inhibit-startup-message t)
+ #+END_SRC
+
+**** Disable menus and scrollbars
+Gets rid of the GUI buttons and scrollbars of Emacs. You'll be using your keyboard anyway, so all these do is take up valuable screen space.
+ #+BEGIN_SRC emacs-lisp
+ (tool-bar-mode -1)
+ (menu-bar-mode -1)
+ (scroll-bar-mode -1)
+ #+END_SRC
+
+**** Disable bell
+Gets rid of the audible/visible notifications of things happening, which usually show up on the minibuffer anyway.
+ #+BEGIN_SRC emacs-lisp
+   (setq ring-bell-function 'ignore)
+ #+END_SRC
+
+**** Set UTF-8 encoding
+Sets all text to UTF-8.
+ #+BEGIN_SRC emacs-lisp
+   (setq locale-coding-system 'utf-8)
+   (set-terminal-coding-system 'utf-8)
+   (set-keyboard-coding-system 'utf-8)
+   (set-selection-coding-system 'utf-8)
+   (prefer-coding-system 'utf-8)
+ #+END_SRC
+
+**** Highlight current line
+ #+BEGIN_SRC emacs-lisp
+   (when window-system (global-hl-line-mode))
+ #+END_SRC
+
+**** Pretty symbols
+Changes various symbol names (e.g. =lambda=) to their actual symbol.
+ #+BEGIN_SRC emacs-lisp
+   (when window-system
+         (use-package pretty-mode
+         :ensure t 
+         :config
+         (global-pretty-mode t)))
+ #+END_SRC
+
+*** Functionality
+**** Backups and auto-saves
+Rather than polluting your directy with obnoxious =#file.etx#= files, this saves your backups to a designated folder.
+ +BEGIN_SRC emacs-lisp
+   (setq make-backup-files t)
+   (setq auto-save-default t)
+   (setq backup-directory-alist
+            `(("." . ,(concat user-emacs-directory "backups"))))
+ #+END_SRC
+
+**** Change yes-or-no questions into y-or-n questions
+Whenever Emacs asks a yes or no question, you have to type `yes` or `no`, or Emacs refuses to do anything. This shortens that process.
+ #+BEGIN_SRC emacs-lisp
+ (defalias 'yes-or-no-p 'y-or-n-p)
+ #+END_SRC
+
+**** Async
+Uses asynchronous processes when possible.
+ #+BEGIN_SRC emacs-lisp
+   (use-package async
+     :ensure t
+     :init (dired-async-mode 1))
+ #+END_SRC
+
+** Dashboard
+Replaces the standard Emacs splash screen with a more streamlined one relevant to whatever you're working on. Change it at your leisure, documentation details can be found [[https://github.com/emacs-dashboard/emacs-dashboard][here]].
+ #+BEGIN_SRC emacs-lisp
+   (use-package dashboard
+     :ensure t
+     :init
+     (dashboard-setup-startup-hook)
+     :config
+     (setq dashboard-startup-banner "~/.emacs.d/img/Gnus-logo.svg")
+     (setq dashboard-banner-logo-title "今日も一日頑張ってくれ！")
+
+     (setq dashboard-set-navigator t)
+     (setq dashboard-set-footer nil)
+     (setq dashboard-set-heading-icons t)
+     (setq dashboard-set-file-icons t)
+
+     (setq dashboard-items '((recents  . 10)
+                             (projects . 10)
+                             (bookmarks . 10))))
+ #+END_SRC
+
+** Theme
+Every good config needs a good theme. I've customized mine to be as easily readible as possible.
+Zeronight/Zerolight are really just Zerodark (by Nicolas Petton) with minor tweaks. Still, putting the customized versions into their own files allows us to switch between dark and light themes quickly.
+ #+BEGIN_SRC emacs-lisp
+   (load-theme 'zeronight t)
+
+   (defvar *theme-dark* 'zeronight)
+   (defvar *theme-light* 'zerolight)
+   (defvar *current-theme* *theme-dark*)
+
+   ;; disable other themes before loading new one
+   (defadvice load-theme (before theme-dont-propagate activate)
+     "Disable theme before loading new one."
+     (mapc #'disable-theme custom-enabled-themes))
+
+   (defun haba/next-theme (theme)
+     (load-theme theme t)
+     (setq *current-theme* theme))
+
+   (defun haba/toggle-theme ()
+     (interactive)
+     (cond ((eq *current-theme* *theme-dark*) (haba/next-theme *theme-light*))
+           ((eq *current-theme* *theme-light*) (haba/next-theme *theme-dark*)))
+     ;; Reset powerline for proper colors
+     (powerline-reset)
+     ;; Reset org bullets to get rid of misplaced asterisks
+     (org-bullets-mode)
+     (org-bullets-mode))
+
+   (global-set-key (kbd "H-t") 'haba/toggle-theme)
+ #+END_SRC
+
+*** Rainbow delimiters
+Color parens and brackets according to their depth. Especially useful in lisp.
+ #+BEGIN_SRC emacs-lisp
+   (use-package rainbow-delimiters
+     :ensure t
+     :config
+     (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+ #+END_SRC
+
+** Modeline
+The modeline is at the bottom of every single buffer in Emacs and contains all of the information you would ever need.
+*** Spaceline
+A modified powerline used in spacemacs. Easy configuration and looks good with the theme.
+ #+BEGIN_SRC emacs-lisp
+   (use-package spaceline
+     :ensure t
+     :config
+     (require 'spaceline-config)
+     (setq spaceline-buffer-encoding-abbrev-p nil)
+     (setq spaceline-line-column-p nil)
+     (setq spaceline-line-p nil)
+     (setq powerline-default-separator (quote arrow))
+     (spaceline-spacemacs-theme)
+     (powerline-reset))
+ #+END_SRC
+
+*** Clock
+Shows a clock and the date to the bottom right. 
+**** Time format
+If you don't want a 24-hour clock, set the first line to `nil`.
+ #+BEGIN_SRC emacs-lisp
+   (setq display-time-24hr-format t)
+   (setq display-time-format "%H:%M - %d %B %Y")
+ #+END_SRC
+
+**** Enabling the mode
+ #+BEGIN_SRC emacs-lisp
+   (display-time-mode 1)
+ #+END_SRC
+
+*** Battery indicator
+Shows battery percentage left on laptops.
+ #+BEGIN_SRC emacs-lisp
+   (use-package fancy-battery
+     :ensure t
+     :config
+       (setq fancy-battery-show-percentage t)
+       (setq battery-update-interval 15)
+       (if window-system
+         (fancy-battery-mode)
+         (display-battery-mode)))
+ #+END_SRC
+
+*** Diminishing modes
+Hides the following modes from your modeline in order to save room.
+ #+BEGIN_SRC emacs-lisp
+   (use-package diminish
+     :ensure t
+     :config
+     (diminish 'which-key-mode "")
+     (diminish 'linum-relative-mode "")
+     (diminish 'hungry-delete-mode "")
+     (diminish 'visual-line-mode "")
+     (diminish 'subword-mode "")
+     (diminish 'beacon-mode "")
+     (diminish 'irony-mode "")
+     (diminish 'page-break-lines-mode "")
+     (diminish 'auto-revert-mode "")
+     (diminish 'rainbow-delimiters-mode "")
+     (diminish 'rainbow-mode "")
+     (diminish 'yas-minor-mode "")
+     (diminish 'flycheck-mode "")
+     (diminish 'helm-mode ""))
  #+END_SRC
 
