@@ -1172,7 +1172,7 @@ Changes various symbol names (e.g. =lambda=) to their actual symbol.
 *** Functionality
 **** Backups and auto-saves
 Rather than polluting your directy with obnoxious =#file.etx#= files, this saves your backups to a designated folder.
- +BEGIN_SRC emacs-lisp
+ #+BEGIN_SRC emacs-lisp
    (setq make-backup-files t)
    (setq auto-save-default t)
    (setq backup-directory-alist
