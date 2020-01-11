@@ -3,6 +3,8 @@
 #+LANGUAGE: en
 #+OPTIONS: num:nil
 #+ATTR_HTML: :style margin-left: auto; margin-right: auto;
+[[./img/dark-capture.png]]
+[[./img/light-capture.png]]
 * Credit
 This repo was adapted/modifed from Uncle Dave's Emacs, found here: =https://github.com/daedreth/UncleDavesEmacs=
 The majority of the configuration and especially the functions were written by him, so a huge thank you for making my Emacs experience a lot more pleasant.
@@ -76,7 +78,8 @@ These are the programs I use to open various file types, feel free to change the
 mu4e (mu-for-emacs) is a mailing suite inside of Emacs, allowing us to use Emac's text editing/movement when composing/reading email.
 - =mu=, which actually contains mu4e
 - =isync=, or mbsync which syncs a designated folder with your mailing server
-mu4e is a bit special in that it requires both =mu= and =mbsync= to have already been installed, configured, and run. Check [[https://wiki.archlinux.org/index.php/Isync][here]] for a tutorial on setting up mbsync, and check [[http://www.djcbsoftware.nl/code/mu/mu4e/index.html#Top][here]] for the documentation on both mu and mu4e.
+- =msmtp=, for sending mail
+mu4e is a bit special in that it requires its dependencies to have already been installed, configured, and run. Check [[https://wiki.archlinux.org/index.php/Isync][here]] for a tutorial on setting up mbsync, check [[http://www.djcbsoftware.nl/code/mu/mu4e/index.html#Top][here]] for the documentation on both mu and mu4e, and check [[https://wiki.archlinux.org/index.php/Msmtp][here]] for a basic msmtp setup.
 ** Some notes
 *** On use-package
 =use-package= automatically downloads and configures all of the packages with minimal effort. Meanwhile, =init.el= automatically checks for whether =use-package= is installed, and downloads/installs it if it is not.
@@ -1001,6 +1004,7 @@ mu4e is a search based mail client that can be used inside Emacs.
 
         mu4e-attachment-dir (expand-file-name "~/maildir/attachments")
         mu4e-get-mail-command "mbsync -a"
+        mu4e-update-interval 300
         mu4e-change-filenames-when-moving t ;; 
         smtpmail-queue-mail nil		  ;; start in normal mode
         smtpmail-queue-dir   (expand-file-name "~/maildir/queue/cur"))
@@ -1024,8 +1028,7 @@ mu4e is a search based mail client that can be used inside Emacs.
       (mu4e-alert-enable-mode-line-display))
     (run-with-timer 0 60 'gjstein/refresh-mu4e-alert-mode-line))
 
-  ;; Sending mail
-  (setq sendmail-program "/usr/bin/msmtp"
+  (setq sendmail-program "/run/current-system/sw/bin/msmtp"
         send-mail-function 'smtpmail-send-it
         message-sendmail-f-is-evil t
         message-sendmail-extra-arguments '("--read-envelope-from")
@@ -1211,8 +1214,8 @@ Replaces the standard Emacs splash screen with a more streamlined one relevant t
      :ensure t
      :init
      (dashboard-setup-startup-hook)
-     :config
-     (setq dashboard-startup-banner "~/.emacs.d/img/Gnus-logo.svg")
+3     :config
+     (setq dashboard-startup-banner "~/.emacs.d/img/Emacs-logo_green.svg")
      (setq dashboard-banner-logo-title "今日も一日頑張ってくれ！")
 
      (setq dashboard-set-navigator t)
@@ -1229,11 +1232,11 @@ Replaces the standard Emacs splash screen with a more streamlined one relevant t
 Every good config needs a good theme. I've customized mine to be as easily readible as possible.
 Zeronight/Zerolight are really just Zerodark (by Nicolas Petton) with minor tweaks. Still, putting the customized versions into their own files allows us to switch between dark and light themes quickly.
  #+BEGIN_SRC emacs-lisp
-   (load-theme 'zeronight t)
-
    (defvar *theme-dark* 'zeronight)
    (defvar *theme-light* 'zerolight)
    (defvar *current-theme* *theme-dark*)
+
+   (load-theme *current-theme* t)
 
    ;; disable other themes before loading new one
    (defadvice load-theme (before theme-dont-propagate activate)

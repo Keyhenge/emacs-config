@@ -508,10 +508,10 @@ The result is cached for one second to avoid hiccups."
    `(font-lock-fic-face ((,class (:foreground ,background :background ,red :weight bold))))
 
    ;; Dashboard
-   `(dashboard-heading-face ((,class (:background ,background-dark :foreground ,green
-                                                  :bold t :height 1.2))))
-   `(dashboard-banner-logo-title-face ((,class (:background ,background-dark :foreground ,green
-                                                            :bold t :height 1.0))))
+   `(dashboard-heading ((,class (:foreground ,green-light
+					     :bold t :height 1.2))))
+   `(dashboard-banner-logo-title ((,class (:foreground ,green-light
+						       :bold t :height 1.0))))
    `(widget-button ((,class (:background ,background-dark :foreground ,default :bold nil
                                          :underline t :height 1.0))))
 
