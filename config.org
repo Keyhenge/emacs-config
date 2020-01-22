@@ -6,7 +6,7 @@
 [[./img/dark-capture.png]]
 [[./img/light-capture.png]]
 * Credit
-This repo was adapted/modifed from Uncle Dave's Emacs, found here: =https://github.com/daedreth/UncleDavesEmacs=
+This repo was adapted/modified from Uncle Dave's Emacs, found here: =https://github.com/daedreth/UncleDavesEmacs=
 The majority of the configuration and especially the functions were written by him, so a huge thank you for making my Emacs experience a lot more pleasant.
 
 * Installation
@@ -41,7 +41,7 @@ add        mod4 = Super_L Super_R
 add        mod5 = Mode_switch ISO_Level3_Shift
 #+END_SRC
 
-If you use OSX, the following binds fn to Hyper in Emacs. Consider using Karabiner Elements for further key changes, especially changling =caps_lock= to =control=.
+If you use OSX, the following binds fn to Hyper in Emacs. Consider using Karabiner Elements for further key changes, especially changing =caps_lock= to =control=.
 #+BEGIN_SRC emacs-lisp
   (setq ns-function-modifier 'hyper) 
 #+END_SRC
@@ -72,10 +72,10 @@ Helm is an easy way to search your filesystem and pretty much anything in Emacs,
 *** Open With
 These are the programs I use to open various file types, feel free to change them in [[Openwith][Openwith]].
 - =mpv= for video/sound files
-- =sxiv= for images
+- =imv= for images
 - =libreoffice= for various documents
 *** mu4e
-mu4e (mu-for-emacs) is a mailing suite inside of Emacs, allowing us to use Emac's text editing/movement when composing/reading email.
+mu4e (mu-for-emacs) is a mailing suite inside of Emacs, allowing us to use Emacs's text editing/movement when composing/reading email.
 - =mu=, which actually contains mu4e
 - =isync=, or mbsync which syncs a designated folder with your mailing server
 - =msmtp=, for sending mail
@@ -114,7 +114,7 @@ No matter what you're doing in Emacs, you WILL frequently forget what key does w
 *** Windows/Panes
 Many people, myself included, have multiple screens, work with more than 2 files at once, etc. that makes the default windowing behavior of buffers annoying and cumbersome. These small enhancements make those annoyances disappear.
 **** switch-window
-Cycling through all of your buffers with =C-x o= is tiresome. How about we press it once, have all available buffers display a letter, then press that letter to get to that specific buffer? We'll also make the letters they display easily acessible, starting with the homerow keys.
+Cycling through all of your buffers with =C-x o= is tiresome. How about we press it once, have all available buffers display a letter, then press that letter to get to that specific buffer? We'll also make the letters they display easily accessible, starting with the home-row keys.
  #+BEGIN_SRC emacs-lisp
  (use-package switch-window
    :ensure t
@@ -241,7 +241,7 @@ Helm is another extremely useful package that is used almost everywhere. Efficie
  #+END_SRC
 
 *** avy
-Let's say you're writing an essay and you spot a typo a few paragraphs up. You could go up by paragraph, then navigate to the line, and then the word, then the letter OR you could just press =M-s=, type the character you want to jump to, type the 2-3 character string which pops up that differentiates it from the other occurances of the character, and now you're there. 10s of key presses reduced to 3-4.
+Let's say you're writing an essay and you spot a typo a few paragraphs up. You could go up by paragraph, then navigate to the line, and then the word, then the letter OR you could just press =M-s=, type the character you want to jump to, type the 2-3 character string which pops up that differentiates it from the other occurences of the character, and now you're there. 10s of key presses reduced to 3-4.
  #+BEGIN_SRC emacs-lisp
    (use-package avy
      :ensure t
@@ -355,7 +355,7 @@ Changing buffers, windows, moving up/down with =M-v= and =C-v= etc. dramatically
  #+END_SRC
 
 *** Rainbow
-Any time you enter a hexidecimal that resembles a colorcode, it will automatically highlight the code with that color. See [[Dired Rainbow]] (while running this config in your Emacs) for an example.
+Any time you enter a hexadecimal that resembles a color code, it will automatically highlight the code with that color. See [[Dired Rainbow]] (while running this config in your Emacs) for an example.
  #+BEGIN_SRC emacs-lisp
    (use-package rainbow-mode
      :ensure t
@@ -575,6 +575,7 @@ Controls the colors of various files found in dired.
      :config
      (progn
        (dired-rainbow-define-chmod directory "#61afef" "d.*")
+       (dired-rainbow-define shell "#fcf4c3" ("awk" "bash" "bat" "sed" "sh" "zsh" "vim" "ini" "conf"))
        (dired-rainbow-define html "#ff8070" ("css" "less" "sass" "scss" "htm" "html" "jhtm" "mht" "eml" "mustache" "xhtml"))
        (dired-rainbow-define xml "#ddbd78" ("xml" "xsd" "xsl" "xslt" "wsdl" "bib" "json" "msg" "pgn" "rss" "yaml" "yml" "rdata"))
        (dired-rainbow-define document "#c678dd" ("docm" "doc" "docx" "odb" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub" "odp" "ppt" "pptx"))
@@ -583,7 +584,6 @@ Controls the colors of various files found in dired.
        (dired-rainbow-define media "#98be65" ("mp3" "mp4" "MP3" "MP4" "avi" "mpeg" "mpg" "flv" "ogg" "mov" "mid" "midi" "wav" "aiff" "flac"))
        (dired-rainbow-define image "#9eac8c" ("tiff" "tif" "cdr" "gif" "ico" "jpeg" "jpg" "png" "psd" "eps" "svg"))
        (dired-rainbow-define log "#687080" ("log"))
-       (dired-rainbow-define shell "#ccd4e3" ("awk" "bash" "bat" "sed" "sh" "zsh" "vim"))
        (dired-rainbow-define interpreted "#ff6464" ("py" "ipynb" "rb" "pl" "t" "msql" "mysql" "pgsql" "sql" "r" "clj" "cljs" "scala" "js"))
        (dired-rainbow-define compiled "#ff6464" ("asm" "cl" "lisp" "el" "c" "h" "c++" "h++" "hpp" "hxx" "m" "cc" "cs" "cp" "cpp" "go" "f" "for" "ftn" "f90" "f95" "f03" "f08" "s" "rs" "hi" "hs" "pyc" ".java"))
        (dired-rainbow-define executable "PeachPuff3" ("exe" "msi"))
@@ -620,7 +620,7 @@ Configures Emacs to always open certain file extensions with certain programs. W
            (list (openwith-make-extension-regexp
                   '("xbm" "pbm" "pgm" "ppm" "pnm"
                     "png" "gif" "bmp" "tif" "jpeg" "jpg"))
-                 "sxiv"
+                 "imv"
                  '(file))
            (list (openwith-make-extension-regexp
                   '("doc" "xls" "ppt" "odt" "ods" "odg" "odp"))
@@ -964,7 +964,7 @@ Replaces the asterisks you usually get in Org mode with more visually interestin
       #+END_SRC
 
 *** Easy-to-add Elisp template
-Great for editing this document in paticular. If you ever need to add a new block of code just type "<el" and then hit =Tab=.
+Great for editing this document in particular. If you ever need to add a new block of code just type "<el" and then hit =Tab=.
  #+BEGIN_SRC emacs-lisp
    (add-to-list 'org-structure-template-alist
 	        '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
@@ -980,11 +980,11 @@ Adds the ability to export your org documents to LaTeX.
  #+END_SRC
 
 *** Agenda
-If you really want to stay organized, I highly recommend starting an agenda.org file and adding tasks and deadlines, then adding it to the org agenda list. Once you do both, you can pull up a 10 day summary (3 days before and the week ahead) of your schedule with =H-a=.
+If you really want to stay organized, I highly recommend starting an agenda.org file and adding tasks and deadlines, then adding it to the org agenda list. Once you do both, you can pull up a 17 day summary (3 days before and two weeks ahead) of your schedule with =H-a=.
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "H-a") 'org-agenda-list)
   (setq org-agenda-start-day "-3d")
-  (setq org-agenda-span 10)
+  (setq org-agenda-span 17)
 #+END_SRC
 
 ** TODO Messaging
@@ -1004,7 +1004,7 @@ mu4e is a search based mail client that can be used inside Emacs.
 
         mu4e-attachment-dir (expand-file-name "~/maildir/attachments")
         mu4e-get-mail-command "mbsync -a"
-        mu4e-update-interval 300
+        mu4e-update-interval 900
         mu4e-change-filenames-when-moving t ;; 
         smtpmail-queue-mail nil		  ;; start in normal mode
         smtpmail-queue-dir   (expand-file-name "~/maildir/queue/cur"))
@@ -1066,7 +1066,7 @@ Changes server history to the following list of servers for easy access.
  #+END_SRC
 
 ** Elfeed
-Elfeed is an RSS newsfeed with tagging, searching, autodownloads, the works.
+Elfeed is an RSS news feed with tagging, searching, auto-downloads, the works.
 #+BEGIN_SRC emacs-lisp
   (use-package elfeed
     :ensure t)
@@ -1185,7 +1185,7 @@ Changes various symbol names (e.g. =lambda=) to their actual symbol.
 
 *** Functionality
 **** Backups and auto-saves
-Rather than polluting your directy with obnoxious =#file.etx#= files, this saves your backups to a designated folder.
+Rather than polluting your directory with obnoxious =#file.etx#= files, this saves your backups to a designated folder.
  #+BEGIN_SRC emacs-lisp
    (setq make-backup-files t)
    (setq auto-save-default t)
