@@ -926,7 +926,7 @@ As much as I like org mode, it can't replace things like JSON, XML, or YAML, so 
                    (define-key yaml-mode-map "\C-m" 'newline-and-indent))))
 #+END_SRC
 
-* Misc
+* TODO Misc
 ** Org
 The most useful mode in Emacs, bar none. This entire document is written in it, my schedule is written it, my contact book is written in it, my papers are written in it, etc.
 *** Common settings
@@ -1040,7 +1040,7 @@ mu4e is a search based mail client that can be used inside Emacs.
   (global-set-key (kbd "H-m") 'mu4e)
 #+END_SRC
 
-*** ERC
+*** TODO ERC
 Some people still use IRC, and you should too! Remember to edit the nickname to be yours.
 **** Some common settings
 Hides some common channel messages and changes the buffer name to match the channel.
@@ -1318,7 +1318,7 @@ Hides the following modes from your modeline in order to save room.
  #+BEGIN_SRC emacs-lisp
    (use-package diminish
      :ensure t
-     :config
+     :init
      (diminish 'which-key-mode "")
      (diminish 'linum-relative-mode "")
      (diminish 'hungry-delete-mode "")
@@ -1332,6 +1332,12 @@ Hides the following modes from your modeline in order to save room.
      (diminish 'rainbow-mode "")
      (diminish 'yas-minor-mode "")
      (diminish 'flycheck-mode "")
-     (diminish 'helm-mode ""))
+     (diminish 'helm-mode "")
+     (diminish 'org-indent-mode)
+     (diminish 'org-src-mode)
+     (diminish 'eldoc-mode)
+     (diminish 'lispy-mode)
+     (diminish 'company-mode))
  #+END_SRC
 
+ 
