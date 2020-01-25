@@ -209,6 +209,13 @@ EXWM makes Emacs into your window manager, making the entire system far more con
      (exwm-enable))
 #+END_SRC
 
+**** Icecat
+Gives some useful keybinds while using GNU Icecat in EXWM. This is actually meant for Firefox, but I've modified it to work on Icecat instead. To use the original, download it [[https://github.com/ieure/exwm-firefox][here]], and the core [[https://github.com/walseb/exwm-firefox-core][here]].
+#+BEGIN_SRC emacs-lisp
+  (load "~/.emacs.d/custom/exwm-icecat.el")
+  (require 'exwm-icecat)
+#+END_SRC
+
 *** Launchers
 **** dmenu for Emacs
 A great little application launcher that works with helm.
@@ -228,7 +235,7 @@ A few useful processes linked to keybinds. The shutdown bind is every modifier k
 
    (defun daedreth/launch-browser ()
      (interactive)
-     (exwm-async-run "firefox"))
+     (exwm-async-run "icecat"))
 
    (defun daedreth/lock-screen ()
      (interactive)
@@ -1415,6 +1422,8 @@ Replaces the standard Emacs splash screen with a more streamlined one relevant t
 Every good config needs a good theme. I've customized mine to be as easily readible as possible.
 Zeronight/Zerolight are really just Zerodark (by Nicolas Petton) with minor tweaks. Still, putting the customized versions into their own files allows us to switch between dark and light themes quickly.
  #+BEGIN_SRC emacs-lisp
+   (load "~/.emacs.d/custom/zeronight-theme.el")
+   (load "~/.emacs.d/custom/zerolight-theme.el")
    (defvar *theme-dark* 'zeronight)
    (defvar *theme-light* 'zerolight)
    (defvar *current-theme* *theme-dark*)
