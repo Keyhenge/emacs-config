@@ -638,6 +638,14 @@ Lets you view the disk usage of various files and folders from Emacs, in a simil
     :ensure t)
 #+END_SRC
 
+** Package manager
+#+BEGIN_SRC emacs-lisp
+  (use-package guix
+    :ensure t
+    :bind
+    ("H-g" . guix))
+#+END_SRC
+
 * Programming
 While Emacs is great for general text editing among many other features, let's be real: if you're reading this, you're a programmer. Therefore, we need some accessories to greatly improve the general programming workflow.
 ** Projectile
