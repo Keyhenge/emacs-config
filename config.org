@@ -870,6 +870,7 @@ Lets you view the disk usage of various files and folders from Emacs, in a simil
 #+END_SRC
 
 ** Package manager
+I use GuixSD, which is a distro that was inspired by NixOS, utilizes transactional package management, makes an effort to give reproducible builds, generally has a better UI/UX than NixOS, and only contains free software. The package manager behind it, Guix (as well as Nix), can be installed on any Unix-based OS, and this gives an Emacs interface to it.
 #+BEGIN_SRC emacs-lisp
   (use-package guix
     :ensure t
@@ -1032,12 +1033,12 @@ Packages and settings that make working in specific languages easier.
 
 *** ELisp
 #+BEGIN_SRC emacs-lisp
-  (use-package lispy
+  (use-package paredit
     :ensure t)
 
   (add-hook 'emacs-lisp-mode-hook 'yas-minor-mode)
   (add-hook 'emacs-lisp-mode-hook 'company-mode)
-  (add-hook 'emacs-lisp-mode-hook 'lispy-mode)
+  (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
 #+END_SRC
 
 *** Scheme
@@ -1046,7 +1047,7 @@ Packages and settings that make working in specific languages easier.
     :ensure t)
 
   ;;(add-hook 'scheme-mode-hook 'run-guile)
-  (add-hook 'scheme-mode-hook 'lispy-mode)
+  (add-hook 'scheme-mode-hook 'paredit-mode)
   (add-hook 'scheme-mode-hook 'yas-minor-mode)
   (add-hook 'scheme-mode-hook 'company-mode)
 #+END_SRC
