@@ -47,11 +47,22 @@ If you use OSX, the following binds fn to Hyper in Emacs. Consider using Karabin
 #+END_SRC
 
 Alternatively if you like your current setup, find a place to bind hyper as it's used for many personalized functions in this config.
+*** EXWM
+EXWM is a window manager with Emacs as its base. Everything is treated as a buffer, allowing us to use Emacs bindings across the entire system and keep "mode-switching" to a minimum.
+ - =xorg-server=, the windowing system ubiquitous among Linux distros, though slowly being replaced by Wayland. Unfortunately, Emacs doesn't support Wayland as of yet, and there is no EXWM equivalent.
+ - =pulsemixer=, a CLI/curses mixer for PulseAudio. Used for audio control functions.
+ - =imagemagick=, a simple image suite we'll be using to take screenshots with.
+ - =fira-code=, a very nice, readable font. If you want to use something else, make sure to edit the init.el file.
+**** Optional
+ - A browser (this config uses =icecat=)
+ - A composite manager (recommended, I use =compton=)
+ - =noto-cjk=, to display foreign languages correctly
+ - =slock=, if you want to lock the screen
 *** TRAMP
 TRAMP (Transparent Remote Access, Multiple Protocols), is used to ssh into other users and machines. We'll primarily use it to make edits as root, but it's also incredibly useful for remote editing.
  - =sudo=, properly configured for your user.
-*** Mingus
-- =mpd=, to play music
+*** Bongo
+- =mpv=, to play music
 *** Programming
 You'll also need various programs for code completion, REPLs, and style guide enforcement.
 **** Package manager
@@ -86,8 +97,228 @@ mu4e is a bit special in that it requires its dependencies to have already been 
 *** On the format of the configuration
 This config file is saved as a .org file, which is a markup language and one of the best packages in Emacs. At launch, this file is stripped of all of its text save for sections labeled as emacs-lisp, which is then parsed into config.el and used. You can find some more info on Org-mode [[https://orgmode.org/manual/][here]], and my custom configuration in the [[Org]] section. As such, most sections have some sort of rambling attached explaining what the keybindings are, what packages I've added, why things are the way they are, etc. You should read through them to get the full benefit of the configuration. Also, if you do decide to download, try deleting these ramblings and filling them in with your own. Doing so helped me understand each part of the config, customize it further to my liking, and got me more familiar with the programs I was using.
 *** On the use case of this configuration
-This configuration is intended to be a full documented configuration for Emacs, and touches pretty much every aspect of it. However, if you don't like some portion of the config, nearly every section can be deleted individually without affecting the greater whole. Likewise, you're more than welcome to cherry pick sections into your own config.
+This configuration is intended to not only be a full configuration for Emacs in terms of text editing/programming/themes/media/etc., but also a complete replacement for whatever window manager you use. However, because all of the configuration is divided into sections, it's relatively trivial to remove a portion you don't want (such as EXWM) without harming the rest of the configuration.
 * Interface
+** Window Manager
+ Everything surrounding EXWM is contained here, as well as a few extra controls which will only be accessible while Emacs is in focus.
+*** EXWM
+EXWM makes Emacs into your window manager, making the entire system far more consistent. Everything is Emacs, so your color scheme applies everywhere. EXWM can fake keypresses to other applications, so you can use the same keybindings everywhere. Everything is a buffer, so you can use your kill ring anywhere.
+**** Installation
+#+BEGIN_SRC emacs-lisp
+   (use-package exwm
+     :ensure t
+     :config
+     ;; necessary to configure exwm manually
+     (require 'exwm-config)
+     (exwm-enable)
+
+     ;; Emacs as a daemon, use "emacsclient <filename>" to seamlessly edit files from the terminal directly in the exwm instance
+     (server-start)
+
+     ;; Number of workspaces created when EXWM starts. Even though EXWM creates them dynamically, window loss can occur so I just make them all immediately
+     (setq exwm-workspace-number 10)
+
+     ;; Set name of new program buffers
+     (add-hook 'exwm-update-class-hook
+               (lambda ()
+                 (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+                             (string= "gimp" exwm-instance-name))
+                   (exwm-workspace-rename-buffer exwm-class-name))))
+     (add-hook 'exwm-update-title-hook
+               (lambda ()
+                 (when (or (not exwm-instance-name)
+                           (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+                           (string= "gimp" exwm-instance-name))
+                   (exwm-workspace-rename-buffer exwm-title))))
+
+     ;; Global keybindings. EXWM has the concept of line-mode (which intercepts keys) and char-mode (which doesn't), but these keys override that and always work.
+     (setq exwm-input-global-keys
+           `(
+             ;; Bind "s-r" to exit char-mode and fullscreen mode.
+             ([?\s-r] . exwm-reset)
+             ;; Bind "s-w" to switch workspace interactively.
+             ([?\s-w] . exwm-workspace-switch)
+             ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
+             ,@(mapcar (lambda (i)
+                         `(,(kbd (format "s-%d" i)) .
+                           (lambda ()
+                             (interactive)
+                             (exwm-workspace-switch-create ,i))))
+                       (number-sequence 0 9))
+             ;; Bind "s-&" to launch applications ('M-&' also works if the output
+             ;; buffer does not bother you).
+             ([?\s-&] . (lambda (command)
+                          (interactive (list (read-shell-command "$ ")))
+                          (start-process-shell-command command nil command)))
+             ;; Bind "s-<f2>" to "slock", a simple X display locker.
+             ([s-f2] . (lambda ()
+                         (interactive)
+                         (start-process "" nil "/usr/bin/slock")))))
+
+     ;; an easy way to make keybindings work *only* in line mode
+     (define-key exwm-mode-map [?\C-q] #'exwm-input-send-next-key)
+
+     ;; simulation keys are keys that exwm will send to the exwm buffer upon inputting a key combination
+     (exwm-input-set-simulation-keys
+      '(
+        ;; movement
+        ([?\C-b] . left)
+        ([?\M-b] . C-left)
+        ([?\C-f] . right)
+        ([?\M-f] . C-right)
+        ([?\C-p] . up)
+        ([?\C-n] . down)
+        ([?\C-a] . home)
+        ([?\C-e] . end)
+        ([?\M-v] . prior)
+        ([?\C-v] . next)
+        ([?\C-d] . delete)
+        ([?\C-k] . (S-end delete))
+        ;; cut/paste
+        ([?\C-w] . ?\C-x)
+        ([?\M-w] . ?\C-c)
+        ([?\C-y] . ?\C-v)
+        ;; cancel
+        ([?\C-g] . escape)
+        ;; search
+        ([?\C-s] . ?\C-f)))
+
+     (add-hook 'exwm-manage-finish-hook
+               (lambda ()
+                 (when (and exwm-class-name
+                           (string= exwm-class-name "Blender"))
+                   (exwm-input-set-local-simulation-keys nil))))
+
+     ;; this little bit will make sure that XF86 keys work in exwm buffers as well
+     (dolist (k '(XF86AudioLowerVolume
+                  XF86AudioRaiseVolume
+                  XF86PowerOff
+                  XF86AudioMute
+                  XF86AudioPlay
+                  XF86AudioStop
+                  XF86AudioPrev
+                  XF86AudioNext
+                  XF86ScreenSaver
+                  XF68Back
+                  XF86Forward
+                  Scroll_Lock
+                  print))
+       (cl-pushnew k exwm-input-prefix-keys))
+
+     ;; this just enables exwm, it started automatically once everything is ready
+     (exwm-enable))
+#+END_SRC
+
+**** Icecat
+Gives some useful keybinds while using GNU Icecat in EXWM. This is actually meant for Firefox, but I've modified it to work on Icecat instead. To use the original, download it [[https://github.com/ieure/exwm-firefox][here]], and the core [[https://github.com/walseb/exwm-firefox-core][here]].
+#+BEGIN_SRC emacs-lisp
+  (load "~/.emacs.d/custom/exwm-icecat.el")
+  (require 'exwm-icecat)
+#+END_SRC
+
+*** Launchers
+**** dmenu for Emacs
+A great little application launcher that works with helm.
+ #+BEGIN_SRC emacs-lisp
+   (use-package dmenu
+     :ensure t
+     :bind
+       ("s-SPC" . 'dmenu))
+ #+END_SRC
+
+**** Various processes
+A few useful processes linked to keybinds. The shutdown bind is every modifier key + p, so that you never accidently press it.
+ #+BEGIN_SRC emacs-lisp
+   (defun exwm-async-run (name)
+     (interactive)
+     (start-process name nil name))
+
+   (defun daedreth/launch-browser ()
+     (interactive)
+     (exwm-async-run "icecat"))
+
+   (defun daedreth/lock-screen ()
+     (interactive)
+     (exwm-async-run "slock"))
+
+   (defun daedreth/shutdown ()
+     (interactive)
+     (start-process "halt" nil "sudo" "halt"))
+
+   (global-set-key (kbd "<H-tab>") 'daedreth/launch-browser)
+   (global-set-key (kbd "<H-s-l>") 'daedreth/lock-screen)
+   (global-set-key (kbd "<H-s-C-M-p>") 'daedreth/shutdown)
+ #+END_SRC
+
+*** Audio controls
+A set of controls/settings to manipulate audio from inside Emacs.
+**** Volume
+ Some functions we'll be using in a second to mute/raise/lower volume. The volume modifier describes how much the volume will be raised or lowered by.
+ #+BEGIN_SRC emacs-lisp
+ (defconst volumeModifier "2")
+   (defun audio/mute ()
+     (interactive)
+     (start-process "audio-mute" nil "pulsemixer" "--toggle-mute"))
+
+   (defun audio/raise-volume ()
+     (interactive)
+     (start-process "raise-volume" nil "pulsemixer" "--change-volume" (concat "+" volumeModifier)))
+
+   (defun audio/lower-volume ()
+     (interactive)
+     (start-process "lower-volume" nil "pulsemixer" "--change-volume" (concat "-" volumeModifier)))
+ #+END_SRC
+
+**** Audio Keybindings
+ I have a couple dedicated audio keys on my keyboard, which I bind the above functions to here. That being said, these are the only dedicated audio keys I have, so other audio keybinds (like those defined in [[Media]]) are bound to function keys.
+ #+BEGIN_SRC emacs-lisp
+ (global-set-key (kbd "<XF86AudioMute>") 'audio/mute)
+ (global-set-key (kbd "<XF86AudioRaiseVolume>") 'audio/raise-volume)
+ (global-set-key (kbd "<XF86AudioLowerVolume>") 'audio/lower-volume)
+ #+END_SRC
+
+*** Screenshots
+Gives us basic screenshot capabilities.
+**** Screenshotting the entire screen
+Bound to <Print Screen>.
+ #+BEGIN_SRC emacs-lisp
+   (defun daedreth/take-screenshot ()
+     "Takes a fullscreen screenshot of the current workspace"
+     (interactive)
+     (when window-system
+     (loop for i downfrom 3 to 1 do
+           (progn
+             (message (concat (number-to-string i) "..."))
+             (sit-for 1)))
+     (message "Cheese!")
+     (sit-for 1)
+     (start-process "screenshot" nil "import" "-window" "root"
+                (concat (getenv "HOME") "/" (subseq (number-to-string (float-time)) 0 10) ".png"))
+     (message "Screenshot taken!")))
+   (global-set-key (kbd "<print>") 'daedreth/take-screenshot)
+ #+END_SRC
+
+**** Screenshotting a region
+Bound to <Scroll Lock>, which I can practically guarantee you don't use.
+ #+BEGIN_SRC emacs-lisp
+   (defun daedreth/take-screenshot-region ()
+     "Takes a screenshot of a region selected by the user."
+     (interactive)
+     (when window-system
+     (call-process "import" nil nil nil ".newScreen.png")
+     (call-process "convert" nil nil nil ".newScreen.png" "-shave" "1x1"
+                   (concat (getenv "HOME") "/" (subseq (number-to-string (float-time)) 0 10) ".png"))
+     (call-process "rm" nil nil nil ".newScreen.png")))
+   (global-set-key (kbd "<Scroll_Lock>") 'daedreth/take-screenshot-region)
+ #+END_SRC
+
+*** Default browser
+ I use Icecat, though that might change when one of the keyboard-focused browsers (qutebrowser, next, etc.) gets proper uBlock/uMatrix support.
+ #+BEGIN_SRC emacs-lisp
+   (setq browse-url-browser-function 'browse-url-generic
+         browse-url-generic-program "icecat")
+ #+END_SRC
+
 ** Moving around Emacs
  Emacs is a great text editor that can be even better if you actually use it properly. That means remembering the keybindings for whatever task you're doing and using them as often as possible. These configs aim to make those even more useful and waste as little of your time as possible.
 *** Prerequisites for other packages
@@ -729,9 +960,12 @@ The language server protocol is where you connect to an external program that pr
 While this doesn't matter for older languages like Python and C that already have rich ecosystems in Emacs, Go requires it.
 #+BEGIN_SRC emacs-lisp
   ;; Install relevant packages
-  (use-package lsp-mode)
-  (use-package company-lsp)
-  (use-package lsp-ui)
+  (use-package lsp-mode
+    :ensure t)
+  (use-package company-lsp
+    :ensure t)
+  (use-package lsp-ui
+    :ensure t)
 #+END_SRC
 
 ** Specific languages
@@ -899,7 +1133,8 @@ Packages and settings that make working in specific languages easier.
   (setenv "GOPATH" (concat (getenv "HOME") "/go"))
   (setenv "GO111MODULE" "on")
 
-  (use-package go-mode)
+  (use-package go-mode
+    :ensure t)
 
   (setq gofmt-command "goimports")
   (defun cce/go-mode-hook ()
@@ -1081,64 +1316,19 @@ Elfeed is an RSS news feed with tagging, searching, auto-downloads, the works.
   (global-set-key (kbd "H-f") 'elfeed)
 #+END_SRC
 
-** Mingus
-Mingus allows us to control MPD from within Emacs. Use =H-p= to reach its various functions.
+** Bongo
+Bongo allows us to listen to music in Emacs. Use =H-p= or =H-<F5-8>= to reach its various functions.
+This may change to another music player at a later date, specifically one that supports MPD. However, EMMS reads tags wrong and doesn't have the functionality I want, while Mingus flickers all other buffers in EXWM. Other MPD players were similarly buggy.
 #+BEGIN_SRC emacs-lisp
-  (use-package mingus
+  (use-package bongo
     :ensure t
     :bind
-    ("H-p p" . mingus)
-    ("H-<f5>" . mingus-previous)
-    ("H-<f8>" . mingus-next)
-    ("H-<f6>" . mingus-pause)
-    ("H-<f7>" . mingus-stop))
-#+END_SRC
-
-*** MPD
-Since EMMS will be using MPD to play music, it's also nice to have some controls we can easily use.
-**** MPC Setup
- #+BEGIN_SRC emacs-lisp
-   (setq mpc-host "localhost:6600")
- #+END_SRC
-
-**** Starting the daemon from within Emacs
- #+BEGIN_SRC emacs-lisp
-   (defun mpd/start-music-daemon ()
-     "Start MPD, connects to it and syncs the metadata cache."
-     (interactive)
-     (shell-command "mpd")
-     (mpd/update-database)
-     (emms-player-mpd-connect)
-     (emms-cache-set-from-mpd-all)
-     (message "MPD Started!"))
-   (global-set-key (kbd "H-p c") 'mpd/start-music-daemon)
- #+END_SRC
-
-**** Killing the daemon from within Emacs
- #+BEGIN_SRC emacs-lisp
-   (defun mpd/kill-music-daemon ()
-     "Stops playback and kill the music daemon."
-     (interactive)
-     (emms-stop)
-     (call-process "killall" nil nil nil "mpd")
-     (message "MPD Killed!"))
-   (global-set-key (kbd "H-p k") 'mpd/kill-music-daemon)
- #+END_SRC
-
-**** Updating the database easily
- #+BEGIN_SRC emacs-lisp
-   (defun mpd/update-database ()
-     "Updates the MPD database synchronously."
-     (interactive)
-     (call-process "mpc" nil nil nil "update")
-     (message "MPD Database Updated!"))
-   (global-set-key (kbd "H-p u") 'mpd/update-database)
- #+END_SRC
-
-** TODO Transmission
-#+BEGIN_SRC emacs-lisp
-  (use-package transmission
-    :ensure t)
+    ("H-p l" . bongo-library)
+    ("H-p p" . bongo-playlist)
+    ("H-<f5>" . bongo-previous)
+    ("H-<f8>" . bongo-next)
+    ("H-<f6>" . bongo-pause/resume)
+    ("H-<f7>" . bongo-start/stop))
 #+END_SRC
 
 * Theming
@@ -1240,6 +1430,8 @@ Replaces the standard Emacs splash screen with a more streamlined one relevant t
 Every good config needs a good theme. I've customized mine to be as easily readible as possible.
 Zeronight/Zerolight are really just Zerodark (by Nicolas Petton) with minor tweaks. Still, putting the customized versions into their own files allows us to switch between dark and light themes quickly.
  #+BEGIN_SRC emacs-lisp
+   (load "~/.emacs.d/custom/zeronight-theme.el")
+   (load "~/.emacs.d/custom/zerolight-theme.el")
    (defvar *theme-dark* 'zeronight)
    (defvar *theme-light* 'zerolight)
    (defvar *current-theme* *theme-dark*)
