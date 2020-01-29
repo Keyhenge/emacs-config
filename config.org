@@ -870,7 +870,7 @@ Lets you view the disk usage of various files and folders from Emacs, in a simil
 #+END_SRC
 
 ** Package manager
-I use GuixSD, which is a distro that was inspired by NixOS, utilizes transactional package management, makes an effort to give reproducible builds, generally has a better UI/UX than NixOS, and only contains free software. The package manager behind it, Guix (as well as Nix), can be installed on any Unix-based OS, and this gives an Emacs interface to it.
+I use GuixSD, which is a distro that was inspired by NixOS, utilizes transactional package management, makes an effort to give reproducible builds, generally has a better UI/UX than NixOS, and only contains free software. The package manager behind it, Guix (as well as Nix!), can be installed on any Linux distro, and this gives an Emacs interface to it.
 #+BEGIN_SRC emacs-lisp
   (use-package guix
     :ensure t
@@ -1170,7 +1170,7 @@ As much as I like org mode, it can't replace things like JSON, XML, or YAML, so 
                    (define-key yaml-mode-map "\C-m" 'newline-and-indent))))
 #+END_SRC
 
-* TODO Misc
+* Misc
 ** Org
 The most useful mode in Emacs, bar none. This entire document is written in it, my schedule is written it, my contact book is written in it, my papers are written in it, etc.
 *** Common settings
@@ -1224,14 +1224,19 @@ Adds the ability to export your org documents to LaTeX.
  #+END_SRC
 
 *** Agenda
-If you really want to stay organized, I highly recommend starting an agenda.org file and adding tasks and deadlines, then adding it to the org agenda list. Once you do both, you can pull up a 17 day summary (3 days before and two weeks ahead) of your schedule with =H-a=.
+If you really want to stay organized, I highly recommend starting an agenda.org file and adding tasks and deadlines, then adding it to the org agenda list. Once you do both, you can pull up a 17 day summary (3 days before and two weeks ahead) of your schedule with =H-a=. This config assumes you're setting it up in ~/agenda/agenda.org.
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "H-a") 'org-agenda-list)
   (setq org-agenda-start-day "-3d")
   (setq org-agenda-span 17)
+
+  (defun agenda-visit ()
+     (interactive)
+     (find-file "~/agenda/agenda.org"))
+  (global-set-key (kbd "H-c a") (lambda() (interactive)(find-file "~/agenda/agenda.org")))
 #+END_SRC
 
-** TODO Messaging
+** Messaging
 Interfaces for several messaging clients. Remember, we want to be using Emacs any time we're editing text.
 Still need to add a matrix client.
 *** mu4e
@@ -1283,31 +1288,6 @@ mu4e is a search based mail client that can be used inside Emacs.
 
   (global-set-key (kbd "H-m") 'mu4e)
 #+END_SRC
-
-*** TODO ERC
-Some people still use IRC, and you should too! Remember to edit the nickname to be yours.
-**** Some common settings
-Hides some common channel messages and changes the buffer name to match the channel.
- #+BEGIN_SRC emacs-lisp
-   (setq erc-nick "keyhenge")
-   (setq erc-prompt (lambda () (concat "[" (buffer-name) "]")))
-   (setq erc-hide-list '("JOIN" "PART" "QUIT"))
- #+END_SRC
-
-**** Poor mans selectable server list
-Changes server history to the following list of servers for easy access.
- #+BEGIN_SRC emacs-lisp
-   (setq erc-server-history-list '("irc.freenode.net"
-                                   "localhost"))
- #+END_SRC
-
-**** Nick highlighting
- #+BEGIN_SRC emacs-lisp
- (use-package erc-hl-nicks
-   :ensure t
-   :config
-     (erc-update-modules))
- #+END_SRC
 
 ** Elfeed
 Elfeed is an RSS news feed with tagging, searching, auto-downloads, the works.
