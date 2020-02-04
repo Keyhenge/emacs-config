@@ -316,7 +316,7 @@ Bound to <Scroll Lock>, which I can practically guarantee you don't use.
  I use Icecat, though that might change when one of the keyboard-focused browsers (qutebrowser, next, etc.) gets proper uBlock/uMatrix support.
  #+BEGIN_SRC emacs-lisp
    (setq browse-url-browser-function 'browse-url-generic
-         browse-url-generic-program "icecat")
+         browse-url-generic-program "firefox")
  #+END_SRC
 
 ** Moving around Emacs
