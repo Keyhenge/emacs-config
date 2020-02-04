@@ -80,6 +80,7 @@ Helm is an easy way to search your filesystem and pretty much anything in Emacs,
 - =all-the-icons-fonts=, for icons that match file types. This also affects the dashboard.
 - =ag=, for grepping/finding strings inside files
 - =avfs=, for looking inside archives
+- =pass=, for its helm integration
 *** Open With
 These are the programs I use to open various file types, feel free to change them in [[Openwith][Openwith]].
 - =mpv= for video/sound files
@@ -464,6 +465,10 @@ Helm is another extremely useful package that is used almost everywhere. Efficie
      ("C-x C-z" . 'helm-projectile)
      :config
      (helm-projectile-on))
+
+   ; Helm interface to pass, a password manager
+   (use-package helm-pass
+     :ensure t)
 
    (require 'helm-config)
    (helm-autoresize-mode 1)
@@ -869,6 +874,25 @@ Lets you view the disk usage of various files and folders from Emacs, in a simil
     :ensure t)
 #+END_SRC
 
+** Package manager
+I use NixOS, which is a distro that utilizes transactional package management and makes an effort to give reproducible builds. The package manager behind it, Nix (as well as Guix!), can be installed on any Linux distro.
+#+BEGIN_SRC emacs-lisp
+  (use-package nix-mode
+    :ensure t)
+  (use-package nixos-options
+    :ensure t)
+  (use-package helm-nixos-options
+    :ensure t
+    :bind
+    ("C-c C-n" . 'helm-nixos-options))
+  (use-package company-nixos-options
+    :ensure t
+    :config
+    (add-to-list 'company-backends 'company-nixos-options))
+  (use-package nix-sandbox
+    :ensure t)
+#+END_SRC
+
 * Programming
 While Emacs is great for general text editing among many other features, let's be real: if you're reading this, you're a programmer. Therefore, we need some accessories to greatly improve the general programming workflow.
 ** Projectile
@@ -1024,12 +1048,12 @@ Packages and settings that make working in specific languages easier.
 
 *** ELisp
 #+BEGIN_SRC emacs-lisp
-  (use-package lispy
+  (use-package paredit
     :ensure t)
 
   (add-hook 'emacs-lisp-mode-hook 'yas-minor-mode)
   (add-hook 'emacs-lisp-mode-hook 'company-mode)
-  (add-hook 'emacs-lisp-mode-hook 'lispy-mode)
+  (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
 #+END_SRC
 
 *** Scheme
@@ -1038,7 +1062,7 @@ Packages and settings that make working in specific languages easier.
     :ensure t)
 
   ;;(add-hook 'scheme-mode-hook 'run-guile)
-  (add-hook 'scheme-mode-hook 'lispy-mode)
+  (add-hook 'scheme-mode-hook 'paredit-mode)
   (add-hook 'scheme-mode-hook 'yas-minor-mode)
   (add-hook 'scheme-mode-hook 'company-mode)
 #+END_SRC
@@ -1161,7 +1185,7 @@ As much as I like org mode, it can't replace things like JSON, XML, or YAML, so 
                    (define-key yaml-mode-map "\C-m" 'newline-and-indent))))
 #+END_SRC
 
-* TODO Misc
+* Misc
 ** Org
 The most useful mode in Emacs, bar none. This entire document is written in it, my schedule is written it, my contact book is written in it, my papers are written in it, etc.
 *** Common settings
@@ -1215,14 +1239,19 @@ Adds the ability to export your org documents to LaTeX.
  #+END_SRC
 
 *** Agenda
-If you really want to stay organized, I highly recommend starting an agenda.org file and adding tasks and deadlines, then adding it to the org agenda list. Once you do both, you can pull up a 17 day summary (3 days before and two weeks ahead) of your schedule with =H-a=.
+If you really want to stay organized, I highly recommend starting an agenda.org file and adding tasks and deadlines, then adding it to the org agenda list. Once you do both, you can pull up a 17 day summary (3 days before and two weeks ahead) of your schedule with =H-a=. This config assumes you're setting it up in ~/agenda/agenda.org.
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "H-a") 'org-agenda-list)
   (setq org-agenda-start-day "-3d")
   (setq org-agenda-span 17)
+
+  (defun agenda-visit ()
+     (interactive)
+     (find-file "~/agenda/agenda.org"))
+  (global-set-key (kbd "H-c a") (lambda() (interactive)(find-file "~/agenda/agenda.org")))
 #+END_SRC
 
-** TODO Messaging
+** Messaging
 Interfaces for several messaging clients. Remember, we want to be using Emacs any time we're editing text.
 Still need to add a matrix client.
 *** mu4e
@@ -1274,31 +1303,6 @@ mu4e is a search based mail client that can be used inside Emacs.
 
   (global-set-key (kbd "H-m") 'mu4e)
 #+END_SRC
-
-*** TODO ERC
-Some people still use IRC, and you should too! Remember to edit the nickname to be yours.
-**** Some common settings
-Hides some common channel messages and changes the buffer name to match the channel.
- #+BEGIN_SRC emacs-lisp
-   (setq erc-nick "keyhenge")
-   (setq erc-prompt (lambda () (concat "[" (buffer-name) "]")))
-   (setq erc-hide-list '("JOIN" "PART" "QUIT"))
- #+END_SRC
-
-**** Poor mans selectable server list
-Changes server history to the following list of servers for easy access.
- #+BEGIN_SRC emacs-lisp
-   (setq erc-server-history-list '("irc.freenode.net"
-                                   "localhost"))
- #+END_SRC
-
-**** Nick highlighting
- #+BEGIN_SRC emacs-lisp
- (use-package erc-hl-nicks
-   :ensure t
-   :config
-     (erc-update-modules))
- #+END_SRC
 
 ** Elfeed
 Elfeed is an RSS news feed with tagging, searching, auto-downloads, the works.
