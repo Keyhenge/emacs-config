@@ -22,7 +22,7 @@ Running the above command will clone this repository into your Emacs settings, o
 :CUSTOM_ID: dep
 :END:
 *** Keybindings
-I bind =control= to =caps_lock= and =caps_lock= to both shift keys. This frees up left control to be used as Hyper whenever we need Emacs-wide bindings that we know won't interfere with other modes. To use my setup, copy the following into ~/.Xmodmap and add the command setxkbmap -option 'shift:both_capslock' to your ~/.Xprofile.
+I bind =control= to =caps_lock= and =caps_lock= to both shift keys. This frees up left control to be used as Hyper whenever we need Emacs-wide bindings that we know won't interfere with other modes. To use my setup, copy the following into ~/.Xmodmap and add the command setxkbmap -option 'shift:both_capslock' to your ~/.xsession.
 #+BEGIN_SRC
 clear      lock 
 clear   control
