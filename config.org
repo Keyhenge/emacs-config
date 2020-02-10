@@ -80,6 +80,7 @@ Helm is an easy way to search your filesystem and pretty much anything in Emacs,
 - =all-the-icons-fonts=, for icons that match file types. This also affects the dashboard.
 - =ag=, for grepping/finding strings inside files
 - =avfs=, for looking inside archives
+- =pass=, for its helm integration
 *** Open With
 These are the programs I use to open various file types, feel free to change them in [[Openwith][Openwith]].
 - =mpv= for video/sound files
@@ -464,6 +465,10 @@ Helm is another extremely useful package that is used almost everywhere. Efficie
      ("C-x C-z" . 'helm-projectile)
      :config
      (helm-projectile-on))
+
+   ; Helm interface to pass, a password manager
+   (use-package helm-pass
+     :ensure t)
 
    (require 'helm-config)
    (helm-autoresize-mode 1)
@@ -870,12 +875,22 @@ Lets you view the disk usage of various files and folders from Emacs, in a simil
 #+END_SRC
 
 ** Package manager
-I use GuixSD, which is a distro that was inspired by NixOS, utilizes transactional package management, makes an effort to give reproducible builds, generally has a better UI/UX than NixOS, and only contains free software. The package manager behind it, Guix (as well as Nix!), can be installed on any Linux distro, and this gives an Emacs interface to it.
+I use NixOS, which is a distro that utilizes transactional package management and makes an effort to give reproducible builds. The package manager behind it, Nix (as well as Guix!), can be installed on any Linux distro.
 #+BEGIN_SRC emacs-lisp
-  (use-package guix
+  (use-package nix-mode
+    :ensure t)
+  (use-package nixos-options
+    :ensure t)
+  (use-package helm-nixos-options
     :ensure t
     :bind
-    ("H-g" . guix))
+    ("C-c C-n" . 'helm-nixos-options))
+  (use-package company-nixos-options
+    :ensure t
+    :config
+    (add-to-list 'company-backends 'company-nixos-options))
+  (use-package nix-sandbox
+    :ensure t)
 #+END_SRC
 
 * Programming
