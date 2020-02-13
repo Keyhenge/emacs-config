@@ -22,7 +22,7 @@ Running the above command will clone this repository into your Emacs settings, o
 :CUSTOM_ID: dep
 :END:
 *** Keybindings
-I bind =control= to =caps_lock= and =caps_lock= to both shift keys. This frees up left control to be used as Hyper whenever we need Emacs-wide bindings that we know won't interfere with other modes. To use my setup, copy the following into ~/.Xmodmap and add the command setxkbmap -option 'shift:both_capslock' to your ~/.Xprofile.
+I bind =control= to =caps_lock= and =caps_lock= to both shift keys. This frees up left control to be used as Hyper whenever we need Emacs-wide bindings that we know won't interfere with other modes. To use my setup, copy the following into ~/.Xmodmap and add the command setxkbmap -option 'shift:both_capslock' to your ~/.xsession.
 #+BEGIN_SRC
 clear      lock 
 clear   control
@@ -106,108 +106,108 @@ This configuration is intended to not only be a full configuration for Emacs in 
 EXWM makes Emacs into your window manager, making the entire system far more consistent. Everything is Emacs, so your color scheme applies everywhere. EXWM can fake keypresses to other applications, so you can use the same keybindings everywhere. Everything is a buffer, so you can use your kill ring anywhere.
 **** Installation
 #+BEGIN_SRC emacs-lisp
-   (use-package exwm
-     :ensure t
-     :config
-     ;; necessary to configure exwm manually
-     (require 'exwm-config)
-     (exwm-enable)
+  (use-package exwm
+    :ensure t
+    :config
+    ;; necessary to configure exwm manually
+    (require 'exwm-config)
 
-     ;; Emacs as a daemon, use "emacsclient <filename>" to seamlessly edit files from the terminal directly in the exwm instance
-     (server-start)
+    ;; Emacs as a daemon, use "emacsclient <filename>" to seamlessly edit files from the terminal directly in the exwm instance
+    (server-start)
 
-     ;; Number of workspaces created when EXWM starts. Even though EXWM creates them dynamically, window loss can occur so I just make them all immediately
-     (setq exwm-workspace-number 10)
+    ;; Number of workspaces created when EXWM starts. Even though EXWM creates them dynamically, window loss can occur so I just make them all immediately
+    (setq exwm-workspace-number 10)
 
-     ;; Set name of new program buffers
-     (add-hook 'exwm-update-class-hook
-               (lambda ()
-                 (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-                             (string= "gimp" exwm-instance-name))
-                   (exwm-workspace-rename-buffer exwm-class-name))))
-     (add-hook 'exwm-update-title-hook
-               (lambda ()
-                 (when (or (not exwm-instance-name)
-                           (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-                           (string= "gimp" exwm-instance-name))
-                   (exwm-workspace-rename-buffer exwm-title))))
+    ;; Set name of new program buffers
+    (add-hook 'exwm-update-class-hook
+              (lambda ()
+                (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+                            (string= "gimp" exwm-instance-name))
+                  (exwm-workspace-rename-buffer exwm-class-name))))
+    (add-hook 'exwm-update-title-hook
+              (lambda ()
+                (when (or (not exwm-instance-name)
+                          (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+                          (string= "gimp" exwm-instance-name))
+                  (exwm-workspace-rename-buffer exwm-title))))
 
-     ;; Global keybindings. EXWM has the concept of line-mode (which intercepts keys) and char-mode (which doesn't), but these keys override that and always work.
-     (setq exwm-input-global-keys
-           `(
-             ;; Bind "s-r" to exit char-mode and fullscreen mode.
-             ([?\s-r] . exwm-reset)
-             ;; Bind "s-w" to switch workspace interactively.
-             ([?\s-w] . exwm-workspace-switch)
-             ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
-             ,@(mapcar (lambda (i)
-                         `(,(kbd (format "s-%d" i)) .
-                           (lambda ()
-                             (interactive)
-                             (exwm-workspace-switch-create ,i))))
-                       (number-sequence 0 9))
-             ;; Bind "s-&" to launch applications ('M-&' also works if the output
-             ;; buffer does not bother you).
-             ([?\s-&] . (lambda (command)
-                          (interactive (list (read-shell-command "$ ")))
-                          (start-process-shell-command command nil command)))
-             ;; Bind "s-<f2>" to "slock", a simple X display locker.
-             ([s-f2] . (lambda ()
-                         (interactive)
-                         (start-process "" nil "/usr/bin/slock")))))
+    ;; Global keybindings. EXWM has the concept of line-mode (which intercepts keys) and char-mode (which doesn't), but these keys override that and always work.
+    (setq exwm-input-global-keys
+          `(
+            ;; Bind "s-r" to exit char-mode and fullscreen mode.
+            ([?\s-r] . exwm-reset)
+            ;; Bind "s-w" to switch workspace interactively.
+            ([?\s-w] . exwm-workspace-switch)
+            ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
+            ,@(mapcar (lambda (i)
+                        `(,(kbd (format "s-%d" i)) .
+                          (lambda ()
+                            (interactive)
+                            (exwm-workspace-switch-create ,i))))
+                      (number-sequence 0 9))
+            ;; Bind "s-&" to launch applications ('M-&' also works if the output
+            ;; buffer does not bother you).
+            ([?\s-&] . (lambda (command)
+                         (interactive (list (read-shell-command "$ ")))
+                         (start-process-shell-command command nil command)))
+            ;; Bind "s-<f2>" to "slock", a simple X display locker.
+            ([s-f2] . (lambda ()
+                        (interactive)
+                        (start-process "" nil "/usr/bin/slock")))))
 
-     ;; an easy way to make keybindings work *only* in line mode
-     (define-key exwm-mode-map [?\C-q] #'exwm-input-send-next-key)
+    ;; an easy way to make keybindings work *only* in line mode
+    (define-key exwm-mode-map [?\C-q] #'exwm-input-send-next-key)
 
-     ;; simulation keys are keys that exwm will send to the exwm buffer upon inputting a key combination
-     (exwm-input-set-simulation-keys
-      '(
-        ;; movement
-        ([?\C-b] . left)
-        ([?\M-b] . C-left)
-        ([?\C-f] . right)
-        ([?\M-f] . C-right)
-        ([?\C-p] . up)
-        ([?\C-n] . down)
-        ([?\C-a] . home)
-        ([?\C-e] . end)
-        ([?\M-v] . prior)
-        ([?\C-v] . next)
-        ([?\C-d] . delete)
-        ([?\C-k] . (S-end delete))
-        ;; cut/paste
-        ([?\C-w] . ?\C-x)
-        ([?\M-w] . ?\C-c)
-        ([?\C-y] . ?\C-v)
-        ;; cancel
-        ([?\C-g] . escape)
-        ;; search
-        ([?\C-s] . ?\C-f)))
+    ;; simulation keys are keys that exwm will send to the exwm buffer upon inputting a key combination
+    (exwm-input-set-simulation-keys
+     '(
+       ;; movement
+       ([?\C-b] . left)
+       ([?\M-b] . C-left)
+       ([?\C-f] . right)
+       ([?\M-f] . C-right)
+       ([?\C-p] . up)
+       ([?\C-n] . down)
+       ([?\C-a] . home)
+       ([?\C-e] . end)
+       ([?\M-v] . prior)
+       ([?\C-v] . next)
+       ([?\C-d] . delete)
+       ([?\C-k] . (S-end delete))
+       ;; cut/paste
+       ([?\C-w] . ?\C-x)
+       ([?\M-w] . ?\C-c)
+       ([?\C-y] . ?\C-v)
+       ;; cancel
+       ([?\C-g] . escape)
+       ;; search
+       ([?\C-s] . ?\C-f)))
 
-     (add-hook 'exwm-manage-finish-hook
-               (lambda ()
-                 (when (and exwm-class-name
-                           (string= exwm-class-name "Blender"))
-                   (exwm-input-set-local-simulation-keys nil))))
+    (add-hook 'exwm-manage-finish-hook
+              (lambda ()
+                (when (and exwm-class-name
+                          (string= exwm-class-name "Blender"))
+                  (exwm-input-set-local-simulation-keys nil))))
 
-     ;; this little bit will make sure that XF86 keys work in exwm buffers as well
-     (dolist (k '(XF86AudioLowerVolume
-                  XF86AudioRaiseVolume
-                  XF86PowerOff
-                  XF86AudioMute
-                  XF86AudioPlay
-                  XF86AudioStop
-                  XF86AudioPrev
-                  XF86AudioNext
-                  XF86ScreenSaver
-                  XF68Back
-                  XF86Forward
-                  Scroll_Lock
-                  print))
-       (cl-pushnew k exwm-input-prefix-keys))
+    ;; this little bit will make sure that XF86 keys work in exwm buffers as well
+    (dolist (k '(XF86AudioLowerVolume
+                 XF86AudioRaiseVolume
+                 XF86PowerOff
+                 XF86AudioMute
+                 XF86AudioPlay
+                 XF86AudioStop
+                 XF86AudioPrev
+                 XF86AudioNext
+                 XF86ScreenSaver
+                 XF68Back
+                 XF86Forward
+                 Scroll_Lock
+                 print))
+      (cl-pushnew k exwm-input-prefix-keys))
 
-     ;; this just enables exwm, it started automatically once everything is ready
-     (exwm-enable))
+    ;; this just enables exwm, it started automatically once everything is ready
+    ;(exwm-enable)
+    )
 #+END_SRC
 
 **** Icecat
@@ -1262,7 +1262,7 @@ Still need to add a matrix client.
 *** mu4e
 mu4e is a search based mail client that can be used inside Emacs.
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
+  (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
   (require 'mu4e)
 
   (setq mu4e-maildir       (expand-file-name "~/maildir") ;; top-level Maildir
