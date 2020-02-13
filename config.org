@@ -891,6 +891,11 @@ I use NixOS, which is a distro that utilizes transactional package management an
     (add-to-list 'company-backends 'company-nixos-options))
   (use-package nix-sandbox
     :ensure t)
+
+  (defun nixos-config-visit ()
+    (interactive)
+    (find-file "/etc/nixos/configuration.nix"))
+  (global-set-key (kbd "H-c n") 'nixos-config-visit)
 #+END_SRC
 
 * Programming
@@ -1248,7 +1253,7 @@ If you really want to stay organized, I highly recommend starting an agenda.org 
   (defun agenda-visit ()
      (interactive)
      (find-file "~/agenda/agenda.org"))
-  (global-set-key (kbd "H-c a") (lambda() (interactive)(find-file "~/agenda/agenda.org")))
+  (global-set-key (kbd "H-c a") 'agenda-visit)
 #+END_SRC
 
 ** Messaging
