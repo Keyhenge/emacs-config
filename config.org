@@ -105,7 +105,7 @@ This configuration is intended to not only be a full configuration for Emacs in 
 *** EXWM
 EXWM makes Emacs into your window manager, making the entire system far more consistent. Everything is Emacs, so your color scheme applies everywhere. EXWM can fake keypresses to other applications, so you can use the same keybindings everywhere. Everything is a buffer, so you can use your kill ring anywhere.
 **** Installation
-#+BEGIN_SRC emacs-lisp
++BEGIN_SRC emacs-lisp
   (use-package exwm
     :ensure t
     :config
@@ -208,14 +208,14 @@ EXWM makes Emacs into your window manager, making the entire system far more con
     ;; this just enables exwm, it started automatically once everything is ready
     ;(exwm-enable)
     )
-#+END_SRC
++END_SRC
 
 **** Icecat
 Gives some useful keybinds while using GNU Icecat in EXWM. This is actually meant for Firefox, but I've modified it to work on Icecat instead. To use the original, download it [[https://github.com/ieure/exwm-firefox][here]], and the core [[https://github.com/walseb/exwm-firefox-core][here]].
-#+BEGIN_SRC emacs-lisp
++BEGIN_SRC emacs-lisp
   (load "~/.emacs.d/custom/exwm-icecat.el")
   (require 'exwm-icecat)
-#+END_SRC
++END_SRC
 
 *** Launchers
 **** dmenu for Emacs
@@ -333,6 +333,11 @@ This setting should make Emacs never re-center the cursor while scrolling down, 
  #+BEGIN_SRC emacs-lisp
    (setq scroll-conservatively 100)
  #+END_SRC
+
+*** Goto line
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "M-l") 'goto-line)
+#+END_SRC
 
 *** Which-key
 No matter what you're doing in Emacs, you WILL frequently forget what key does what. Fortunately, Emacs is self documenting and allows you to search for specific functions/describe key combinations. Even more fortunately, the =which-key= package will automatically open a small buffer at the bottom of the screen showing all possible completions of a command.
@@ -678,6 +683,8 @@ Command completion isn't that great in eshell, so let's leech from the great com
               (eshell-cmpl-initialize)
               (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete)
               (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history)))
+
+  (setq helm-show-completion-display-function #'helm-show-completion-default-display-function)
 #+END_SRC
 
 *** Shortcut
@@ -715,6 +722,9 @@ Dired is the default Emacs file manager. Below are some customizations for it.
 *** All the icons
 Makes it easier to differentiate files in dired, making it a lot more pleasant.
 #+BEGIN_SRC emacs-lisp
+  (use-package all-the-icons
+    :ensure t)
+
   (use-package all-the-icons-dired
     :after all-the-icons
     :hook dired)
@@ -891,6 +901,11 @@ I use NixOS, which is a distro that utilizes transactional package management an
     (add-to-list 'company-backends 'company-nixos-options))
   (use-package nix-sandbox
     :ensure t)
+
+  (defun nixos-config-visit ()
+    (interactive)
+    (find-file "/etc/nixos/configuration.nix"))
+  (global-set-key (kbd "H-c n") 'nixos-config-visit)
 #+END_SRC
 
 * Programming
@@ -919,6 +934,7 @@ Yasnippet gives you access to a bunch of different templates that you can use to
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
     :ensure t
+    :hook (go-mode . yas-minor-mode)
     :config
     (use-package yasnippet-snippets
       :ensure t)
@@ -944,6 +960,12 @@ Text completion, another great tool. Use =M-n= and =M-p= to cycle through sugges
 
   (with-eval-after-load 'company
     (define-key company-active-map (kbd "SPC") #'company-abort))
+
+  ;; company-lsp integrates company mode completion with lsp-mode.
+  ;; completion-at-point also works out of the box but doesn't support snippets.
+  (use-package company-lsp
+    :ensure t
+    :commands company-lsp)
 
   (defun tab-indent-or-complete ()
     (interactive)
@@ -975,13 +997,22 @@ The language server protocol is where you connect to an external program that pr
 
 While this doesn't matter for older languages like Python and C that already have rich ecosystems in Emacs, Go requires it.
 #+BEGIN_SRC emacs-lisp
-  ;; Install relevant packages
   (use-package lsp-mode
-    :ensure t)
-  (use-package company-lsp
-    :ensure t)
+    :ensure t
+    :commands (lsp lsp-deferred)
+    :hook (go-mode . lsp-deferred))
+
+  ;; Set up before-save hooks to format buffer and add/delete imports.
+  ;; Make sure you don't have other gofmt/goimports hooks enabled.
+  (defun lsp-go-install-save-hooks ()
+    (add-hook 'before-save-hook #'lsp-format-buffer t t)
+    (add-hook 'before-save-hook #'lsp-organize-imports t t))
+  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+  ;; Optional - provides fancier overlays.
   (use-package lsp-ui
-    :ensure t)
+    :ensure t
+    :commands lsp-ui-mode)
 #+END_SRC
 
 ** Specific languages
@@ -991,12 +1022,12 @@ Packages and settings that make working in specific languages easier.
   (add-hook 'c++-mode-hook 'yas-minor-mode)
   (add-hook 'c-mode-hook 'yas-minor-mode)
 
-  (use-package flycheck-clang-analyzer
-    :ensure t
-    :config
-    (with-eval-after-load 'flycheck
-      (require 'flycheck-clang-analyzer)
-       (flycheck-clang-analyzer-setup)))
+  ;; (use-package flycheck-clang-analyzer
+  ;;   :ensure t
+  ;;   :config
+  ;;   (with-eval-after-load 'flycheck
+  ;;     (require 'flycheck-clang-analyzer)
+  ;;      (flycheck-clang-analyzer-setup)))
 
   (with-eval-after-load 'company
     (add-hook 'c++-mode-hook 'company-mode)
@@ -1146,29 +1177,11 @@ Packages and settings that make working in specific languages easier.
            "usr/local/go/bin" ":"
            (getenv "PATH")
            ":" (getenv "HOME") "/go/bin"))
-  (setenv "GOPATH" (concat (getenv "HOME") "/go"))
-  (setenv "GO111MODULE" "on")
+  ;;(setenv "GOPATH" (concat (getenv "HOME") "/go"))
+  ;;(setenv "GO111MODULE" "on")
 
   (use-package go-mode
     :ensure t)
-
-  (setq gofmt-command "goimports")
-  (defun cce/go-mode-hook ()
-    (lsp)
-    (company-mode)
-    (flycheck-mode)
-    (eldoc-mode))
-
-  (use-package flycheck-gometalinter
-    :ensure t
-    :config
-    (progn
-      (flycheck-gometalinter-setup)))
-
-  (add-hook 'go-mode-hook 'cce/go-mode-hook)
-  (eval-after-load "go-mode"
-    (lambda ()
-      (define-key go-mode-map (kbd "C-<tab>") 'company-lsp)))
 #+END_SRC
 
 *** Markup languages
