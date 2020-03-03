@@ -1389,20 +1389,6 @@ Since EMMS will be using MPD to play music, it's also nice to have some controls
   (global-set-key (kbd "H-p u") 'mpd/update-database)
 #+END_SRC
 
-** TODO Bongo
-Bongo allows us to listen to music in Emacs. Use =H-p= or =H-<F5-8>= to reach its various functions.
-This may change to another music player at a later date, specifically one that supports MPD. However, EMMS reads tags wrong and doesn't have the functionality I want, while Mingus flickers all other buffers in EXWM. Other MPD players were similarly buggy.
-+BEGIN_SRC emacs-lisp
-  (use-package bongo
-    :ensure t
-    :bind
-    ("H-p l" . bongo-library)
-    ("H-p p" . bongo-playlist)
-    ("H-<f5>" . bongo-previous)
-    ("H-<f8>" . bongo-next)
-    ("H-<f6>" . bongo-pause/resume)
-    ("H-<f7>" . bongo-start/stop))
-+END_SRC
 * Theming
 Theming is done last as some of the hooks (namely delimiters) won't work when placed earlier in the config.
 ** Basic Interface Settings
