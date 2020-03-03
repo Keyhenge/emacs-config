@@ -49,7 +49,7 @@ If you use OSX, the following binds fn to Hyper in Emacs. Consider using Karabin
 Alternatively if you like your current setup, find a place to bind hyper as it's used for many personalized functions in this config.
 *** General
 - =fira-code=, a very nice, readable font. If you want to use something else, make sure to edit the init.el file.
-- A browser (this config uses =qutebrowser= and =tor-browser=)
+- =qutebrowser=, a keyboard driven browser.
 *** TODO EXWM
 NOTE: Much of the EXWM section is currently disabled until a later date. You can re-enable it if you wish.
 
@@ -91,10 +91,10 @@ These are the programs I use to open various file types, feel free to change the
 - =libreoffice= for various documents
 *** mu4e
 mu4e (mu-for-emacs) is a mailing suite inside of Emacs, allowing us to use Emacs's text editing/movement when composing/reading email.
-- =mu=, which actually contains mu4e
-- =isync=, or mbsync which syncs a designated folder with your mailing server
+- =mu=, which indexes your mail and actually contains mu4e
+- =getmail=, which syncs a designated folder with your mailing server via POP or IMAP
 - =msmtp=, for sending mail
-mu4e is a bit special in that it requires its dependencies to have already been installed, configured, and run. Check [[https://wiki.archlinux.org/index.php/Isync][here]] for a tutorial on setting up mbsync, check [[http://www.djcbsoftware.nl/code/mu/mu4e/index.html#Top][here]] for the documentation on both mu and mu4e, and check [[https://wiki.archlinux.org/index.php/Msmtp][here]] for a basic msmtp setup.
+mu4e is a bit special in that it requires its dependencies to have already been installed, configured, and run. Check [[https://www.linode.com/docs/email/clients/retrieve-email-using-getmail/][here]] and [[http://pyropus.ca/software/getmail/configuration.html][here]] on how to setup getmail, check [[http://www.djcbsoftware.nl/code/mu/mu4e/index.html#Top][here]] for the documentation on both mu and mu4e, and check [[https://wiki.archlinux.org/index.php/Msmtp][here]] for a basic msmtp setup.
 ** Some notes
 *** On use-package
 =use-package= automatically downloads and configures all of the packages with minimal effort. Meanwhile, =init.el= automatically checks for whether =use-package= is installed, and downloads/installs it if it is not.
@@ -121,9 +121,6 @@ EXWM makes Emacs into your window manager, making the entire system far more con
     :config
     ;; necessary to configure exwm manually
     (require 'exwm-config)
-
-    ;; Emacs as a daemon, use "emacsclient <filename>" to seamlessly edit files from the terminal directly in the exwm instance
-    (server-start)
 
     ;; Number of workspaces created when EXWM starts. Even though EXWM creates them dynamically, window loss can occur so I just make them all immediately
     (setq exwm-workspace-number 10)
@@ -324,10 +321,12 @@ Bound to <Scroll Lock>, which I can practically guarantee you don't use.
 +END_SRC
 
 *** Default browser
-I use a combination of Qutebrowser and Tor Browser. Qutebrowser now has basic adblocking/uMatrix(jMatrix) support, making it viable for everyday browsing. However it's still fairly rocky and doesn't block everything, so if I need more privacy/blocking I fall back to the Tor Browser.
+I use Qutebrowser. Qutebrowser now has basic adblocking/uMatrix(jMatrix) support, making it viable for everyday browsing. However it's still fairly rocky and doesn't block everything, so if I need more privacy/blocking I fall back to a hardened Firefox.
  #+BEGIN_SRC emacs-lisp
    (setq browse-url-browser-function 'browse-url-generic
          browse-url-generic-program "qutebrowser")
+   ;; Emacs as a daemon, use "emacsclient <filename>" to seamlessly edit files from the terminal directly in the exwm instance
+   (server-start)
  #+END_SRC
 
 ** Moving around Emacs
@@ -1281,12 +1280,15 @@ mu4e is a search based mail client that can be used inside Emacs.
         mu4e-trash-folder  "/trash"   ;; trashed messages
         mu4e-refile-folder "/archive" ;; saved messages
 
+        user-mail-address "key@keyhenge.xyz"
         mu4e-attachment-dir (expand-file-name "~/maildir/attachments")
-        mu4e-get-mail-command "mbsync -a"
+        mu4e-get-mail-command "getmail --getmaildir ~/.config/getmail --rcfile getmailrcKey --rcfile getmailrcAccounts"
         mu4e-update-interval 900
         mu4e-change-filenames-when-moving t ;; 
         smtpmail-queue-mail nil		  ;; start in normal mode
         smtpmail-queue-dir   (expand-file-name "~/maildir/queue/cur"))
+
+  (setq mail-user-agent 'mu4e-user-agent)
 
   ;; Get alerts when important mail comes in
   (use-package mu4e-alert
@@ -1297,7 +1299,9 @@ mu4e is a search based mail client that can be used inside Emacs.
           (concat
            "flag:unread maildir:/gmail/Inbox "
            "OR "
-           "flag:unread maildir:/outlook/Inbox"))
+           "flag:unread maildir:/outlook/Inbox "
+           "OR "
+           "flag:unread maildir:/key"))
     (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
     (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
     (mu4e-alert-enable-mode-line-display)
