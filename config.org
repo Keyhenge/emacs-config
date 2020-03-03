@@ -343,6 +343,11 @@ This setting should make Emacs never re-center the cursor while scrolling down, 
    (setq scroll-conservatively 100)
  #+END_SRC
 
+*** Goto line
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "M-l") 'goto-line)
+#+END_SRC
+
 *** Which-key
 No matter what you're doing in Emacs, you WILL frequently forget what key does what. Fortunately, Emacs is self documenting and allows you to search for specific functions/describe key combinations. Even more fortunately, the =which-key= package will automatically open a small buffer at the bottom of the screen showing all possible completions of a command.
  #+BEGIN_SRC emacs-lisp
@@ -687,6 +692,8 @@ Command completion isn't that great in eshell, so let's leech from the great com
               (eshell-cmpl-initialize)
               (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete)
               (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history)))
+
+  (setq helm-show-completion-display-function #'helm-show-completion-default-display-function)
 #+END_SRC
 
 *** Shortcut
@@ -724,6 +731,9 @@ Dired is the default Emacs file manager. Below are some customizations for it.
 *** All the icons
 Makes it easier to differentiate files in dired, making it a lot more pleasant.
 #+BEGIN_SRC emacs-lisp
+  (use-package all-the-icons
+    :ensure t)
+
   (use-package all-the-icons-dired
     :after all-the-icons
     :hook dired)
@@ -933,6 +943,7 @@ Yasnippet gives you access to a bunch of different templates that you can use to
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
     :ensure t
+    :hook (go-mode . yas-minor-mode)
     :config
     (use-package yasnippet-snippets
       :ensure t)
@@ -958,6 +969,12 @@ Text completion, another great tool. Use =M-n= and =M-p= to cycle through sugges
 
   (with-eval-after-load 'company
     (define-key company-active-map (kbd "SPC") #'company-abort))
+
+  ;; company-lsp integrates company mode completion with lsp-mode.
+  ;; completion-at-point also works out of the box but doesn't support snippets.
+  (use-package company-lsp
+    :ensure t
+    :commands company-lsp)
 
   (defun tab-indent-or-complete ()
     (interactive)
@@ -989,13 +1006,22 @@ The language server protocol is where you connect to an external program that pr
 
 While this doesn't matter for older languages like Python and C that already have rich ecosystems in Emacs, Go requires it.
 #+BEGIN_SRC emacs-lisp
-  ;; Install relevant packages
   (use-package lsp-mode
-    :ensure t)
-  (use-package company-lsp
-    :ensure t)
+    :ensure t
+    :commands (lsp lsp-deferred)
+    :hook (go-mode . lsp-deferred))
+
+  ;; Set up before-save hooks to format buffer and add/delete imports.
+  ;; Make sure you don't have other gofmt/goimports hooks enabled.
+  (defun lsp-go-install-save-hooks ()
+    (add-hook 'before-save-hook #'lsp-format-buffer t t)
+    (add-hook 'before-save-hook #'lsp-organize-imports t t))
+  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+  ;; Optional - provides fancier overlays.
   (use-package lsp-ui
-    :ensure t)
+    :ensure t
+    :commands lsp-ui-mode)
 #+END_SRC
 
 ** Specific languages
@@ -1005,12 +1031,12 @@ Packages and settings that make working in specific languages easier.
   (add-hook 'c++-mode-hook 'yas-minor-mode)
   (add-hook 'c-mode-hook 'yas-minor-mode)
 
-  (use-package flycheck-clang-analyzer
-    :ensure t
-    :config
-    (with-eval-after-load 'flycheck
-      (require 'flycheck-clang-analyzer)
-       (flycheck-clang-analyzer-setup)))
+  ;; (use-package flycheck-clang-analyzer
+  ;;   :ensure t
+  ;;   :config
+  ;;   (with-eval-after-load 'flycheck
+  ;;     (require 'flycheck-clang-analyzer)
+  ;;      (flycheck-clang-analyzer-setup)))
 
   (with-eval-after-load 'company
     (add-hook 'c++-mode-hook 'company-mode)
@@ -1160,29 +1186,11 @@ Packages and settings that make working in specific languages easier.
            "usr/local/go/bin" ":"
            (getenv "PATH")
            ":" (getenv "HOME") "/go/bin"))
-  (setenv "GOPATH" (concat (getenv "HOME") "/go"))
-  (setenv "GO111MODULE" "on")
+  ;;(setenv "GOPATH" (concat (getenv "HOME") "/go"))
+  ;;(setenv "GO111MODULE" "on")
 
   (use-package go-mode
     :ensure t)
-
-  (setq gofmt-command "goimports")
-  (defun cce/go-mode-hook ()
-    (lsp)
-    (company-mode)
-    (flycheck-mode)
-    (eldoc-mode))
-
-  (use-package flycheck-gometalinter
-    :ensure t
-    :config
-    (progn
-      (flycheck-gometalinter-setup)))
-
-  (add-hook 'go-mode-hook 'cce/go-mode-hook)
-  (eval-after-load "go-mode"
-    (lambda ()
-      (define-key go-mode-map (kbd "C-<tab>") 'company-lsp)))
 #+END_SRC
 
 *** Markup languages
@@ -1385,20 +1393,6 @@ Since EMMS will be using MPD to play music, it's also nice to have some controls
   (global-set-key (kbd "H-p u") 'mpd/update-database)
 #+END_SRC
 
-** TODO Bongo
-Bongo allows us to listen to music in Emacs. Use =H-p= or =H-<F5-8>= to reach its various functions.
-This may change to another music player at a later date, specifically one that supports MPD. However, EMMS reads tags wrong and doesn't have the functionality I want, while Mingus flickers all other buffers in EXWM. Other MPD players were similarly buggy.
-+BEGIN_SRC emacs-lisp
-  (use-package bongo
-    :ensure t
-    :bind
-    ("H-p l" . bongo-library)
-    ("H-p p" . bongo-playlist)
-    ("H-<f5>" . bongo-previous)
-    ("H-<f8>" . bongo-next)
-    ("H-<f6>" . bongo-pause/resume)
-    ("H-<f7>" . bongo-start/stop))
-+END_SRC
 * Theming
 Theming is done last as some of the hooks (namely delimiters) won't work when placed earlier in the config.
 ** Basic Interface Settings
