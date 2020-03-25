@@ -96,6 +96,8 @@ mu4e (mu-for-emacs) is a mailing suite inside of Emacs, allowing us to use Emacs
 - =msmtp=, for sending mail
 mu4e is a bit special in that it requires its dependencies to have already been installed, configured, and run. Check [[https://www.linode.com/docs/email/clients/retrieve-email-using-getmail/][here]] and [[http://pyropus.ca/software/getmail/configuration.html][here]] on how to setup getmail, check [[http://www.djcbsoftware.nl/code/mu/mu4e/index.html#Top][here]] for the documentation on both mu and mu4e, and check [[https://wiki.archlinux.org/index.php/Msmtp][here]] for a basic msmtp setup.
 ** Some notes
+*** On some of the keybindings
+This configuration changes the default exit chord of =C-x C-c= to =C-x C-q=, see [[Change exit chord]].
 *** On use-package
 =use-package= automatically downloads and configures all of the packages with minimal effort. Meanwhile, =init.el= automatically checks for whether =use-package= is installed, and downloads/installs it if it is not.
 *** On the format of the configuration
@@ -558,6 +560,13 @@ Kills the whole like the cursor is on.
 
 ** Minor conveniences
 Just some minor things that help you out once in a while.
+*** Change exit chord
+Something I find myself doing too often is moving to press =C-x= and accidently pressing =C-x C-c=, closing Emacs, which is quite annoying. This changes it to =C-x C-q=, overwriting a command I never use (read-only mode) and making it harder to make that mistake.
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-x C-q") 'save-buffers-kill-terminal)
+  (global-unset-key (kbd "C-x C-c"))
+#+END_SRC
+
 *** Visiting the configuration
 It's often cumbersome to go looking for this file, so binding it to =H-c e= means you can instantly access it.
  #+BEGIN_SRC emacs-lisp
@@ -1186,8 +1195,8 @@ Packages and settings that make working in specific languages easier.
            "usr/local/go/bin" ":"
            (getenv "PATH")
            ":" (getenv "HOME") "/go/bin"))
-  ;;(setenv "GOPATH" (concat (getenv "HOME") "/go"))
-  ;;(setenv "GO111MODULE" "on")
+  (setenv "GOPATH" (concat (getenv "HOME") "/go"))
+  (setenv "GO111MODULE" "on")
 
   (use-package go-mode
     :ensure t)
@@ -1290,13 +1299,21 @@ mu4e is a search based mail client that can be used inside Emacs.
 
         user-mail-address "key@keyhenge.xyz"
         mu4e-attachment-dir (expand-file-name "~/maildir/attachments")
-        mu4e-get-mail-command "getmail --getmaildir ~/.config/getmail --rcfile getmailrcKey --rcfile getmailrcAccounts"
+        mu4e-get-mail-command "getmail --getmaildir ~/.config/getmail --rcfile main --rcfile alt --rcfile job"
         mu4e-update-interval 900
         mu4e-change-filenames-when-moving t ;; 
         smtpmail-queue-mail nil		  ;; start in normal mode
         smtpmail-queue-dir   (expand-file-name "~/maildir/queue/cur"))
 
   (setq mail-user-agent 'mu4e-user-agent)
+  (add-hook 'message-mode-hook 'auto-fill-mode)
+  (setq mu4e-compose-format-flowed t)
+  (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
+  (add-hook 'mu4e-view-mode-hook 'visual-line-mode)
+  (use-package visual-fill-column
+    :ensure t
+    :config
+    (add-hook 'mu4e-view-mode-hook 'visual-fill-column-mode))
 
   ;; Get alerts when important mail comes in
   (use-package mu4e-alert
@@ -1332,11 +1349,18 @@ mu4e is a search based mail client that can be used inside Emacs.
 #+END_SRC
 
 ** Elfeed
-Elfeed is an RSS news feed with tagging, searching, auto-downloads, the works.
+Elfeed is an RSS news feed with tagging, searching, auto-downloads, the works. You can open it via =H-f= and additionally play links with media in them (like youtube) with =r=
 #+BEGIN_SRC emacs-lisp
   (use-package elfeed
-    :ensure t)
-  (global-set-key (kbd "H-f") 'elfeed)
+    :ensure t
+    :config
+    (global-set-key (kbd "H-f") 'elfeed)
+    (defun ga/play-with-mpv (start end)
+      "Play the link in the region with mpv"
+      (interactive "r")
+      (shell-command (concat "mpv " (buffer-substring start end) "\&")))
+
+    (define-key elfeed-show-mode-map (kbd "C-c o") 'ga/play-with-mpv))
 #+END_SRC
 
 ** Mingus
