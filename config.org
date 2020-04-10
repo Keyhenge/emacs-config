@@ -1270,7 +1270,7 @@ Adds the ability to export your org documents to LaTeX.
  #+END_SRC
 
 *** Agenda
-If you really want to stay organized, I highly recommend starting an agenda.org file and adding tasks and deadlines, then adding it to the org agenda list. Once you do both, you can pull up a 17 day summary (3 days before and two weeks ahead) of your schedule with =H-a=. This config assumes you're setting it up in ~/agenda/agenda.org.
+If you really want to stay organized, I highly recommend starting an agenda.org file and adding tasks and deadlines, then adding it to the org agenda list. Once you do both, you can pull up a 17 day summary (3 days before and two weeks ahead) of your schedule with =H-a=. This config assumes you're setting it up in ~/.local/org-files/agenda.org.
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "H-a") 'org-agenda-list)
   (setq org-agenda-start-day "-3d")
@@ -1278,7 +1278,7 @@ If you really want to stay organized, I highly recommend starting an agenda.org 
 
   (defun agenda-visit ()
      (interactive)
-     (find-file "~/agenda/agenda.org"))
+     (find-file "~/.local/org-files/agenda.org"))
   (global-set-key (kbd "H-c a") 'agenda-visit)
 #+END_SRC
 
@@ -1349,7 +1349,7 @@ mu4e is a search based mail client that can be used inside Emacs.
 #+END_SRC
 
 ** Elfeed
-Elfeed is an RSS news feed with tagging, searching, auto-downloads, the works. You can open it via =H-f= and additionally play links with media in them (like youtube) with =r=
+Elfeed is an RSS news feed with tagging, searching, auto-downloads, the works. You can open it via =H-f= and additionally play links with media in them (like youtube) with =r=. I also use elfeed-org to manage what feeds I'm subscribed to with an org file.
 #+BEGIN_SRC emacs-lisp
   (use-package elfeed
     :ensure t
@@ -1358,9 +1358,21 @@ Elfeed is an RSS news feed with tagging, searching, auto-downloads, the works. Y
     (defun ga/play-with-mpv (start end)
       "Play the link in the region with mpv"
       (interactive "r")
-      (shell-command (concat "mpv " (buffer-substring start end) "\&")))
+      (shell-command (concat "mpv " (buffer-substring start end) " \&")))
 
     (define-key elfeed-show-mode-map (kbd "C-c o") 'ga/play-with-mpv))
+
+  (use-package elfeed-org
+    :ensure t
+    :config
+    (setq rmh-elfeed-org-files (list "~/.local/org-files/elfeed.org"))
+    :init
+    (elfeed-org))
+
+  (defun feed-visit ()
+     (interactive)
+     (find-file "~/.local/org-files/elfeed.org"))
+  (global-set-key (kbd "H-c f") 'feed-visit)
 #+END_SRC
 
 ** Mingus
