@@ -1322,9 +1322,7 @@ mu4e is a search based mail client that can be used inside Emacs.
     :init
     (setq mu4e-alert-interesting-mail-query
           (concat
-           "flag:unread maildir:/gmail/Inbox "
-           "OR "
-           "flag:unread maildir:/outlook/Inbox "
+           "flag:unread maildir:/accounts"
            "OR "
            "flag:unread maildir:/key"))
     (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
@@ -1343,7 +1341,7 @@ mu4e is a search based mail client that can be used inside Emacs.
         message-send-mail-function 'message-send-mail-with-sendmail)
 
   ;; don't save messages to Sent Messages, Gmail/IMAP takes care of this
-  (setq mu4e-sent-messages-behavior 'delete)
+  ;;(setq mu4e-sent-messages-behavior 'delete)
 
   (global-set-key (kbd "H-m") 'mu4e)
 #+END_SRC
